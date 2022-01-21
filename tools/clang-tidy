@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Run clang tidy on all source files.
+#
+# Usage:
+#
+#     ./scripts/clang-tidy
+#
+#     ./scripts/clang-format --fix
+#
+
+set -eu
+
+find . -type d \( -name .git -o -name third_party \) -prune -false -o -type f -name '*.cpp' \
+  -exec clang-tidy -p "$(pwd)" "$@" {} +

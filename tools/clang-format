@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Run clang format on all source files.
+# 
+# Usage:
+#
+#     ./scripts/clang-format -i
+#
+#     ./scripts/clang-format --dry-run -Werror
+#
+
+find . -type d \( -name .git -o -name third_party \) -prune -false -o -type f -name '*.[ch]pp' \
+    -exec clang-format --style=file --fallback-style=none "$@" {} +

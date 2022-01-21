@@ -1,0 +1,12 @@
+
+build --cxxopt=-std=c++17
+build --ui_event_filters=-info
+# build --show_timestamps
+# build --noshow_progress
+
+test --test_output=errors 
+test --test_env=HOME 
+
+# allow workspace specific user settings
+try-import %workspace%/user.bazelrc
+
