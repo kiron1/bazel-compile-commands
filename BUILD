@@ -26,6 +26,6 @@ pkg_deb(
     description = "Generates compile_commands.json file from a Bazel workspace",
     homepage = "https://github.com/kiron1/bazel-compile-commands",
     maintainer = "Kiron <kiron1@gmail.com>",
-    package = "bazel-compile-commnds",
+    package = "bazel-compile-commands",
     version = "0.0.1",
 )
