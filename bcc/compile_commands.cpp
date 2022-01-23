@@ -9,7 +9,6 @@
 namespace bcc {
 
 namespace {
-/// A hack way to get the input fail (TODO)
 std::optional<boost::json::string>
 find_argument(boost::json::array const& arguments, std::string_view flag)
 {
@@ -60,6 +59,13 @@ compile_commands_builder::compiler(std::optional<std::string> value)
 }
 
 compile_commands_builder&
+compile_commands_builder::replacements(bcc::replacements value)
+{
+  replacements_ = std::move(value);
+  return *this;
+}
+
+compile_commands_builder&
 compile_commands_builder::execution_root(boost::filesystem::path value)
 {
   execution_root_ = std::move(value);
@@ -79,15 +85,17 @@ compile_commands_builder::build(boost::json::value const& analysis) const
   for (const auto& action_value : actions) {
     const auto& action = action_value.as_object();
     auto args = action.at("arguments").as_array();
-    const auto file = find_argument(args, "-c");
     if (compiler_.has_value()) {
       args[0] = compiler_.value();
     }
+    std::transform(std::begin(args), std::end(args), std::begin(args), [&](auto a) { return boost::json::string(replacements_.apply(a.as_string().data())); });
     const auto cmd = join_arguments(args);
     const auto output = find_argument(args, "-o");
 
-    // one entry in the compile_commands.json document
+    /// A hack way to get the input fail (TODO)
+    const auto file = find_argument(args, "-c");
     if (file.has_value()) {
+      // one entry in the compile_commands.json document
       auto obj = boost::json::object();
       obj.insert(boost::json::object::value_type{ "directory",
                                                   execution_root_.native() });

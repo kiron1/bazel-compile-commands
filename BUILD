@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+
+package(default_visibility = ["//visibility:public"])
 
 cc_binary(
     name = "bazel-compile-commands",
@@ -9,6 +9,8 @@ cc_binary(
         "//bcc:bazel",
         "//bcc:compile_commands",
         "//bcc:options",
+        "//bcc:platform",
+        "//bcc:replacements",
     ],
 )
 

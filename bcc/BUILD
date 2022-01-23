@@ -28,6 +28,7 @@ cc_library(
         "@boost//:filesystem",
         "@boost//:io",
         "@boost//:json",
+        ":replacements",
     ],
 )
 
@@ -46,5 +47,30 @@ cc_library(
     hdrs = ["options.hpp"],
     deps = [
         "@boost//:program_options",
+    ],
+)
+
+cc_library(
+    name = "platform",
+    srcs = ["platform.cpp"],
+    hdrs = ["platform.hpp"],
+    deps = [
+        "@boost//:process",
+        ":replacements",
+    ],
+)
+
+cc_library(
+    name = "replacements",
+    srcs = ["replacements.cpp"],
+    hdrs = ["replacements.hpp"],
+)
+
+cc_test(
+    name = "replacements_test",
+    srcs = ["replacements_test.cpp"],
+    deps = [
+        ":replacements",
+        "@com_google_googletest//:gtest_main",
     ],
 )

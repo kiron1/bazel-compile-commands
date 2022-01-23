@@ -2,6 +2,7 @@
 #include "bcc/bazel.hpp"
 #include "bcc/compile_commands.hpp"
 #include "bcc/options.hpp"
+#include "bcc/platform.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -30,9 +31,15 @@ main(int argc, char** argv)
       std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
     }
 
+    const auto replacements = bcc::platform_replacements();
+    if (options.verbose) {
+      for(auto const& def : replacements.definitions()) {
+        std::cerr << def.first << "=" << def.second << std::endl;
+      }
+    }
+
     auto builder = bcc::compile_commands_builder();
-    builder.execution_root(bazel.execution_root())
-      .compiler(options.compiler);
+    builder.replacements(replacements).execution_root(bazel.execution_root()).compiler(options.compiler);
 
     auto compile_commands_array = boost::json::array{};
     for (auto const& target : options.targets) {
