@@ -99,7 +99,7 @@ compile_commands_builder::build(boost::json::value const& analysis) const
       obj.insert(boost::json::object::value_type{ "directory",
                                                   execution_root_.native() });
       obj.insert(boost::json::object::value_type{ "arguments", args });
-      obj.insert(boost::json::object::value_type{ "commands", cmd });
+      obj.insert(boost::json::object::value_type{ "command", cmd });
       obj.insert(boost::json::object::value_type{ "file", file.value() });
       if (output.has_value()) {
         // `output` is optional in `compile_commands.json`
