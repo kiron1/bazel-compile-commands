@@ -53,23 +53,16 @@ join_arguments(boost::json::array const& args)
 } // namespace
 
 compile_commands_builder&
-compile_commands_builder::cc(std::optional<std::string> cc)
+compile_commands_builder::compiler(std::optional<std::string> value)
 {
-  cc_ = cc;
+  compiler_ = std::move(value);
   return *this;
 }
 
 compile_commands_builder&
-compile_commands_builder::cxx(std::optional<std::string> cxx)
+compile_commands_builder::execution_root(boost::filesystem::path value)
 {
-  cxx_ = cxx;
-  return *this;
-}
-
-compile_commands_builder&
-compile_commands_builder::execution_root(boost::filesystem::path execution_root)
-{
-  execution_root_ = execution_root;
+  execution_root_ = std::move(value);
   return *this;
 }
 
@@ -87,8 +80,8 @@ compile_commands_builder::build(boost::json::value const& analysis) const
     const auto& action = action_value.as_object();
     auto args = action.at("arguments").as_array();
     const auto file = find_argument(args, "-c");
-    if (cc_.has_value()) {
-      args[0] = cc_.value();
+    if (compiler_.has_value()) {
+      args[0] = compiler_.value();
     }
     const auto cmd = join_arguments(args);
     const auto output = find_argument(args, "-o");

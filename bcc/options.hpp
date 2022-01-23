@@ -11,10 +11,8 @@ struct options
 
   /// Be verbose.
   bool verbose{ false };
-  /// Replace Bazel C compiler with `cc`.
-  std::optional<std::string> cc{};
-  /// Replace Bazel C++ compiler with `cxx`.
-  std::optional<std::string> cxx{};
+  /// Replace Bazel compiler with `cc`.
+  std::optional<std::string> compiler{};
   /// Targets to consider for the generation of the `compile_commands.json`
   /// file.
   std::vector<std::string> targets{ "//..." };

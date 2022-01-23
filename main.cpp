@@ -32,8 +32,7 @@ main(int argc, char** argv)
 
     auto builder = bcc::compile_commands_builder();
     builder.execution_root(bazel.execution_root())
-      .cc(options.cc)
-      .cxx(options.cxx);
+      .compiler(options.compiler);
 
     auto compile_commands_array = boost::json::array{};
     for (auto const& target : options.targets) {

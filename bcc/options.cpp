@@ -18,8 +18,7 @@ options::from_argv(int argc, char* argv[])
   desc.add_options()
     ("help", "produce help message")
     ("verbose,v", "verbose, report more information")
-    ("cc,c", po::value<std::string>(), "set C compiler")
-    ("cxx,C", po::value<std::string>(), "set C++ compiler")
+    ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
     ;
   // clang-format on
 
@@ -40,12 +39,8 @@ options::from_argv(int argc, char* argv[])
 
   options result;
   result.verbose = vm.count("verbose") > 0;
-  if (vm.count("cc")) {
-    result.cc = vm["cc"].as<std::string>();
-  }
-
-  if (vm.count("cxx")) {
-    result.cxx = vm["cxx"].as<std::string>();
+  if (vm.count("compiler")) {
+    result.compiler = vm["compiler"].as<std::string>();
   }
 
   if (vm.count("targets")) {
