@@ -27,3 +27,8 @@ This will generate a `compile_commands.json` file in the current directory.
 ## Issues
 
 - https://github.com/bazelbuild/bazel/issues/12852
+
+## License
+
+This source code is under the [MIT](https://opensource.org/licenses/MIT) license
+with the exceptions mentioned in "Third party source code in this repository".
