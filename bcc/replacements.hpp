@@ -16,6 +16,7 @@ public:
   std::string apply(std::string input) const;
   /// Return list of replacements.
   std::vector<value_type> const& definitions() const { return definitions_; }
+
 private:
   std::vector<value_type> definitions_ = {};
 };

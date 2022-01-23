@@ -10,6 +10,7 @@ namespace bcc {
 options
 options::from_argv(int argc, char* argv[])
 {
+  options result;
 
   // Declare the supported options.
   po::options_description desc(
@@ -17,7 +18,8 @@ options::from_argv(int argc, char* argv[])
   // clang-format off
   desc.add_options()
     ("help", "produce help message")
-    ("verbose,v", "verbose, report more information")
+    ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
+    ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
     ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
     ;
   // clang-format on
@@ -37,7 +39,6 @@ options::from_argv(int argc, char* argv[])
     std::exit(0);
   }
 
-  options result;
   result.verbose = vm.count("verbose") > 0;
   if (vm.count("compiler")) {
     result.compiler = vm["compiler"].as<std::string>();

@@ -1,8 +1,8 @@
 #include "bcc/platform.hpp"
 
-#include <string_view>
-#include <sstream>
 #include <boost/process.hpp>
+#include <sstream>
+#include <string_view>
 
 namespace bcc {
 
@@ -40,13 +40,13 @@ platform_error::platform_error(std::string const& what)
 replacements
 platform_replacements()
 {
-  const auto devdir = output_of("xcode-select", {"--print-path"});
-  const auto sdkroot = output_of("xcrun", {"--show-sdk-path"});
+  const auto devdir = output_of("xcode-select", { "--print-path" });
+  const auto sdkroot = output_of("xcrun", { "--show-sdk-path" });
 
   replacements result;
-  result.add({"DEBUG_PREFIX_MAP_PWD", "-fdebug-prefix-map"});
-  result.add({"__BAZEL_XCODE_DEVELOPER_DIR__", devdir});
-  result.add({"__BAZEL_XCODE_SDKROOT__", sdkroot});
+  result.add({ "DEBUG_PREFIX_MAP_PWD", "-fdebug-prefix-map" });
+  result.add({ "__BAZEL_XCODE_DEVELOPER_DIR__", devdir });
+  result.add({ "__BAZEL_XCODE_SDKROOT__", sdkroot });
 
   return result;
 }

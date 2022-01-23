@@ -11,6 +11,8 @@ struct options
 
   /// Be verbose.
   bool verbose{ false };
+  /// Include `arguments` array in the final `compile_commands.json`
+  bool arguments{ false };
   /// Replace Bazel compiler with `cc`.
   std::optional<std::string> compiler{};
   /// Targets to consider for the generation of the `compile_commands.json`

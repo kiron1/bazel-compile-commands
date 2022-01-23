@@ -23,6 +23,13 @@ main(int argc, char** argv)
     }
 
     auto options = bcc::options::from_argv(argc, argv);
+    if (options.verbose) {
+      std::cerr << "arguments: " << options.arguments << std::endl;
+      if (options.compiler.has_value()) {
+        std::cerr << "compiler: " << options.compiler.value() << std::endl;
+      }
+    }
+
     auto bazel = bcc::bazel::create();
 
     if (options.verbose) {
@@ -33,13 +40,16 @@ main(int argc, char** argv)
 
     const auto replacements = bcc::platform_replacements();
     if (options.verbose) {
-      for(auto const& def : replacements.definitions()) {
+      for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
       }
     }
 
     auto builder = bcc::compile_commands_builder();
-    builder.replacements(replacements).execution_root(bazel.execution_root()).compiler(options.compiler);
+    builder.arguments(options.arguments)
+      .replacements(replacements)
+      .execution_root(bazel.execution_root())
+      .compiler(options.compiler);
 
     auto compile_commands_array = boost::json::array{};
     for (auto const& target : options.targets) {

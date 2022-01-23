@@ -1,10 +1,10 @@
 #pragma once
 
-#include <stdexcept>
 #include "bcc/replacements.hpp"
+#include <stdexcept>
 
 namespace bcc {
-  /// Error occured during querying of the platform.
+/// Error occured during querying of the platform.
 class platform_error : public std::runtime_error
 {
 public:
