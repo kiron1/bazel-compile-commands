@@ -21,6 +21,7 @@ options::from_argv(int argc, char* argv[])
     ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
     ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
     ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
+    ("targets", po::value<std::vector<std::string>>(), "Bazel target labels to query for compile commands")
     ;
   // clang-format on
 
