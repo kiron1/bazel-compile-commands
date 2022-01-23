@@ -38,7 +38,7 @@ main(int argc, char** argv)
       std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
     }
 
-    const auto replacements = bcc::platform_replacements();
+    const auto replacements = bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;

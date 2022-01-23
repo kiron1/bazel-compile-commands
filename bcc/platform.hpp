@@ -13,5 +13,5 @@ public:
 
 /// Returns platform specific replacements.
 replacements
-platform_replacements();
+platform_replacements(std::string workspace, std::string execution_root);
 }
