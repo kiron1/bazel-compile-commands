@@ -1,28 +1,70 @@
 
 #include "bcc/bazel.hpp"
 #include "bcc/compile_commands.hpp"
+#include "bcc/options.hpp"
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
-/* #include <boost/format.hpp> */
+#include <boost/json.hpp>
 
-int main(int argc, char **argv) {
+#include <unistd.h>
+
+int
+main(int argc, char** argv)
+{
   try {
+    // When run via `bazel run ...` change directory to the current workspace
+    if (getenv("BUILD_WORKSPACE_DIRECTORY")) {
+      chdir(getenv("BUILD_WORKSPACE_DIRECTORY"));
+    }
+
+    auto options = bcc::options::from_argv(argc, argv);
     auto bazel = bcc::bazel::create();
-    // std::cout << "bazel_command: " << bazel.command_path() << '\n';
-    // std::cout << "workspace: " << bazel.workspace_path() << '\n';
-    // std::cout << "execution_root: " << bazel.execution_root() << '\n';
 
-    auto actions = bazel.aquery({"mnemonic('(Objc|Cpp)Compile',deps(//...))"});
+    if (options.verbose) {
+      std::cerr << "bazel_command: " << bazel.command_path() << std::endl;
+      std::cerr << "workspace: " << bazel.workspace_path() << std::endl;
+      std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
+    }
 
-    auto compile_commands_json = std::ofstream("compile_commands.json");
-    auto compile_commands =
-        bcc::compile_commands(actions, bazel.execution_root());
-    compile_commands_json << compile_commands;
-  } catch (std::exception const &ex) {
-    std::cerr << "fatal error: " << ex.what() << '\n';
+    auto builder = bcc::compile_commands_builder();
+    builder.execution_root(bazel.execution_root())
+      .cc(options.cc)
+      .cxx(options.cxx);
+
+    auto compile_commands_array = boost::json::array{};
+    for (auto const& target : options.targets) {
+      auto query = std::stringstream{};
+      query << "mnemonic('(Objc|Cpp)Compile',deps(" << target << "))";
+      const auto query_str = query.str();
+      if (options.verbose) {
+        std::cerr << "Query target `" << target << "`: " << query_str
+                  << std::endl;
+      }
+      auto actions = bazel.aquery(query_str, options.bazel_flags);
+      if (options.verbose) {
+        std::cerr << "Build compile commands from "
+                  << actions.at("actions").as_array().size() << " actions"
+                  << std::endl;
+      }
+      const auto compile_actions = builder.build(actions);
+      compile_commands_array.insert(std::end(compile_commands_array),
+                                    std::begin(compile_actions),
+                                    std::end(compile_actions));
+    }
+
+    {
+      if (options.verbose) {
+        std::cerr << "Writting `compile_commands.json` file" << std::endl;
+      }
+      auto compile_commands_json = std::ofstream("compile_commands.json");
+      compile_commands_json << compile_commands_array;
+    }
+  } catch (std::exception const& ex) {
+    std::cerr << "fatal error: " << ex.what() << std::endl;
     return 1;
   }
   return 0;

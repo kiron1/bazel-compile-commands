@@ -14,12 +14,15 @@ namespace {
 
 /// Run `bazel info $location` and return it as path
 boost::filesystem::path
-bazel_info(boost::filesystem::path const &bazel_commmand,
-           std::string_view location) {
+bazel_info(boost::filesystem::path const& bazel_commmand,
+           std::string_view location)
+{
   const auto info = std::string_view("info");
   boost::process::ipstream outs;
   boost::process::ipstream errs;
-  boost::process::child bazel_proc(bazel_commmand, info.data(), location.data(),
+  boost::process::child bazel_proc(bazel_commmand,
+                                   info.data(),
+                                   location.data(),
                                    boost::process::std_out > outs,
                                    boost::process::std_err > errs);
 
@@ -36,11 +39,19 @@ bazel_info(boost::filesystem::path const &bazel_commmand,
 }
 } // namespace
 
-bazel_error::bazel_error(std::string const &what) : std::runtime_error(what) {}
-workspace_error::workspace_error() : std::logic_error("workspace is invalid") {}
-json_error::json_error() : std::runtime_error("JSON document is invalid") {}
+bazel_error::bazel_error(std::string const& what)
+  : std::runtime_error(what)
+{}
+workspace_error::workspace_error()
+  : std::logic_error("workspace is invalid")
+{}
+json_error::json_error()
+  : std::runtime_error("JSON document is invalid")
+{}
 
-bazel bazel::create() {
+bazel
+bazel::create()
+{
   auto bazel_command = boost::process::search_path("bazel");
   auto workspace = bazel_info(bazel_command, "workspace");
   auto execution_root = bazel_info(bazel_command, "execution_root");
@@ -53,15 +64,21 @@ bazel bazel::create() {
 }
 
 boost::json::value
-bazel::aquery(std::vector<std::string_view> const &query) const {
-  std::vector<std::string_view> args{"aquery", "--output=jsonproto",
-                                     "--ui_event_filters=-info",
-                                     "--noshow_progress"};
-  std::copy(std::begin(query), std::end(query), std::back_inserter(args));
+bazel::aquery(std::string_view query,
+              std::vector<std::string> const& bazel_flags) const
+{
+  std::vector<std::string_view> args{ "aquery",
+                                      "--output=jsonproto",
+                                      "--ui_event_filters=-info",
+                                      "--noshow_progress" };
+  std::copy(
+    std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
+  args.push_back(query);
 
   boost::process::ipstream outs;
   boost::process::ipstream errs;
-  boost::process::child bazel_proc(bazel_command_, boost::process::args(args),
+  boost::process::child bazel_proc(bazel_command_,
+                                   boost::process::args(args),
                                    boost::process::std_out > outs,
                                    boost::process::std_err > errs);
 
@@ -69,8 +86,7 @@ bazel::aquery(std::vector<std::string_view> const &query) const {
   json_parser.reset();
   auto line = std::string{};
 
-  while (/*bazel_proc.running() &&*/ std::getline(outs,
-                                                  line) /*&& !line.empty()*/) {
+  while (std::getline(outs, line)) {
     auto ec = boost::json::error_code{};
     json_parser.write(line, ec);
     if (ec) {
@@ -89,7 +105,8 @@ bazel::aquery(std::vector<std::string_view> const &query) const {
 bazel::bazel(boost::filesystem::path bazel_commands,
              boost::filesystem::path workspace_path,
              boost::filesystem::path execution_root)
-    : bazel_command_(std::move(bazel_commands)),
-      workspace_path_(std::move(workspace_path)),
-      execution_root_(std::move(execution_root)) {}
+  : bazel_command_(std::move(bazel_commands))
+  , workspace_path_(std::move(workspace_path))
+  , execution_root_(std::move(execution_root))
+{}
 } // namespace bcc

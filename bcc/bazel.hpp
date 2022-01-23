@@ -3,28 +3,33 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/json.hpp>
 
 namespace bcc {
 
-class bazel_error : public std::runtime_error {
+class bazel_error : public std::runtime_error
+{
 public:
-  bazel_error(std::string const &what);
+  bazel_error(std::string const& what);
 };
 
-class workspace_error : public std::logic_error {
+class workspace_error : public std::logic_error
+{
 public:
   workspace_error();
 };
 
-class json_error : public std::runtime_error {
+class json_error : public std::runtime_error
+{
 public:
   json_error();
 };
 
-class bazel {
+class bazel
+{
 public:
   static bazel create();
 
@@ -38,7 +43,8 @@ public:
   boost::filesystem::path execution_root() const { return execution_root_; };
 
   // Execute an `aquery` on the current workspace.
-  boost::json::value aquery(std::vector<std::string_view> const &args) const;
+  boost::json::value aquery(std::string_view query,
+                            std::vector<std::string> const& bazel_flags) const;
 
 private:
   bazel() = delete;

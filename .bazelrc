@@ -1,4 +1,27 @@
 
+build --copt=-Werror
+build --copt=-pedantic
+build --copt=-Wall
+build --copt=-Wextra
+
+build --copt=-Wctor-dtor-privacy
+build --copt=-Wdisabled-optimization
+build --copt=-Wformat=2
+build --copt=-Winit-self
+build --copt=-Wmissing-declarations
+build --copt=-Wmissing-include-dirs
+build --copt=-Woverloaded-virtual
+build --copt=-Wredundant-decls
+build --copt=-Wshadow
+build --copt=-Wsign-conversion
+build --copt=-Wsign-promo
+build --copt=-Wstrict-overflow=5
+build --copt=-Wswitch-default
+
+build --copt=-Wno-unused
+build --copt=-Wno-unused-parameter
+build --copt=-Wno-sign-conversion
+
 build --cxxopt=-std=c++17
 build --ui_event_filters=-info
 # build --show_timestamps

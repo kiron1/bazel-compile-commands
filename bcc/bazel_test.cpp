@@ -8,7 +8,8 @@ using testing::Not;
 
 namespace {
 
-TEST(bazel, create) {
+TEST(bazel, create)
+{
 
   auto bzl = bcc::bazel::create();
 

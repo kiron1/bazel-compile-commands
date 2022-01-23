@@ -22,3 +22,4 @@ This will generate a `compile_commands.json` file in the current directory.
 ## Links
 
 - [Format of the `compile_commands.json` format](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
+- [analysis_v2.proto](https://github.com/bazelbuild/bazel/blob/master/src/main/protobuf/analysis_v2.proto)

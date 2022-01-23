@@ -39,3 +39,12 @@ cc_test(
         "@com_google_googletest//:gtest_main",
     ],
 )
+
+cc_library(
+    name = "options",
+    srcs = ["options.cpp"],
+    hdrs = ["options.hpp"],
+    deps = [
+        "@boost//:program_options",
+    ],
+)

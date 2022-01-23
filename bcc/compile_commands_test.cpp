@@ -8,6 +8,9 @@ using testing::IsTrue;
 
 namespace {
 
-TEST(compile_commands, simple) { EXPECT_THAT(true, IsTrue()); }
+TEST(compile_commands, simple)
+{
+  EXPECT_THAT(true, IsTrue());
+}
 
 } // namespace

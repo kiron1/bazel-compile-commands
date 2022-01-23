@@ -8,6 +8,7 @@ cc_binary(
     deps = [
         "//bcc:bazel",
         "//bcc:compile_commands",
+        "//bcc:options",
     ],
 )
 
