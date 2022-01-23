@@ -1,8 +1,8 @@
 #include "bcc/platform.hpp"
 
-#include <boost/process.hpp>
 #include <sstream>
 #include <string_view>
+#include <boost/process.hpp>
 
 namespace bcc {
 

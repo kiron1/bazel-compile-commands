@@ -1,3 +1,14 @@
 ---
 BasedOnStyle: Mozilla
+IncludeCategories:
+  - Regex:           '^((<|")boost/)'
+    Priority:        4
+  - Regex:           '^((<|")(gtest|gmock)/)'
+    Priority:        3
+  - Regex:           '<[[a-z_].]+>'
+    Priority:        5
+  - Regex:           '"bcc/"'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        1
 ...

@@ -3,8 +3,8 @@
 #include <optional>
 #include <sstream>
 
-#include <boost/json.hpp>
 #include <string_view>
+#include <boost/json.hpp>
 
 namespace bcc {
 
