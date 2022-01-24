@@ -28,10 +28,15 @@ main(int argc, char** argv)
       if (options.compiler.has_value()) {
         std::cerr << "compiler: " << options.compiler.value() << std::endl;
       }
+      std::cerr << "targets: ";
+      std::copy(std::begin(options.targets), std::end(options.targets), std::ostream_iterator<std::string_view>(std::cerr, " "));
+      std::cerr << std::endl;
+      std::cerr << "config: ";
+      std::copy(std::begin(options.bazel_flags), std::end(options.bazel_flags), std::ostream_iterator<std::string_view>(std::cerr, " "));
+      std::cerr << std::endl;
     }
 
     auto bazel = bcc::bazel::create();
-
     if (options.verbose) {
       std::cerr << "bazel_command: " << bazel.command_path() << std::endl;
       std::cerr << "workspace: " << bazel.workspace_path() << std::endl;
