@@ -10,7 +10,16 @@ namespace bcc {
 options
 options::from_argv(int argc, char* argv[])
 {
+  auto* argv_end = argc + argv;
+  int our_argc = argc;
+
   options result;
+
+  const auto it = std::find(argv, argv_end, std::string_view("--"));
+  if (it != argv_end) {
+    our_argc = std::distance(argv, it);
+    result.bazel_flags.assign(it + 1, argv_end);
+  }
 
   // Declare the supported options.
   po::options_description desc(
@@ -30,9 +39,11 @@ options::from_argv(int argc, char* argv[])
   targets.add("targets", -1);
 
   po::variables_map vm;
-  po::store(
-    po::command_line_parser(argc, argv).options(desc).positional(targets).run(),
-    vm);
+  po::store(po::command_line_parser(our_argc, argv)
+              .options(desc)
+              .positional(targets)
+              .run(),
+            vm);
   po::notify(vm);
 
   if (vm.count("help")) {
