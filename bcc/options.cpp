@@ -17,7 +17,7 @@ options::from_argv(int argc, char* argv[])
     "Usage: bazle-compile-commands [-hvcC] TARGETS -- CONFIG");
   // clang-format off
   desc.add_options()
-    ("help", "produce help message")
+    ("help,h", "produce help message")
     ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
     ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
     ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
