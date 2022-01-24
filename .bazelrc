@@ -9,7 +9,6 @@ build --copt=-Wdisabled-optimization
 build --copt=-Wformat=2
 build --copt=-Winit-self
 build --copt=-Wmissing-declarations
-build --copt=-Wmissing-include-dirs
 build --copt=-Woverloaded-virtual
 build --copt=-Wredundant-decls
 build --copt=-Wshadow
