@@ -40,11 +40,6 @@ options::from_argv(int argc, char* argv[])
     std::exit(0);
   }
 
-  result.verbose = vm.count("verbose") > 0;
-  if (vm.count("compiler")) {
-    result.compiler = vm["compiler"].as<std::string>();
-  }
-
   if (vm.count("targets")) {
     result.targets = vm["targets"].as<std::vector<std::string>>();
   }
