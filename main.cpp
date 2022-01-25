@@ -29,10 +29,14 @@ main(int argc, char** argv)
         std::cerr << "compiler: " << options.compiler.value() << std::endl;
       }
       std::cerr << "targets: ";
-      std::copy(std::begin(options.targets), std::end(options.targets), std::ostream_iterator<std::string_view>(std::cerr, " "));
+      std::copy(std::begin(options.targets),
+                std::end(options.targets),
+                std::ostream_iterator<std::string_view>(std::cerr, " "));
       std::cerr << std::endl;
       std::cerr << "config: ";
-      std::copy(std::begin(options.bazel_flags), std::end(options.bazel_flags), std::ostream_iterator<std::string_view>(std::cerr, " "));
+      std::copy(std::begin(options.bazel_flags),
+                std::end(options.bazel_flags),
+                std::ostream_iterator<std::string_view>(std::cerr, " "));
       std::cerr << std::endl;
     }
 
@@ -43,7 +47,8 @@ main(int argc, char** argv)
       std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
     }
 
-    const auto replacements = bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
+    const auto replacements = bcc::platform_replacements(
+      bazel.workspace_path().native(), bazel.execution_root().native());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
@@ -57,29 +62,36 @@ main(int argc, char** argv)
       .compiler(options.compiler);
 
     auto compile_commands_array = boost::json::array{};
+    auto query = std::stringstream{};
+    query << "mnemonic('(Objc|Cpp)Compile',deps(";
+    bool need_plus = false;
     for (auto const& target : options.targets) {
-      auto query = std::stringstream{};
-      query << "mnemonic('(Objc|Cpp)Compile',deps(" << target << "))";
-      const auto query_str = query.str();
-      if (options.verbose) {
-        std::cerr << "Query target `" << target << "`: " << query_str
-                  << std::endl;
+      if (need_plus) {
+        query << " + ";
       }
-      auto actions = bazel.aquery(query_str, options.bazel_flags);
-      if (options.verbose) {
-        std::cerr << "Build compile commands from "
-                  << actions.at("actions").as_array().size() << " actions"
-                  << std::endl;
-      }
-      const auto compile_actions = builder.build(actions);
-      compile_commands_array.insert(std::end(compile_commands_array),
-                                    std::begin(compile_actions),
-                                    std::end(compile_actions));
+      query << target;
+      need_plus = true;
     }
+    query << "))";
+    const auto query_str = query.str();
+    if (options.verbose) {
+      std::cerr << "Query `" << query_str << '`' << std::endl;
+    }
+    auto actions = bazel.aquery(query_str, options.bazel_flags);
+    if (options.verbose) {
+      std::cerr << "Build compile commands from "
+                << actions.at("actions").as_array().size() << " actions"
+                << std::endl;
+    }
+    const auto compile_actions = builder.build(actions);
+    compile_commands_array.insert(std::end(compile_commands_array),
+                                  std::begin(compile_actions),
+                                  std::end(compile_actions));
 
     {
       if (options.verbose) {
-        std::cerr << "Writting `compile_commands.json` file" << std::endl;
+        std::cerr << "Writting " << compile_commands_array.size()
+                  << " commands to `compile_commands.json`" << std::endl;
       }
       auto compile_commands_json = std::ofstream("compile_commands.json");
       compile_commands_json << compile_commands_array;
