@@ -13,6 +13,21 @@
 
 #include <unistd.h>
 
+std::string make_query(std::vector<std::string> const& targets) {
+  auto query = std::stringstream{};
+  query << "mnemonic('(Objc|Cpp)Compile',deps(";
+  bool need_plus = false;
+  for (auto const& target : targets) {
+    if (need_plus) {
+      query << " + ";
+    }
+    query << target;
+    need_plus = true;
+  }
+  query << "))";
+  return query.str();
+}
+
 int
 main(int argc, char** argv)
 {
@@ -61,19 +76,7 @@ main(int argc, char** argv)
       .execution_root(bazel.execution_root())
       .compiler(options.compiler);
 
-    auto compile_commands_array = boost::json::array{};
-    auto query = std::stringstream{};
-    query << "mnemonic('(Objc|Cpp)Compile',deps(";
-    bool need_plus = false;
-    for (auto const& target : options.targets) {
-      if (need_plus) {
-        query << " + ";
-      }
-      query << target;
-      need_plus = true;
-    }
-    query << "))";
-    const auto query_str = query.str();
+    const auto query_str = make_query(options.targets);
     if (options.verbose) {
       std::cerr << "Query `" << query_str << '`' << std::endl;
     }
