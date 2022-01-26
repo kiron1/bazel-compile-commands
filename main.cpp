@@ -86,18 +86,14 @@ main(int argc, char** argv)
                 << actions.at("actions").as_array().size() << " actions"
                 << std::endl;
     }
-    const auto compile_actions = builder.build(actions);
-    compile_commands_array.insert(std::end(compile_commands_array),
-                                  std::begin(compile_actions),
-                                  std::end(compile_actions));
-
+    const auto compile_commands = builder.build(actions);
     {
       if (options.verbose) {
-        std::cerr << "Writting " << compile_commands_array.size()
+        std::cerr << "Writting " << compile_commands.size()
                   << " commands to `compile_commands.json`" << std::endl;
       }
       auto compile_commands_json = std::ofstream("compile_commands.json");
-      compile_commands_json << compile_commands_array;
+      compile_commands_json << compile_commands;
     }
   } catch (std::exception const& ex) {
     std::cerr << "fatal error: " << ex.what() << std::endl;
