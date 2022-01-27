@@ -1,5 +1,7 @@
 # `compile_commands.json` generator for Bazel
 
+![bazel-compile-commands build status of main branch](https://github.com/kiron1/bazel-compile-commands/actions/workflows/main.yaml/badge.svg)
+
 This `bazle-compile-commands` tool can generate a `compile_commands.json` file
 without the need to modify any of the Bazel configuration files.
 

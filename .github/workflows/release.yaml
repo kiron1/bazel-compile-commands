@@ -1,0 +1,65 @@
+# GitHub Workflows file
+
+name: release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  mkrelease:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  buildpkg:
+    name: Build and Upload Release Asset
+    runs-on: ${{ matrix.os }}
+
+    needs: mkrelease
+
+    strategy:
+      matrix:
+        build: [linux]
+        include:
+          - build: linux
+            os: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Run bazel test
+        run: bazel test -s --config=ci //...
+      - name: Build Release Package
+        id: buildpkg
+        run: bazel build -s --config=ci --config=release //:deb
+      - name: Rule info
+        id: pkginfo
+        run: bazel query --noshow_progress --output=xml //:deb | ./tools/rule-info
+      - name: Copy artifact
+        run: cp ./bazel-bin/deb.deb ${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.mkrelease.outputs.upload_url }}
+          asset_name: ${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+          asset_path: ./${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+          asset_content_type: application/octet-stream
