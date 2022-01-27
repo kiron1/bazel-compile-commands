@@ -1,0 +1,54 @@
+# GitHub Workflows file
+
+name: main
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    name: Build and test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        build: [linux]
+        include:
+          - build: linux
+            os: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Run bazel test
+        run: bazel test -s --config=ci //...
+      - name: Build Release Package
+        id: buildpkg
+        run: bazel build -s --config=ci --config=release //:deb
+      - name: Rule info
+        id: pkginfo
+        run: bazel query --noshow_progress --output=xml //:deb | ./tools/rule-info
+      - name: Copy artifact
+        run: cp ./bazel-bin/deb.deb ${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+
+  format_check:
+    name: Style check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Style check
+        run: ./tools/clang-format --dry-run -Werror
+

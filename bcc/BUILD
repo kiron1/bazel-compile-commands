@@ -11,15 +11,6 @@ cc_library(
     ],
 )
 
-cc_test(
-    name = "bazel_test",
-    srcs = ["bazel_test.cpp"],
-    deps = [
-        ":bazel",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
 cc_library(
     name = "compile_commands",
     srcs = ["compile_commands.cpp"],
