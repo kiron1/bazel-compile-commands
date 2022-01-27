@@ -13,7 +13,9 @@
 
 #include <unistd.h>
 
-std::string make_query(std::vector<std::string> const& targets) {
+std::string
+make_query(std::vector<std::string> const& targets)
+{
   auto query = std::stringstream{};
   query << "mnemonic('(Objc|Cpp)Compile',deps(";
   bool need_plus = false;

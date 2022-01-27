@@ -4,9 +4,9 @@
 #
 # Usage:
 #
-#     ./scripts/clang-tidy
+#     ./tools/clang-tidy
 #
-#     ./scripts/clang-format --fix
+#     ./tools/clang-format --fix
 #
 
 set -eu
