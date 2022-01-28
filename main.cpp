@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
@@ -107,8 +108,18 @@ main(int argc, char** argv)
         std::cerr << "Writting " << compile_commands.size() << " commands to `"
                   << options.output_path << "`" << std::endl;
       }
-      auto compile_commands_json = std::ofstream(options.output_path.c_str());
-      compile_commands_json << compile_commands;
+      // Allow `-` as output_path to mean write to stdout instead of a file.
+      auto compile_commands_file = std::ofstream{};
+      auto* compile_commands_buf = static_cast<std::streambuf*>(nullptr);
+      if (options.output_path == "-") {
+        compile_commands_buf = std::cout.rdbuf();
+      } else {
+        compile_commands_file.open(options.output_path.c_str());
+        compile_commands_buf = compile_commands_file.rdbuf();
+      }
+
+      auto compile_commands_stream = std::ostream(compile_commands_buf);
+      compile_commands_stream << compile_commands;
     }
   } catch (std::exception const& ex) {
     std::cerr << "fatal error: " << ex.what() << std::endl;
