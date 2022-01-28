@@ -3,11 +3,13 @@
 #include "bcc/compile_commands.hpp"
 #include "bcc/options.hpp"
 #include "bcc/platform.hpp"
+#include "bcc/replacements.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <string_view>
 
 #include <boost/json.hpp>
 
@@ -30,6 +32,16 @@ make_query(std::vector<std::string> const& targets)
   return query.str();
 }
 
+std::string
+replace_workspace_placeholder(std::string value, std::string workspace_location)
+{
+  bcc::replacements repl;
+
+  repl.add({ "%workspace%", std::move(workspace_location) });
+
+  return repl.apply(std::move(value));
+}
+
 int
 main(int argc, char** argv)
 {
@@ -40,6 +52,10 @@ main(int argc, char** argv)
     }
 
     auto options = bcc::options::from_argv(argc, argv);
+    auto bazel = bcc::bazel::create();
+    options.output_path = replace_workspace_placeholder(
+      options.output_path, bazel.workspace_path().native());
+
     if (options.verbose) {
       std::cerr << "arguments: " << options.arguments << std::endl;
       if (options.compiler.has_value()) {
@@ -55,10 +71,7 @@ main(int argc, char** argv)
                 std::end(options.bazel_flags),
                 std::ostream_iterator<std::string_view>(std::cerr, " "));
       std::cerr << std::endl;
-    }
-
-    auto bazel = bcc::bazel::create();
-    if (options.verbose) {
+      std::cerr << "output: " << options.output_path << std::endl;
       std::cerr << "bazel_command: " << bazel.command_path() << std::endl;
       std::cerr << "workspace: " << bazel.workspace_path() << std::endl;
       std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
@@ -91,10 +104,10 @@ main(int argc, char** argv)
     const auto compile_commands = builder.build(actions);
     {
       if (options.verbose) {
-        std::cerr << "Writting " << compile_commands.size()
-                  << " commands to `compile_commands.json`" << std::endl;
+        std::cerr << "Writting " << compile_commands.size() << " commands to `"
+                  << options.output_path << "`" << std::endl;
       }
-      auto compile_commands_json = std::ofstream("compile_commands.json");
+      auto compile_commands_json = std::ofstream(options.output_path.c_str());
       compile_commands_json << compile_commands;
     }
   } catch (std::exception const& ex) {

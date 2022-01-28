@@ -15,6 +15,8 @@ struct options
   bool arguments{ false };
   /// Replace Bazel compiler with `cc`.
   std::optional<std::string> compiler{};
+  /// Output path of the `compile_commands.json` file.
+  std::string output_path{ "%workspace%/compile_commands.json" };
   /// Targets to consider for the generation of the `compile_commands.json`
   /// file.
   std::vector<std::string> targets{ "//..." };
