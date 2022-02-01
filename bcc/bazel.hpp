@@ -31,7 +31,8 @@ public:
 class bazel
 {
 public:
-  static bazel create();
+  static bazel create(std::string_view bazel_commands,
+                      std::vector<std::string> bazel_startup_options);
 
   // Path of the `bazel` executable.
   boost::filesystem::path command_path() const { return bazel_command_; };
@@ -48,11 +49,13 @@ public:
 private:
   bazel() = delete;
   bazel(boost::filesystem::path bazel_command,
+        std::vector<std::string> bazel_startup_options,
         boost::filesystem::path workspace,
         boost::filesystem::path execution_root);
 
 private:
   boost::filesystem::path bazel_command_;
+  std::vector<std::string> bazel_startup_options_;
   boost::filesystem::path workspace_path_;
   boost::filesystem::path execution_root_;
 };

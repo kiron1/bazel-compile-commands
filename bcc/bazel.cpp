@@ -46,30 +46,38 @@ json_error::json_error()
 {}
 
 bazel
-bazel::create()
+bazel::create(std::string_view bazel_command, std::vector<std::string> bazel_startup_options)
 {
-  auto bazel_command = boost::process::search_path("bazel");
-  auto workspace = bazel_info(bazel_command, "workspace");
-  auto execution_root = bazel_info(bazel_command, "execution_root");
+  auto bazel_path = boost::filesystem::path();
+  if (boost::filesystem::exists(bazel_command.data())) {
+    bazel_path = bazel_command.data();
+  } else {
+    bazel_path = boost::process::search_path(bazel_command.data());
+  }
+  auto workspace = bazel_info(bazel_path, "workspace");
+  auto execution_root = bazel_info(bazel_path, "execution_root");
 
   if (workspace.empty()) {
     throw workspace_error();
   }
 
-  return bazel(bazel_command, workspace, execution_root);
+  return bazel(bazel_path, std::move(bazel_startup_options), workspace, execution_root);
 }
 
 boost::json::value
 bazel::aquery(std::string_view query, std::vector<std::string> const& bazel_flags) const
 {
-  std::vector<std::string_view> args{ "aquery", "--output=jsonproto", "--ui_event_filters=-info", "--noshow_progress" };
+  std::vector<std::string_view> args(std::begin(bazel_startup_options_), std::end(bazel_startup_options_));
+  std::vector<std::string_view> aquery_cmd{
+    "aquery", "--output=jsonproto", "--ui_event_filters=-info", "--noshow_progress"
+  };
+  std::copy(std::begin(aquery_cmd), std::end(aquery_cmd), std::back_inserter(args));
   std::copy(std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
   args.push_back(query);
 
   boost::process::ipstream outs;
   boost::process::ipstream errs;
-  boost::process::child bazel_proc(
-    bazel_command_, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
+  boost::process::child bazel_proc(bazel_command_, boost::process::args(args), boost::process::std_out > outs);
 
   auto json_parser = boost::json::stream_parser{};
   json_parser.reset();
@@ -92,9 +100,11 @@ bazel::aquery(std::string_view query, std::vector<std::string> const& bazel_flag
 }
 
 bazel::bazel(boost::filesystem::path bazel_commands,
+             std::vector<std::string> bazel_startup_options,
              boost::filesystem::path workspace_path,
              boost::filesystem::path execution_root)
   : bazel_command_(std::move(bazel_commands))
+  , bazel_startup_options_(std::move(bazel_startup_options))
   , workspace_path_(std::move(workspace_path))
   , execution_root_(std::move(execution_root))
 {}

@@ -53,7 +53,7 @@ main(int argc, char** argv)
     }
 
     auto options = bcc::options::from_argv(argc, argv);
-    auto bazel = bcc::bazel::create();
+    auto bazel = bcc::bazel::create(options.bazel_commands, options.bazel_startup_options);
     options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
 
     if (options.verbose) {
