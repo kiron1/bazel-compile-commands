@@ -1,5 +1,6 @@
 ---
 BasedOnStyle: Mozilla
+ColumnLimit:     120
 IncludeCategories:
   - Regex:           '^((<|")boost/)'
     Priority:        4

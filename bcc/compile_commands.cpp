@@ -95,10 +95,9 @@ compile_commands_builder::build(boost::json::value const& analysis) const
     if (compiler_.has_value()) {
       args[0] = compiler_.value();
     }
-    std::transform(
-      std::begin(args), std::end(args), std::begin(args), [&](auto a) {
-        return boost::json::string(replacements_.apply(a.as_string().data()));
-      });
+    std::transform(std::begin(args), std::end(args), std::begin(args), [&](auto a) {
+      return boost::json::string(replacements_.apply(a.as_string().data()));
+    });
     const auto cmd = join_arguments(args);
     const auto output = find_argument(args, "-o");
 
@@ -107,8 +106,7 @@ compile_commands_builder::build(boost::json::value const& analysis) const
     if (file.has_value()) {
       // one entry in the compile_commands.json document
       auto obj = boost::json::object();
-      obj.insert(boost::json::object::value_type{ "directory",
-                                                  execution_root_.native() });
+      obj.insert(boost::json::object::value_type{ "directory", execution_root_.native() });
       if (arguments_) {
         obj.insert(boost::json::object::value_type{ "arguments", args });
       }

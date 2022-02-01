@@ -54,8 +54,7 @@ main(int argc, char** argv)
 
     auto options = bcc::options::from_argv(argc, argv);
     auto bazel = bcc::bazel::create();
-    options.output_path = replace_workspace_placeholder(
-      options.output_path, bazel.workspace_path().native());
+    options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
 
     if (options.verbose) {
       std::cerr << "arguments: " << options.arguments << std::endl;
@@ -78,8 +77,8 @@ main(int argc, char** argv)
       std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
     }
 
-    const auto replacements = bcc::platform_replacements(
-      bazel.workspace_path().native(), bazel.execution_root().native());
+    const auto replacements =
+      bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
@@ -98,15 +97,13 @@ main(int argc, char** argv)
     }
     auto actions = bazel.aquery(query_str, options.bazel_flags);
     if (options.verbose) {
-      std::cerr << "Build compile commands from "
-                << actions.at("actions").as_array().size() << " actions"
-                << std::endl;
+      std::cerr << "Build compile commands from " << actions.at("actions").as_array().size() << " actions" << std::endl;
     }
     const auto compile_commands = builder.build(actions);
     {
       if (options.verbose) {
-        std::cerr << "Writting " << compile_commands.size() << " commands to `"
-                  << options.output_path << "`" << std::endl;
+        std::cerr << "Writting " << compile_commands.size() << " commands to `" << options.output_path << "`"
+                  << std::endl;
       }
       // Allow `-` as output_path to mean write to stdout instead of a file.
       auto compile_commands_file = std::ofstream{};

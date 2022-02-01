@@ -14,17 +14,13 @@ namespace {
 
 /// Run `bazel info $location` and return it as path
 boost::filesystem::path
-bazel_info(boost::filesystem::path const& bazel_commmand,
-           std::string_view location)
+bazel_info(boost::filesystem::path const& bazel_commmand, std::string_view location)
 {
   const auto info = std::string_view("info");
   boost::process::ipstream outs;
   boost::process::ipstream errs;
-  boost::process::child bazel_proc(bazel_commmand,
-                                   info.data(),
-                                   location.data(),
-                                   boost::process::std_out > outs,
-                                   boost::process::std_err > errs);
+  boost::process::child bazel_proc(
+    bazel_commmand, info.data(), location.data(), boost::process::std_out > outs, boost::process::std_err > errs);
 
   auto line = std::string{};
   std::getline(outs, line);
@@ -64,23 +60,16 @@ bazel::create()
 }
 
 boost::json::value
-bazel::aquery(std::string_view query,
-              std::vector<std::string> const& bazel_flags) const
+bazel::aquery(std::string_view query, std::vector<std::string> const& bazel_flags) const
 {
-  std::vector<std::string_view> args{ "aquery",
-                                      "--output=jsonproto",
-                                      "--ui_event_filters=-info",
-                                      "--noshow_progress" };
-  std::copy(
-    std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
+  std::vector<std::string_view> args{ "aquery", "--output=jsonproto", "--ui_event_filters=-info", "--noshow_progress" };
+  std::copy(std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
   args.push_back(query);
 
   boost::process::ipstream outs;
   boost::process::ipstream errs;
-  boost::process::child bazel_proc(bazel_command_,
-                                   boost::process::args(args),
-                                   boost::process::std_out > outs,
-                                   boost::process::std_err > errs);
+  boost::process::child bazel_proc(
+    bazel_command_, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
 
   auto json_parser = boost::json::stream_parser{};
   json_parser.reset();

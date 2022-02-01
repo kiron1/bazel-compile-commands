@@ -22,8 +22,7 @@ options::from_argv(int argc, char* argv[])
   }
 
   // Declare the supported options.
-  po::options_description desc(
-    "Usage: bazle-compile-commands [-hvcC] TARGETS -- CONFIG");
+  po::options_description desc("Usage: bazle-compile-commands [-hvcC] TARGETS -- CONFIG");
   // clang-format off
   desc.add_options()
     ("help,h", "produce help message")
@@ -40,11 +39,7 @@ options::from_argv(int argc, char* argv[])
   targets.add("targets", -1);
 
   po::variables_map vm;
-  po::store(po::command_line_parser(our_argc, argv)
-              .options(desc)
-              .positional(targets)
-              .run(),
-            vm);
+  po::store(po::command_line_parser(our_argc, argv).options(desc).positional(targets).run(), vm);
   po::notify(vm);
 
   if (vm.count("help")) {
