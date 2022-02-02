@@ -30,5 +30,5 @@ pkg_deb(
     homepage = "https://github.com/kiron1/bazel-compile-commands",
     maintainer = "Kiron <kiron1@gmail.com>",
     package = "bazel-compile-commands",
-    version = "0.0.1",
+    version = "0.1.0",
 )
