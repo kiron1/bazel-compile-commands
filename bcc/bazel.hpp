@@ -31,8 +31,7 @@ public:
 class bazel
 {
 public:
-  static bazel create(std::string_view bazel_commands,
-                      std::vector<std::string> bazel_startup_options);
+  static bazel create(std::string_view bazel_commands, std::vector<std::string> bazel_startup_options);
 
   // Path of the `bazel` executable.
   boost::filesystem::path command_path() const { return bazel_command_; };
