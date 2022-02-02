@@ -53,28 +53,19 @@ main(int argc, char** argv)
     }
 
     auto options = bcc::options::from_argv(argc, argv);
-    auto bazel = bcc::bazel::create(options.bazel_commands, options.bazel_startup_options);
-    options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
+    auto bazel = bcc::bazel::create(options.bazel_command, options.bazel_startup_options);
 
-    if (options.verbose) {
-      std::cerr << "arguments: " << options.arguments << std::endl;
-      if (options.compiler.has_value()) {
-        std::cerr << "compiler: " << options.compiler.value() << std::endl;
+    if (options.write_rc_file) {
+      if (!options.rcpath.has_value()) {
+        options.rcpath = bazel.workspace_path() / bcc::rc_name;
       }
-      std::cerr << "targets: ";
-      std::copy(std::begin(options.targets),
-                std::end(options.targets),
-                std::ostream_iterator<std::string_view>(std::cerr, " "));
-      std::cerr << std::endl;
-      std::cerr << "config: ";
-      std::copy(std::begin(options.bazel_flags),
-                std::end(options.bazel_flags),
-                std::ostream_iterator<std::string_view>(std::cerr, " "));
-      std::cerr << std::endl;
-      std::cerr << "output: " << options.output_path << std::endl;
-      std::cerr << "bazel_command: " << bazel.command_path() << std::endl;
-      std::cerr << "workspace: " << bazel.workspace_path() << std::endl;
-      std::cerr << "execution_root: " << bazel.execution_root() << std::endl;
+      auto rcfile = std::ofstream(options.rcpath.value().c_str());
+      options.write(rcfile);
+    }
+
+    options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
+    if (options.verbose) {
+      options.write(std::cerr);
     }
 
     const auto replacements =

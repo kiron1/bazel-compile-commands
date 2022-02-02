@@ -16,10 +16,10 @@ cc_library(
     srcs = ["compile_commands.cpp"],
     hdrs = ["compile_commands.hpp"],
     deps = [
+        ":replacements",
         "@boost//:filesystem",
         "@boost//:io",
         "@boost//:json",
-        ":replacements",
     ],
 )
 
@@ -37,6 +37,7 @@ cc_library(
     srcs = ["options.cpp"],
     hdrs = ["options.hpp"],
     deps = [
+        "@boost//:filesystem",
         "@boost//:program_options",
     ],
 )
@@ -46,8 +47,8 @@ cc_library(
     srcs = ["platform.cpp"],
     hdrs = ["platform.hpp"],
     deps = [
-        "@boost//:process",
         ":replacements",
+        "@boost//:process",
     ],
 )
 

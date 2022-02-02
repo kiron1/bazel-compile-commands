@@ -1,4 +1,5 @@
 bazel-*
 user.bazelrc
+.bazelccrc
 compile_flags.txt
 compile_commands.json
