@@ -37,3 +37,14 @@ http_archive(
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
+
+http_archive(
+    name = "bazel_pandoc",
+    sha256 = "15ea7c76226c9df57cf9e3e32d856513b26365831c9979ef9c28dd5a1ef2c196",
+    strip_prefix = "bazel-pandoc-0.3",
+    urls = ["https://github.com/ProdriveTechnologies/bazel-pandoc/archive/v0.3.tar.gz"],
+)
+
+load("@bazel_pandoc//:repositories.bzl", "pandoc_repositories")
+
+pandoc_repositories()

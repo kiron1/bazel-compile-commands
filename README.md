@@ -3,7 +3,9 @@
 ![bazel-compile-commands build status of main branch](https://github.com/kiron1/bazel-compile-commands/actions/workflows/main.yaml/badge.svg)
 
 This `bazle-compile-commands` tool can generate a `compile_commands.json` file
-without the need to modify any of the Bazel configuration files.
+from a Bazel workspace without the need to modify any of the Bazel
+configuration files. This is the equivalent of _CMAKE_EXPORT_COMPILE_COMMANDS_
+from CMake for Bazel.
 
 ## Usage
 
@@ -14,6 +16,9 @@ bazel-compile-commands
 ```
 
 This will generate a `compile_commands.json` file in the current directory.
+
+- [Documentation](./documentation.md) or `man 1 bazel-compile-commands`
+- [Download latest release](https://github.com/kiron1/bazel-compile-commands/releases/latest)
 
 ## Alternative tools
 
