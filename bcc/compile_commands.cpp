@@ -82,7 +82,7 @@ compile_commands_builder::execution_root(boost::filesystem::path value)
 boost::json::array
 compile_commands_builder::build(boost::json::value const& analysis) const
 {
-  // The aqery result is an object with an actions element which is an array of
+  // The aquery result is an object with an actions element which is an array of
   // objects
   auto actions = analysis.at("actions").as_array();
 
@@ -101,7 +101,7 @@ compile_commands_builder::build(boost::json::value const& analysis) const
     const auto cmd = join_arguments(args);
     const auto output = find_argument(args, "-o");
 
-    /// A hack way to get the input fail (TODO)
+    /// A hack way to get the input file (TODO)
     const auto file = find_argument(args, "-c");
     if (file.has_value()) {
       // one entry in the compile_commands.json document
