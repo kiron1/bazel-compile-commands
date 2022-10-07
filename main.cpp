@@ -88,7 +88,12 @@ main(int argc, char** argv)
     }
     auto actions = bazel.aquery(query_str, options.bazel_flags);
     if (options.verbose) {
-      std::cerr << "Build compile commands from " << actions.at("actions").as_array().size() << " actions" << std::endl;
+      if (const auto actions_object = actions.if_object(); actions_object) {
+        if (const auto actions_value = actions_object->if_contains("actions"); actions_value) {
+          const auto actions_size = actions_value->is_array() ? actions_value->as_array().size() : 0;
+          std::cerr << "Build compile commands from " << actions_size << " actions" << std::endl;
+        }
+      }
     }
     const auto compile_commands = builder.build(actions);
     {
