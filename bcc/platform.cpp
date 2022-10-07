@@ -38,7 +38,8 @@ output_of(std::string_view cmd, std::vector<std::string_view> args)
 
 platform_error::platform_error(std::string const& what)
   : std::runtime_error(what)
-{}
+{
+}
 
 replacements
 platform_replacements(std::string workspace, std::string execution_root)
