@@ -1,6 +1,7 @@
 #include "bcc/options.hpp"
 
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <optional>
 #include <boost/filesystem.hpp>

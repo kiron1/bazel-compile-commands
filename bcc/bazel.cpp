@@ -3,10 +3,12 @@
 #include "bcc/bazel.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
+#include <sstream>
+#include <string>
 #include <string_view>
 
+#include <boost/filesystem.hpp>
 #include <boost/process.hpp>
 
 namespace bcc {
@@ -37,13 +39,16 @@ bazel_info(boost::filesystem::path const& bazel_commmand, std::string_view locat
 
 bazel_error::bazel_error(std::string const& what)
   : std::runtime_error(what)
-{}
+{
+}
 workspace_error::workspace_error()
   : std::logic_error("workspace is invalid")
-{}
+{
+}
 json_error::json_error()
   : std::runtime_error("JSON document is invalid")
-{}
+{
+}
 
 bazel
 bazel::create(std::string_view bazel_command, std::vector<std::string> bazel_startup_options)
@@ -107,5 +112,6 @@ bazel::bazel(boost::filesystem::path bazel_commands,
   , bazel_startup_options_(std::move(bazel_startup_options))
   , workspace_path_(std::move(workspace_path))
   , execution_root_(std::move(execution_root))
-{}
+{
+}
 } // namespace bcc
