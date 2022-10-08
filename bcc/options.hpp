@@ -25,6 +25,8 @@ struct options
   std::vector<std::string> bazel_startup_options;
   /// Output path of the `compile_commands.json` file.
   std::string output_path{ "%workspace%/compile_commands.json" };
+  /// Bazel build configs to apply.
+  std::vector<std::string> configs{};
   /// Targets to consider for the generation of the `compile_commands.json`
   /// file.
   std::vector<std::string> targets{ "//..." };

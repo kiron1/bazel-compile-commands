@@ -37,6 +37,11 @@ from the configuration file are combined when bazel-compile-commands is called
 
 -b, --bazelopt **OPTION**
 
+--config **NAME**
+
+: Same as `--bazelopt "--config=CONFIG"`. A config option from `.bazelrc` to
+apply when querying Bazel for build actions.
+
 -c, --compiler **FILE**
 
 : Replace the internal Bazel compiler wrapper script with this compiler (useful

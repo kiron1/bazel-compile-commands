@@ -70,14 +70,19 @@ bazel::create(std::string_view bazel_command, std::vector<std::string> bazel_sta
 }
 
 boost::json::value
-bazel::aquery(std::string_view query, std::vector<std::string> const& bazel_flags) const
+bazel::aquery(std::string const& query,
+              std::vector<std::string> const& bazel_flags,
+              std::vector<std::string> const& configs) const
 {
-  std::vector<std::string_view> args(std::begin(bazel_startup_options_), std::end(bazel_startup_options_));
-  std::vector<std::string_view> aquery_cmd{
-    "aquery", "--output=jsonproto", "--ui_event_filters=-info", "--noshow_progress"
-  };
-  std::copy(std::begin(aquery_cmd), std::end(aquery_cmd), std::back_inserter(args));
+  std::vector<std::string> args(std::begin(bazel_startup_options_), std::end(bazel_startup_options_));
+  args.push_back("aquery");
+  args.push_back("--output=jsonproto");
+  args.push_back("--ui_event_filters=-info");
+  args.push_back("--noshow_progress");
   std::copy(std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
+  std::transform(std::begin(configs), std::end(configs), std::back_inserter(args), [&](auto c) {
+    return std::string("--config=") + c;
+  });
   args.push_back(query);
 
   boost::process::ipstream outs;

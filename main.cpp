@@ -86,7 +86,7 @@ main(int argc, char** argv)
     if (options.verbose) {
       std::cerr << "Query `" << query_str << '`' << std::endl;
     }
-    auto actions = bazel.aquery(query_str, options.bazel_flags);
+    auto actions = bazel.aquery(query_str, options.bazel_flags, options.configs);
     if (options.verbose) {
       if (const auto actions_object = actions.if_object(); actions_object) {
         if (const auto actions_value = actions_object->if_contains("actions"); actions_value) {

@@ -48,6 +48,7 @@ options::from_argv(int argc, char* argv[])
     ("bazelsupopt,s", po::value(&result.bazel_startup_options), "bazel startup options")
     ("bazelopt,b", po::value(&result.bazel_flags), "bazel options")
     ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
+    ("config", po::value(&result.configs), "Bazel build config to apply")
     ("output,o", po::value<std::string>(&result.output_path), "output path for the `compile_commands.json` file")
     ("targets", po::value<std::vector<std::string>>(), "Bazel target labels to query for compile commands")
     ;
@@ -107,6 +108,9 @@ options::write(std::ostream& os) const
     os << "compiler = " << this->compiler.value() << "\n";
   }
   os << "output = " << this->output_path << "\n";
+  for (const auto& c : this->configs) {
+    os << "config = " << c << "\n";
+  }
   for (const auto& t : this->targets) {
     os << "targets = " << t << "\n";
   }

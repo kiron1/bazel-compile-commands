@@ -43,7 +43,9 @@ public:
   boost::filesystem::path execution_root() const { return execution_root_; };
 
   // Execute an `aquery` on the current workspace.
-  boost::json::value aquery(std::string_view query, std::vector<std::string> const& bazel_flags) const;
+  boost::json::value aquery(std::string const& query,
+                            std::vector<std::string> const& bazel_flags,
+                            std::vector<std::string> const& configs) const;
 
 private:
   bazel() = delete;
