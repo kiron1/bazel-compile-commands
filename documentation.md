@@ -37,6 +37,8 @@ from the configuration file are combined when bazel-compile-commands is called
 
 -b, --bazelopt **OPTION**
 
+: **OPTION** will be forwarded to Bazel when querying Bazel for build actions.
+
 --config **NAME**
 
 : Same as `--bazelopt "--config=CONFIG"`. A config option from `.bazelrc` to
