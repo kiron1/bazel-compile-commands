@@ -49,6 +49,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
+      - name: Install LLVM
+        uses: KyleMayes/install-llvm-action@v1.6.1
+        with:
+          version: "15.0.6"
+      - name: clang-format --version
+        run: clang-format --version
       - name: Style check
         run: ./tools/clang-format --dry-run -Werror
 
