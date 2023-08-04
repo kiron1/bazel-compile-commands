@@ -51,14 +51,8 @@ json_error::json_error()
 }
 
 bazel
-bazel::create(std::string_view bazel_command, std::vector<std::string> bazel_startup_options)
+bazel::create(boost::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
 {
-  auto bazel_path = boost::filesystem::path();
-  if (boost::filesystem::exists(bazel_command.data())) {
-    bazel_path = bazel_command.data();
-  } else {
-    bazel_path = boost::process::search_path(bazel_command.data());
-  }
   auto workspace = bazel_info(bazel_path, "workspace");
   auto execution_root = bazel_info(bazel_path, "execution_root");
 

@@ -18,7 +18,7 @@ struct options
   /// Include `arguments` array in the final `compile_commands.json`
   bool arguments{ false };
   /// Bazel command.
-  std::string bazel_command{ "bazel" };
+  boost::filesystem::path bazel_command{};
   /// Replace Bazel compiler with `cc`.
   std::optional<std::string> compiler{};
   /// Bazel startup options.

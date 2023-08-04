@@ -17,6 +17,9 @@ output_of(std::string_view cmd, std::vector<std::string_view> args)
     boost::process::ipstream errs;
 
     auto cmd_path = boost::process::search_path(cmd.data());
+    if (cmd_path.empty()) {
+      return std::nullopt;
+    }
     boost::process::child proc(
       cmd_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
 
