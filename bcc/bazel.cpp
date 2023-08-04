@@ -49,6 +49,10 @@ json_error::json_error()
   : std::runtime_error("JSON document is invalid")
 {
 }
+json_error::json_error(std::string const& what)
+  : std::runtime_error(what)
+{
+}
 
 bazel
 bazel::create(boost::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
@@ -91,13 +95,16 @@ bazel::aquery(std::string const& query,
     auto ec = boost::json::error_code{};
     json_parser.write(line, ec);
     if (ec) {
-      throw json_error();
+      throw json_error(ec.message());
     }
   }
   bazel_proc.wait();
   const auto rc = bazel_proc.exit_code();
-  if (rc != 0 || !json_parser.done()) {
-    throw json_error();
+  if (rc != 0) {
+    throw bazel_error("bazel command failed with exit code " + std::to_string(rc));
+  }
+  if (!json_parser.done()) {
+    throw json_error("incomplete json document");
   }
 
   return json_parser.release();

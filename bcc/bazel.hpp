@@ -26,6 +26,7 @@ class json_error : public std::runtime_error
 {
 public:
   json_error();
+  json_error(std::string const& what);
 };
 
 class bazel
