@@ -39,6 +39,7 @@ cc_library(
     deps = [
         "@boost//:filesystem",
         "@boost//:program_options",
+        "@boost//:process",
     ],
 )
 

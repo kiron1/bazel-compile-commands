@@ -5,6 +5,7 @@
 #include <iostream>
 #include <optional>
 #include <boost/filesystem.hpp>
+#include <boost/process/search_path.hpp>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -88,6 +89,20 @@ options::from_argv(int argc, char* argv[])
 
   if (vm.count("targets")) {
     result.targets = vm["targets"].as<std::vector<std::string>>();
+  }
+
+  if (result.bazel_command.empty()) {
+    result.bazel_command = boost::process::search_path("bazelisk");
+    if (result.bazel_command.empty()) {
+      result.bazel_command = boost::process::search_path("bazel");
+    }
+  } else {
+    if (!boost::filesystem::exists(result.bazel_command)) {
+      result.bazel_command = boost::process::search_path(result.bazel_command);
+    }
+  }
+  if (!result.bazel_command.empty()) {
+    result.bazel_command = boost::filesystem::canonical(result.bazel_command);
   }
   return result;
 }
