@@ -17,10 +17,9 @@ namespace {
 std::optional<fs::path>
 find_bazelccrc()
 {
-  const auto rcname = fs::path(".bazelccrc");
   auto dir = fs::current_path();
   while (!dir.empty()) {
-    const auto rcpath = dir / rcname;
+    const auto rcpath = dir / rc_name;
     if (fs::exists(rcpath)) {
       return rcpath;
     }
