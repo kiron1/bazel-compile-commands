@@ -1,5 +1,7 @@
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
+load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -49,12 +51,40 @@ pkg_tar(
 
 pkg_deb(
     name = "deb",
-    architecture = "amd64",
+    architecture = select({
+        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:x86_32": "i386",
+        "@platforms//cpu:x86_64": "amd64",
+    }),
     built_using = "unzip (6.0.1)",
     data = ":usr.tar",
     description = "Generates compile_commands.json file from a Bazel workspace",
     homepage = "https://github.com/kiron1/bazel-compile-commands",
     maintainer = "Kiron <kiron1@gmail.com>",
     package = "bazel-compile-commands",
-    version = "0.5.0",
+    package_file_name = "proxydetox_{version}_{architecture}.deb",
+    package_variables = "@//:variables",
+    version_file = "@//:version_file",
+)
+
+pkg_variables(
+    name = "variables",
+    architecture = select({
+        "@platforms//cpu:x86_64": "amd64",
+        "@platforms//cpu:aarch64": "aarch64",
+    }),
+    version = "//:version",
+    visibility = ["//pkg:__subpackages__"],
+)
+
+pkg_version(
+    name = "version_file",
+    out = "version.txt",
+    version = "//:version",
+)
+
+string_flag(
+    name = "version",
+    build_setting_default = "0",
+    visibility = ["//visibility:public"],
 )

@@ -18,27 +18,25 @@ jobs:
         build: [linux]
         include:
           - build: linux
-            os: ubuntu-latest
+            os: ubuntu-20.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
+        uses: actions/checkout@v3
       - name: Run bazel test
         run: bazel test -s --config=ci //...
       - name: Build Release Package
         id: buildpkg
         run: bazel build -s --config=ci --config=release //:deb
-      - name: Rule info
-        id: pkginfo
-        run: bazel query --noshow_progress --output=xml //:deb | ./tools/rule-info
-      - name: Copy artifact
-        run: cp ./bazel-bin/deb.deb ${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+      - name: Output file
+        id: outfile
+        run: |
+          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --output=files //:deb | head -1)
+          printf "path=%s\n" "${OUTPUT_FILE}" | tee -a "${GITHUB_OUTPUT}"
       - name: Upload package artifact
         uses: actions/upload-artifact@v2
         with:
-          path: ./${{ steps.pkginfo.outputs.package }}_${{ steps.pkginfo.outputs.version }}_${{ steps.pkginfo.outputs.architecture }}.deb
+          path: ${{ steps.outfile.outputs.path }}
 
   format_check:
     name: Style check
@@ -57,4 +55,3 @@ jobs:
         run: clang-format --version
       - name: Style check
         run: ./tools/clang-format --dry-run -Werror
-
