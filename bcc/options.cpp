@@ -96,7 +96,7 @@ options::from_argv(int argc, char* argv[])
       result.bazel_command = boost::process::search_path("bazel");
     }
   } else {
-    if (!boost::filesystem::exists(result.bazel_command)) {
+    if (!result.bazel_command.is_absolute()) {
       result.bazel_command = boost::process::search_path(result.bazel_command);
     }
   }
