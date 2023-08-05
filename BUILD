@@ -1,5 +1,5 @@
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
-load("@bazel_pandoc//:pandoc.bzl", "pandoc")
+load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,14 +17,11 @@ cc_binary(
 
 pandoc(
     name = "man",
-    src = "documentation.md",
-    from_format = "markdown",
-    options = [
-        "--standalone",
-        "--metadata=title:bazel-compile-commands(1)",
-    ],
-    output = "bazel-compile-commands.1",
-    to_format = "man",
+    out = "bazel-compile-commands.1",
+    input = "documentation.md",
+    standalone = True,
+    title = "bazel-compile-commands(1)",
+    to = "man",
 )
 
 pkg_tar(

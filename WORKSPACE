@@ -39,12 +39,17 @@ load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 rules_pkg_dependencies()
 
 http_archive(
-    name = "bazel_pandoc",
-    sha256 = "15ea7c76226c9df57cf9e3e32d856513b26365831c9979ef9c28dd5a1ef2c196",
-    strip_prefix = "bazel-pandoc-0.3",
-    urls = ["https://github.com/ProdriveTechnologies/bazel-pandoc/archive/v0.3.tar.gz"],
+    name = "mgred_rules_pandoc",
+    sha256 = "0ee76dc7403d40de7946e6b884f3e868e72f2d7ba172edfc828bfb50fd5baf04",
+    strip_prefix = "rules_pandoc-0.2.0",
+    url = "https://github.com/mgred/rules_pandoc/releases/download/v0.2.0/rules_pandoc-v0.2.0.tar.gz",
 )
 
-load("@bazel_pandoc//:repositories.bzl", "pandoc_repositories")
+load("@mgred_rules_pandoc//pandoc:repositories.bzl", "LATEST_PANDOC_VERSION", "pandoc_register_toolchains", "rules_pandoc_dependencies")
 
-pandoc_repositories()
+rules_pandoc_dependencies()
+
+pandoc_register_toolchains(
+    name = "pandoc3_1",
+    pandoc_version = LATEST_PANDOC_VERSION,
+)
