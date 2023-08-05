@@ -53,7 +53,7 @@ jobs:
       - name: Output file
         id: outfile
         run: |
-          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --output=files //:deb | head -1)
+          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --//:version=${{ steps.version.outputs.number }} --output=files //:deb | head -1)
           printf "path=%s\n" "${OUTPUT_FILE}" | tee -a "${GITHUB_OUTPUT}"
           printf "name=%s\n" "${OUTPUT_FILE##*/}" | tee -a "${GITHUB_OUTPUT}"
       - name: Upload Release Asset
