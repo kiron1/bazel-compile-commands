@@ -62,7 +62,7 @@ pkg_deb(
     homepage = "https://github.com/kiron1/bazel-compile-commands",
     maintainer = "Kiron <kiron1@gmail.com>",
     package = "bazel-compile-commands",
-    package_file_name = "proxydetox_{version}_{architecture}.deb",
+    package_file_name = "bazel-compile-commands_{version}_{architecture}.deb",
     package_variables = "@//:variables",
     version_file = "@//:version_file",
 )
