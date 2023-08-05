@@ -1,5 +1,5 @@
-Proxydetox License
-==================
+Bazel Compile Commands License
+==============================
 
 Copyright 2022 Kiron
 
