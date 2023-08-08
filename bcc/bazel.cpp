@@ -77,8 +77,8 @@ proto_error::proto_error(std::string const& what)
 bazel
 bazel::create(boost::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
 {
-  auto workspace = bazel_info(bazel_path, "workspace");
-  auto execution_root = bazel_info(bazel_path, "execution_root");
+  auto workspace = bazel_info(bazel_path, bazel_startup_options, "workspace");
+  auto execution_root = bazel_info(bazel_path, bazel_startup_options, "execution_root");
 
   if (workspace.empty()) {
     throw workspace_error();
