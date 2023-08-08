@@ -52,7 +52,7 @@ pkg_tar(
 pkg_deb(
     name = "deb",
     architecture = select({
-        "@platforms//cpu:arm64": "arm64",
+        "@platforms//cpu:aarch64": "arm64",
         "@platforms//cpu:x86_32": "i386",
         "@platforms//cpu:x86_64": "amd64",
     }),
@@ -74,7 +74,6 @@ pkg_variables(
         "@platforms//cpu:aarch64": "aarch64",
     }),
     version = "//:version",
-    visibility = ["//pkg:__subpackages__"],
 )
 
 pkg_version(
