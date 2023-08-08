@@ -2,8 +2,8 @@
 
 #include <optional>
 #include <sstream>
-
 #include <string_view>
+
 #include <boost/json.hpp>
 
 namespace bcc {
@@ -80,53 +80,39 @@ compile_commands_builder::execution_root(boost::filesystem::path value)
 }
 
 boost::json::array
-compile_commands_builder::build(boost::json::value const& analysis) const
+compile_commands_builder::build(analysis::ActionGraphContainer const& action_graph) const
 {
   // the root element of a compile_commands.json document is an array of objects
   auto json = boost::json::array();
 
-  // The aquery result is an object with an actions element which is an array of
-  // objects
-  if (const auto actions_object = analysis.if_object(); actions_object) {
-    if (const auto actions_value = actions_object->if_contains("actions"); actions_value) {
-
-      const auto actions = actions_value->as_array();
-
-      for (const auto& action_value : actions) {
-        if (const auto& action = action_value.if_object(); action) {
-          if (const auto& args_value = action->if_contains("arguments"); args_value) {
-
-            auto args = args_value->as_array();
-            if (compiler_.has_value()) {
-              args[0] = compiler_.value();
-            }
-            std::transform(std::begin(args), std::end(args), std::begin(args), [&](auto a) {
-              return boost::json::string(replacements_.apply(a.as_string().data()));
-            });
-            const auto cmd = join_arguments(args);
-            const auto output = find_argument(args, "-o");
-
-            /// A hack way to get the input file (TODO)
-            const auto file = find_argument(args, "-c");
-            if (file.has_value()) {
-              // one entry in the compile_commands.json document
-              auto obj = boost::json::object();
-              obj.insert(boost::json::object::value_type{ "directory", execution_root_.native() });
-              if (arguments_) {
-                obj.insert(boost::json::object::value_type{ "arguments", args });
-              }
-              obj.insert(boost::json::object::value_type{ "command", cmd });
-              obj.insert(boost::json::object::value_type{ "file", file.value() });
-              if (output.has_value()) {
-                // `output` is optional in `compile_commands.json`
-                obj.insert(boost::json::object::value_type{ "output", output.value() });
-              }
-
-              json.push_back(obj);
-            }
-          }
-        }
+  for (const auto& action : action_graph.actions()) {
+    auto args = boost::json::array();
+    if (compiler_.has_value()) {
+      args.push_back(boost::json::string(compiler_.value()));
+    }
+    const auto action_args = action.arguments();
+    std::transform(std::begin(action_args), std::end(action_args), std::back_inserter(args), [&](auto a) {
+      return boost::json::string(replacements_.apply(a));
+    });
+    const auto cmd = join_arguments(args);
+    const auto output = find_argument(args, "-o");
+    /// A hack way to get the input file (TODO)
+    const auto file = find_argument(args, "-c");
+    if (file.has_value()) {
+      // one entry in the compile_commands.json document
+      auto obj = boost::json::object();
+      obj.insert(boost::json::object::value_type{ "directory", execution_root_.native() });
+      if (arguments_) {
+        obj.insert(boost::json::object::value_type{ "arguments", args });
       }
+      obj.insert(boost::json::object::value_type{ "command", cmd });
+      obj.insert(boost::json::object::value_type{ "file", file.value() });
+      if (output.has_value()) {
+        // `output` is optional in `compile_commands.json`
+        obj.insert(boost::json::object::value_type{ "output", output.value() });
+      }
+
+      json.push_back(obj);
     }
   }
   return json;

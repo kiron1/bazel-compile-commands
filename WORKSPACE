@@ -5,6 +5,15 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 _RULES_BOOST_COMMIT = "33461a3c666af36d7a080e4fd6f554725df44132"
 
 http_archive(
+    name = "bazel",
+    sha256 = "3898d2af83fe3538e40fa279911990458066f8fd170620a7a010e7537fa2c0e6",
+    strip_prefix = "bazel-6.3.1",
+    urls = [
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/6.3.1.tar.gz",
+    ],
+)
+
+http_archive(
     name = "com_github_nelhage_rules_boost",
     sha256 = "1198cb810d18d2a86abbd4c3d71665375e2c6a2ba4044b4f9d7b2f28e6ed898e",
     strip_prefix = "rules_boost-%s" % _RULES_BOOST_COMMIT,
@@ -17,10 +26,25 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 
 boost_deps()
 
+http_archive(
+    name = "rules_proto",
+    sha256 = "dc3fb206a2cb3441b485eb1e423165b231235a1ea9b031b4433cf7bc1fa460dd",
+    strip_prefix = "rules_proto-5.3.0-21.7",
+    urls = [
+        "https://github.com/bazelbuild/rules_proto/archive/refs/tags/5.3.0-21.7.tar.gz",
+    ],
+)
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+
+rules_proto_dependencies()
+
+rules_proto_toolchains()
+
 # GoogleTest/GoogleMock framework. Used by unit-tests.
 http_archive(
     name = "com_google_googletest",
-    sha256 = "",
+    sha256 = "8ad598c73ad796e0d8280b082cebd82a630d73e73cd3c70057938a6501bba5d7",
     strip_prefix = "googletest-1.14.0",
     urls = ["https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz"],
 )

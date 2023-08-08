@@ -1,10 +1,14 @@
 #pragma once
 
 #include "bcc/replacements.hpp"
+
 #include <optional>
 #include <string>
+
 #include <boost/filesystem/path.hpp>
 #include <boost/json/value.hpp>
+
+#include "external/bazel/src/main/protobuf/analysis_v2.pb.h"
 
 namespace bcc {
 
@@ -20,7 +24,7 @@ public:
   /// Set replacements.
   compile_commands_builder& replacements(bcc::replacements value);
   /// Turn actions from a bazel aquery into a compile_commands.json format.
-  boost::json::array build(boost::json::value const& analysis) const;
+  boost::json::array build(analysis::ActionGraphContainer const& action_graph) const;
 
 private:
   bool arguments_{ false };

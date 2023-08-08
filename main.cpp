@@ -1,4 +1,3 @@
-
 #include "bcc/bazel.hpp"
 #include "bcc/compile_commands.hpp"
 #include "bcc/options.hpp"
@@ -95,16 +94,14 @@ main(int argc, char** argv)
     if (options.verbose) {
       std::cerr << "Query `" << query_str << '`' << std::endl;
     }
-    auto actions = bazel.aquery(query_str, options.bazel_flags, options.configs);
+    const auto agc = bazel.aquery(query_str, options.bazel_flags, options.configs);
+    const auto actions = agc.actions();
+
     if (options.verbose) {
-      if (const auto actions_object = actions.if_object(); actions_object) {
-        if (const auto actions_value = actions_object->if_contains("actions"); actions_value) {
-          const auto actions_size = actions_value->is_array() ? actions_value->as_array().size() : 0;
-          std::cerr << "Build compile commands from " << actions_size << " actions" << std::endl;
-        }
-      }
+      std::cerr << "Build compile commands from " << agc.actions().size() << " actions" << std::endl;
     }
-    const auto compile_commands = builder.build(actions);
+
+    const auto compile_commands = builder.build(agc);
     {
       if (options.verbose) {
         std::cerr << "Writting " << compile_commands.size() << " commands to `" << options.output_path << "`"
