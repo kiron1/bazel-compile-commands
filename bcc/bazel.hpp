@@ -15,7 +15,7 @@ namespace bcc {
 class bazel_error : public std::runtime_error
 {
 public:
-  bazel_error(std::string const& what);
+  bazel_error(boost::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error);
 };
 
 class workspace_error : public std::logic_error

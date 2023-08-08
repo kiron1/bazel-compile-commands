@@ -17,17 +17,21 @@
 #include <google/protobuf/stubs/common.h>
 
 namespace bcc {
-namespace {
 
+namespace {
 /// Run `bazel info $location` and return it as path
 boost::filesystem::path
-bazel_info(boost::filesystem::path const& bazel_commmand, std::string_view location)
+bazel_info(boost::filesystem::path const& bazel_path,
+           std::vector<std::string> const& bazel_startup_options,
+           std::string const& location)
 {
-  const auto info = std::string_view("info");
+  std::vector<std::string> args(std::begin(bazel_startup_options), std::end(bazel_startup_options));
+  args.push_back("info");
+  args.push_back(location);
   boost::process::ipstream outs;
   boost::process::ipstream errs;
   boost::process::child bazel_proc(
-    bazel_commmand, info.data(), location.data(), boost::process::std_out > outs, boost::process::std_err > errs);
+    bazel_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
 
   auto line = std::string{};
   std::getline(outs, line);
@@ -36,16 +40,27 @@ bazel_info(boost::filesystem::path const& bazel_commmand, std::string_view locat
   if (rc != 0) {
     std::ostringstream oss;
     oss << errs.rdbuf();
-    throw bazel_error(oss.str());
+    throw bazel_error(bazel_path, args, rc, oss.str());
   }
   return boost::filesystem::path(line);
 }
-} // namespace
 
-bazel_error::bazel_error(std::string const& what)
-  : std::runtime_error(what)
+std::string
+make_bazel_error_message(boost::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
+{
+  std::stringstream msg;
+  msg << "bazel command failed with exit code " << rc << ": " << path.native() << " ";
+  std::copy(std::begin(args), std::end(args), std::ostream_iterator<std::string>(msg, " "));
+  msg << ": " << error;
+  return msg.str();
+}
+}
+
+bazel_error::bazel_error(boost::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
+  : std::runtime_error(make_bazel_error_message(path, args, rc, error))
 {
 }
+
 workspace_error::workspace_error()
   : std::logic_error("workspace is invalid")
 {
@@ -98,10 +113,7 @@ bazel::aquery(std::string const& query,
   bazel_proc.wait();
   const auto rc = bazel_proc.exit_code();
   if (rc != 0) {
-    std::stringstream cmd;
-    cmd << "bazel command failed with exit code " << rc << ": " << bazel_command_.native() << " ";
-    std::copy(std::begin(args), std::end(args), std::ostream_iterator<std::string>(cmd, " "));
-    throw bazel_error(cmd.str());
+    throw bazel_error(bazel_command_, args, rc, std::string());
   }
   return agc;
 }
