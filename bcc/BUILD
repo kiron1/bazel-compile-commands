@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 cc_proto_library(
     name = "analysis",
-    deps = ["@bazel//src/main/protobuf:analysis_v2_proto"],
+    deps = ["@io_bazel//src/main/protobuf:analysis_v2_proto"],
 )
 
 cc_library(

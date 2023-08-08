@@ -7,7 +7,7 @@
 
 #include <google/protobuf/text_format.h>
 
-#include "external/bazel/src/main/protobuf/analysis_v2.pb.h"
+#include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
 
 namespace {
 const char* const AQUERY_TEXTPROTO = R"(

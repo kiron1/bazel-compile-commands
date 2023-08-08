@@ -5,7 +5,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 _RULES_BOOST_COMMIT = "33461a3c666af36d7a080e4fd6f554725df44132"
 
 http_archive(
-    name = "bazel",
+    name = "io_bazel",
     sha256 = "3898d2af83fe3538e40fa279911990458066f8fd170620a7a010e7537fa2c0e6",
     strip_prefix = "bazel-6.3.1",
     urls = [
