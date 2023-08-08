@@ -57,14 +57,12 @@ TEST(self_test, run)
   ASSERT_THAT(runfiles, NotNull()) << error;
 
   const auto bcc_path = runfiles->Rlocation("bazel-compile-commands/bazel-compile-commands");
-  ASSERT_THAT(bcc_path, Not(IsEmpty()));
-  ASSERT_THAT(boost::filesystem::exists(bcc_path), IsTrue());
-  std::cout << bcc_path << std::endl;
+  ASSERT_THAT(bcc_path, Not(IsEmpty())) << bcc_path;
+  ASSERT_THAT(boost::filesystem::exists(bcc_path), IsTrue()) << bcc_path;
 
   const auto bazel_path = runfiles->Rlocation("bazel-compile-commands/tests/bazel-mock");
-  ASSERT_THAT(bazel_path, Not(IsEmpty()));
-  ASSERT_THAT(boost::filesystem::exists(bazel_path), IsTrue());
-  std::cout << bazel_path << std::endl;
+  ASSERT_THAT(bazel_path, Not(IsEmpty())) << bazel_path;
+  ASSERT_THAT(boost::filesystem::exists(bazel_path), IsTrue()) << bazel_path;
 
   const auto result = run(bcc_path, { "-B", bazel_path.c_str(), "-a", "-o-" });
 

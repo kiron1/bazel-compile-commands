@@ -11,6 +11,11 @@
 #include <boost/filesystem.hpp>
 #include <boost/process.hpp>
 
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/stubs/common.h>
+
 namespace bcc {
 namespace {
 
@@ -45,11 +50,11 @@ workspace_error::workspace_error()
   : std::logic_error("workspace is invalid")
 {
 }
-json_error::json_error()
+proto_error::proto_error()
   : std::runtime_error("JSON document is invalid")
 {
 }
-json_error::json_error(std::string const& what)
+proto_error::proto_error(std::string const& what)
   : std::runtime_error(what)
 {
 }
@@ -67,14 +72,14 @@ bazel::create(boost::filesystem::path const& bazel_path, std::vector<std::string
   return bazel(bazel_path, std::move(bazel_startup_options), workspace, execution_root);
 }
 
-boost::json::value
+analysis::ActionGraphContainer
 bazel::aquery(std::string const& query,
               std::vector<std::string> const& bazel_flags,
               std::vector<std::string> const& configs) const
 {
   std::vector<std::string> args(std::begin(bazel_startup_options_), std::end(bazel_startup_options_));
   args.push_back("aquery");
-  args.push_back("--output=jsonproto");
+  args.push_back("--output=proto");
   args.push_back("--ui_event_filters=-info");
   args.push_back("--noshow_progress");
   std::copy(std::begin(bazel_flags), std::end(bazel_flags), std::back_inserter(args));
@@ -84,30 +89,21 @@ bazel::aquery(std::string const& query,
   args.push_back(query);
 
   boost::process::ipstream outs;
-  boost::process::ipstream errs;
   boost::process::child bazel_proc(bazel_command_, boost::process::args(args), boost::process::std_out > outs);
 
-  auto json_parser = boost::json::stream_parser{};
-  json_parser.reset();
-  auto line = std::string{};
-
-  while (std::getline(outs, line)) {
-    auto ec = boost::json::error_code{};
-    json_parser.write(line, ec);
-    if (ec) {
-      throw json_error(ec.message());
-    }
+  analysis::ActionGraphContainer agc;
+  if (!agc.ParseFromIstream(&outs)) {
+    throw proto_error("failed to parse aquery output");
   }
   bazel_proc.wait();
   const auto rc = bazel_proc.exit_code();
   if (rc != 0) {
-    throw bazel_error("bazel command failed with exit code " + std::to_string(rc));
+    std::stringstream cmd;
+    cmd << "bazel command failed with exit code " << rc << ": " << bazel_command_.native() << " ";
+    std::copy(std::begin(args), std::end(args), std::ostream_iterator<std::string>(cmd, " "));
+    throw bazel_error(cmd.str());
   }
-  if (!json_parser.done()) {
-    throw json_error("incomplete json document");
-  }
-
-  return json_parser.release();
+  return agc;
 }
 
 bazel::bazel(boost::filesystem::path bazel_commands,

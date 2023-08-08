@@ -8,6 +8,8 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/json.hpp>
 
+#include "external/bazel/src/main/protobuf/analysis_v2.pb.h"
+
 namespace bcc {
 
 class bazel_error : public std::runtime_error
@@ -22,11 +24,11 @@ public:
   workspace_error();
 };
 
-class json_error : public std::runtime_error
+class proto_error : public std::runtime_error
 {
 public:
-  json_error();
-  json_error(std::string const& what);
+  proto_error();
+  proto_error(std::string const& what);
 };
 
 class bazel
@@ -44,9 +46,9 @@ public:
   boost::filesystem::path execution_root() const { return execution_root_; };
 
   // Execute an `aquery` on the current workspace.
-  boost::json::value aquery(std::string const& query,
-                            std::vector<std::string> const& bazel_flags,
-                            std::vector<std::string> const& configs) const;
+  analysis::ActionGraphContainer aquery(std::string const& query,
+                                        std::vector<std::string> const& bazel_flags,
+                                        std::vector<std::string> const& configs) const;
 
 private:
   bazel() = delete;

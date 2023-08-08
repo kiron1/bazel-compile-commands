@@ -1,10 +1,16 @@
 package(default_visibility = ["//visibility:public"])
 
+cc_proto_library(
+    name = "analysis",
+    deps = ["@bazel//src/main/protobuf:analysis_v2_proto"],
+)
+
 cc_library(
     name = "bazel",
     srcs = ["bazel.cpp"],
     hdrs = ["bazel.hpp"],
     deps = [
+        ":analysis",
         "@boost//:filesystem",
         "@boost//:json",
         "@boost//:process",
@@ -16,6 +22,7 @@ cc_library(
     srcs = ["compile_commands.cpp"],
     hdrs = ["compile_commands.hpp"],
     deps = [
+        ":analysis",
         ":replacements",
         "@boost//:filesystem",
         "@boost//:io",
@@ -38,8 +45,8 @@ cc_library(
     hdrs = ["options.hpp"],
     deps = [
         "@boost//:filesystem",
-        "@boost//:program_options",
         "@boost//:process",
+        "@boost//:program_options",
     ],
 )
 

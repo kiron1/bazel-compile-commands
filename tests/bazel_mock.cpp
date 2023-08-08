@@ -1,10 +1,198 @@
-
 #include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#include <google/protobuf/text_format.h>
+
+#include "external/bazel/src/main/protobuf/analysis_v2.pb.h"
+
+namespace {
+const char* const AQUERY_TEXTPROTO = R"(
+rule_classes {
+id: 1
+name: "cc_binary"
+}
+targets {
+id: 1
+label: "//:main"
+rule_class_id: 1
+}
+configuration {
+id: 1
+mnemonic: "darwin_arm64-fastbuild"
+platform_name: "darwin_arm64"
+checksum: "f4755fdba2a9adc4be1938f00075ca430c17dfc1e57b306638d8379237e33b52"
+}
+path_fragments {
+id: 3
+label: "external"
+}
+path_fragments {
+id: 2
+label: "local_config_cc"
+parent_id: 3
+}
+path_fragments {
+id: 1
+label: "cc_wrapper.sh"
+parent_id: 2
+}
+artifacts {
+id: 1
+path_fragment_id: 1
+}
+path_fragments {
+id: 4
+label: "libtool"
+parent_id: 2
+}
+artifacts {
+id: 2
+path_fragment_id: 4
+}
+path_fragments {
+id: 5
+label: "libtool_check_unique"
+parent_id: 2
+}
+artifacts {
+id: 3
+path_fragment_id: 5
+}
+path_fragments {
+id: 6
+label: "make_hashed_objlist.py"
+parent_id: 2
+}
+artifacts {
+id: 4
+path_fragment_id: 6
+}
+path_fragments {
+id: 7
+label: "wrapped_clang"
+parent_id: 2
+}
+artifacts {
+id: 5
+path_fragment_id: 7
+}
+path_fragments {
+id: 8
+label: "wrapped_clang_pp"
+parent_id: 2
+}
+artifacts {
+id: 6
+path_fragment_id: 8
+}
+path_fragments {
+id: 9
+label: "xcrunwrapper.sh"
+parent_id: 2
+}
+artifacts {
+id: 7
+path_fragment_id: 9
+}
+dep_set_of_files {
+id: 2
+direct_artifact_ids: 1
+direct_artifact_ids: 2
+direct_artifact_ids: 3
+direct_artifact_ids: 4
+direct_artifact_ids: 5
+direct_artifact_ids: 6
+direct_artifact_ids: 7
+}
+path_fragments {
+id: 10
+label: "main.cpp"
+}
+artifacts {
+id: 8
+path_fragment_id: 10
+}
+dep_set_of_files {
+id: 1
+transitive_dep_set_ids: 2
+direct_artifact_ids: 8
+}
+path_fragments {
+id: 16
+label: "bazel-out"
+}
+path_fragments {
+id: 15
+label: "darwin_arm64-fastbuild"
+parent_id: 16
+}
+path_fragments {
+id: 14
+label: "bin"
+parent_id: 15
+}
+path_fragments {
+id: 13
+label: "_objs"
+parent_id: 14
+}
+path_fragments {
+id: 12
+label: "main"
+parent_id: 13
+}
+path_fragments {
+id: 11
+label: "main.o"
+parent_id: 12
+}
+artifacts {
+id: 9
+path_fragment_id: 11
+}
+path_fragments {
+id: 17
+label: "main.d"
+parent_id: 12
+}
+artifacts {
+id: 10
+path_fragment_id: 17
+}
+actions {
+target_id: 1
+action_key: "7e536f8eda15e04d9292a64bb937d579272c49b8cf88bb77c4fc2f282a6b9ff3"
+mnemonic: "CppCompile"
+configuration_id: 1
+arguments: "cc"
+arguments: "-Wall"
+arguments: "-c"
+arguments: "main.cpp"
+arguments: "-o"
+arguments: "bazel-out/darwin_arm64-fastbuild/bin/_objs/main/main.o"
+environment_variables {
+  key: "ZERO_AR_DATE"
+  value: "1"
+}
+input_dep_set_ids: 1
+output_ids: 9
+output_ids: 10
+discovers_inputs: true
+execution_info {
+  key: "requires-darwin"
+}
+execution_info {
+  key: "supports-xcode-requirements-set"
+}
+primary_output_id: 9
+execution_platform: "@local_config_platform//:host"
+}
+)";
+}
 
 int
 main(int argc, char** argv)
@@ -32,17 +220,9 @@ main(int argc, char** argv)
       return 1;
     }
   } else if (aquery_iter != std::end(arguments)) {
-    // clang-format off
-    std::cout 
-      << "{\n"
-      << "  \"actions\": [{\n"
-      << "    \"targetId\": 1,\n"
-      << "    \"actionKey\": \"1f29468d5d54dd866a435f9f256366c6c49194618b04ef7f6a290311c4485271\",\n"
-      << "    \"mnemonic\": \"CppCompile\",\n"
-      << "    \"arguments\": [\"c++\", \"-c\", \"main.cpp\", \"-o\", \"main.o\"]\n"
-      << "  }]\n"
-      << "}\n";
-    // clang-format on
+    analysis::ActionGraphContainer agc;
+    google::protobuf::TextFormat::ParseFromString(AQUERY_TEXTPROTO, &agc);
+    agc.SerializePartialToOstream(&std::cout);
     return 0;
   } else {
     std::cerr << "fatal error: invalid argument: unknown sub-command\n";

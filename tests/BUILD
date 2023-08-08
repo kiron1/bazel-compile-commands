@@ -17,4 +17,5 @@ cc_test(
 cc_binary(
     name = "bazel-mock",
     srcs = ["bazel_mock.cpp"],
+    deps = ["//bcc:analysis"],
 )
