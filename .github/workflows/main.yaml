@@ -24,10 +24,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Run bazel test
-        run: bazel test -s --config=ci //...
+        run: bazel test --config=ci //...
       - name: Build Release Package
         id: buildpkg
-        run: bazel build -s --config=ci --config=release //:deb
+        run: bazel build --config=ci --config=release //:deb
       - name: Output file
         id: outfile
         run: |

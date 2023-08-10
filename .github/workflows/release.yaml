@@ -43,13 +43,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Run bazel test
-        run: bazel test -s --config=ci //...
+        run: bazel test --config=ci //...
       - name: Version
         id: version
         run: |
           printf "number=%s\n" "${GITHUB_REF_NAME#v}" | tee -a "${GITHUB_OUTPUT}"
       - name: Build Release Package
-        run: bazel build -s --config=ci --config=release --//:version=${{ steps.version.outputs.number }} //:deb
+        run: bazel build --config=ci --config=release --//:version=${{ steps.version.outputs.number }} //:deb
       - name: Output file
         id: outfile
         run: |

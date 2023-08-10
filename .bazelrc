@@ -1,4 +1,6 @@
 
+common --verbose_failures
+
 build --copt=-pedantic
 build --copt=-Wall
 build --copt=-Wextra
@@ -11,9 +13,8 @@ build:release --compilation_mode=opt
 build:ci --show_timestamps
 build:ci --curses=no
 
-test --test_output=errors 
-test --test_env=HOME 
+test --test_output=errors
+test --test_env=HOME
 
 # allow workspace specific user settings
 try-import %workspace%/user.bazelrc
-
