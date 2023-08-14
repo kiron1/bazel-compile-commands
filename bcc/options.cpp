@@ -44,13 +44,14 @@ options::from_argv(int argc, char* argv[])
     ("help,h", "produce help message")
     ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
     ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
-    ("bazel-command,B", po::value(&result.bazel_command), "bazel command")
-    ("bazelsupopt,s", po::value(&result.bazel_startup_options), "bazel startup options")
-    ("bazelopt,b", po::value(&result.bazel_flags), "bazel options")
-    ("compiler,c", po::value<std::string>(), "use `compiler` as replacement for the bazel compiler wrapper script")
-    ("config", po::value(&result.configs), "Bazel build config to apply")
-    ("output,o", po::value<std::string>(&result.output_path), "output path for the `compile_commands.json` file")
-    ("targets", po::value<std::vector<std::string>>(), "Bazel target labels to query for compile commands")
+    ("bazel-command,B", po::value(&result.bazel_command)->value_name("PATH"), "bazel command")
+    ("bazelsupopt,s", po::value(&result.bazel_startup_options)->value_name("OPTION"), "bazel startup options")
+    ("bazelopt,b", po::value(&result.bazel_flags)->value_name("OPTION"), "bazel options")
+    ("compiler,c", po::value<std::string>()->value_name("PATH"), "use `compiler` as replacement for the bazel compiler wrapper script")
+    ("config", po::value(&result.configs)->value_name("NAME"), "Bazel build config to apply")
+    ("output,o", po::value<std::string>(&result.output_path)->value_name("PATH"), "output path for the `compile_commands.json` file")
+    ("replace,R", po::value<std::vector<std::string>>()->value_name("KEY=VALUE"), "Replace KEY with VALUE of each compile argument")
+    ("targets", po::value<std::vector<std::string>>()->value_name("LABEL"), "Bazel target labels to query for compile commands")
     ;
   // clang-format on
 
@@ -84,6 +85,21 @@ options::from_argv(int argc, char* argv[])
 
   if (vm.count("compiler")) {
     result.compiler = vm["compiler"].as<std::string>();
+  }
+
+  if (vm.count("replace")) {
+    const auto rdef = vm["replace"].as<std::vector<std::string>>();
+    for (const auto& r : rdef) {
+      const auto pos = r.find('=');
+      if (pos == 0) {
+        // ignore empty keys
+      } else if (pos == std::string::npos) {
+        // no '=' found
+        result.replace.push_back({ r, "" });
+      } else {
+        result.replace.push_back({ r.substr(0, pos), r.substr(pos + 1) });
+      }
+    }
   }
 
   if (vm.count("targets")) {
@@ -122,6 +138,9 @@ options::write(std::ostream& os) const
     os << "compiler = " << this->compiler.value() << "\n";
   }
   os << "output = " << this->output_path << "\n";
+  for (const auto& r : this->replace) {
+    os << "replace = " << r.first << "=" << r.second << "\n";
+  }
   for (const auto& c : this->configs) {
     os << "config = " << c << "\n";
   }

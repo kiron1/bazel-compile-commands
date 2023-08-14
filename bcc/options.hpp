@@ -3,6 +3,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include <boost/filesystem/path.hpp>
 
 namespace bcc {
@@ -27,6 +28,8 @@ struct options
   std::string output_path{ "%workspace%/compile_commands.json" };
   /// Bazel build configs to apply.
   std::vector<std::string> configs{};
+  /// Any replacements to apply.
+  std::vector<std::pair<std::string, std::string>> replace{};
   /// Targets to consider for the generation of the `compile_commands.json`
   /// file.
   std::vector<std::string> targets{ "//..." };

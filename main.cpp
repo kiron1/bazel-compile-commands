@@ -76,13 +76,13 @@ main(int argc, char** argv)
       options.write(std::cerr);
     }
 
-    const auto replacements =
-      bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
+    auto replacements = bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
       }
     }
+    replacements.add_all(options.replace);
 
     auto builder = bcc::compile_commands_builder();
     builder.arguments(options.arguments)
