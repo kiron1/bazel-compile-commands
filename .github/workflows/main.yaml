@@ -7,15 +7,22 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version `x.y.z` (without leading `v`)'
+        type: string
+        required: true
 
 jobs:
-  build_and_test:
+  test:
     name: Build and test
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        build: [linux]
+        build:
+          - linux
         include:
           - build: linux
             os: ubuntu-20.04
@@ -23,28 +30,79 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Bazel cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/bazel_build_cache
+          key: ${{ runner.os }}-bazel-test-${{ hashFiles('WORKSPACE') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-test-
       - name: Run bazel test
-        run: bazel test --config=ci //...
+        run: bazel test --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+
+  buildpkg:
+    name: Build Release Asset
+    runs-on: ${{ matrix.os }}
+    needs: test
+
+    strategy:
+      matrix:
+        build:
+          - linux
+        include:
+          - build: linux
+            os: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Bazel cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/bazel_build_cache
+          key: ${{ runner.os }}-bazel-buildpkg-${{ hashFiles('WORKSPACE') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-buildpkg-
       - name: Build Release Package
-        id: buildpkg
-        run: bazel build --config=ci --config=release //:deb
+        run: bazel build --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:deb
       - name: Output file
         id: outfile
         run: |
-          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --output=files //:deb | head -1)
+          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --output=files //:deb | head -1)
           printf "path=%s\n" "${OUTPUT_FILE}" | tee -a "${GITHUB_OUTPUT}"
       - name: Upload package artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
+          name: pkg
           path: ${{ steps.outfile.outputs.path }}
+
+  mkrelease:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: buildpkg
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: pkg
+      - name: Create Release
+        run: |
+          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
   format_check:
     name: Style check
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 1
       - name: Install LLVM
