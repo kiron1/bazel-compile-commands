@@ -7,6 +7,12 @@ replacements::add(replacements::value_type value)
   definitions_.emplace_back(std::move(value));
 }
 
+void
+replacements::add_all(std::vector<value_type> value)
+{
+  std::move(value.begin(), value.end(), std::back_inserter(definitions_));
+}
+
 std::string
 replacements::apply(std::string input) const
 {

@@ -12,6 +12,8 @@ public:
   using value_type = std::pair<std::string, std::string>;
   /// Add a replacement definition.
   void add(value_type value);
+  /// Add all replacement definition.
+  void add_all(std::vector<value_type> value);
   /// Returns a string with all replacements applied.
   std::string apply(std::string input) const;
   /// Return list of replacements.
