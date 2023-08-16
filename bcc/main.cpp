@@ -4,6 +4,7 @@
 #include "bcc/platform.hpp"
 #include "bcc/replacements.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <ostream>
@@ -11,7 +12,6 @@
 #include <stdexcept>
 #include <string_view>
 
-#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
 
 #include <unistd.h>
@@ -19,7 +19,7 @@
 class file_error : public std::runtime_error
 {
 public:
-  file_error(std::string_view what, boost::filesystem::path const& path)
+  file_error(std::string_view what, std::filesystem::path const& path)
     : std::runtime_error([&]() {
       std::stringstream msg;
       msg << "failed to " << what << ": " << path.native();
@@ -67,7 +67,7 @@ main(int argc, char** argv)
 
     auto options = bcc::options::from_argv(argc, argv);
 
-    if (options.bazel_command.empty() || !boost::filesystem::exists(options.bazel_command)) {
+    if (options.bazel_command.empty() || !std::filesystem::exists(options.bazel_command)) {
       std::cerr << "fatal error: bazel or bazelisk command not found, please enure the command is in PATH or use "
                    "`--bazel-command PATH'"
                 << std::endl;
@@ -132,14 +132,15 @@ main(int argc, char** argv)
       if (options.output_path == "-") {
         compile_commands_buf = std::cout.rdbuf();
       } else {
-        auto const output_path = boost::filesystem::path(options.output_path);
-        boost::filesystem::create_directories(output_path.parent_path());
+        auto const output_path = std::filesystem::path(options.output_path);
+        std::filesystem::create_directories(output_path.parent_path());
         compile_commands_file.open(output_path.c_str());
         if (!compile_commands_file) {
           throw file_error("open", output_path);
         }
         compile_commands_buf = compile_commands_file.rdbuf();
       }
+      assert(compile_commands_buf != nullptr);
 
       auto compile_commands_stream = std::ostream(compile_commands_buf);
       compile_commands_stream << compile_commands;

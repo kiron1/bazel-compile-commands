@@ -6,9 +6,9 @@ cc_test(
         ":bazel-mock",
         "//bcc:bazel-compile-commands",
     ],
+    defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
-        "@boost//:filesystem",
         "@boost//:json",
         "@boost//:process",
         "@com_google_googletest//:gtest_main",

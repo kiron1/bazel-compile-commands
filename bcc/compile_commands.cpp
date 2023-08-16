@@ -77,7 +77,7 @@ compile_commands_builder::replacements(bcc::replacements value)
 }
 
 compile_commands_builder&
-compile_commands_builder::execution_root(boost::filesystem::path value)
+compile_commands_builder::execution_root(std::filesystem::path value)
 {
   execution_root_ = std::move(value);
   return *this;
