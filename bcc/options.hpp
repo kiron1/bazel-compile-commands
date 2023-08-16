@@ -1,10 +1,9 @@
 #pragma once
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <vector>
-
-#include <boost/filesystem/path.hpp>
 
 namespace bcc {
 
@@ -19,7 +18,7 @@ struct options
   /// Include `arguments` array in the final `compile_commands.json`
   bool arguments{ false };
   /// Bazel command.
-  boost::filesystem::path bazel_command{};
+  std::filesystem::path bazel_command{};
   /// Replace Bazel compiler with `cc`.
   std::optional<std::string> compiler{};
   /// Bazel startup options.
@@ -38,7 +37,7 @@ struct options
   /// Write current config to file.
   bool write_rc_file{ false };
   /// Path of config file if one is found.
-  std::optional<boost::filesystem::path> rcpath;
+  std::optional<std::filesystem::path> rcpath;
 
   std::ostream& write(std::ostream& os) const;
 };

@@ -31,9 +31,9 @@ cc_library(
     name = "bazel",
     srcs = ["bazel.cpp"],
     hdrs = ["bazel.hpp"],
+    defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         ":analysis",
-        "@boost//:filesystem",
         "@boost//:json",
         "@boost//:process",
     ],
@@ -49,7 +49,6 @@ cc_library(
         ":dep_set_of_files",
         ":path_fragments",
         ":replacements",
-        "@boost//:filesystem",
         "@boost//:io",
         "@boost//:json",
     ],
@@ -80,8 +79,8 @@ cc_library(
     name = "options",
     srcs = ["options.cpp"],
     hdrs = ["options.hpp"],
+    defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
-        "@boost//:filesystem",
         "@boost//:process",
         "@boost//:program_options",
     ],
@@ -100,6 +99,7 @@ cc_library(
     name = "platform",
     srcs = ["platform.cpp"],
     hdrs = ["platform.hpp"],
+    defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         ":replacements",
         "@boost//:process",

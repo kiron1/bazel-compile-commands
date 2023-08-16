@@ -197,7 +197,6 @@ execution_platform: "@local_config_platform//:host"
 int
 main(int argc, char** argv)
 {
-
   std::vector<std::string> arguments(argv + 1, argv + argc);
   auto info_iter = std::find(std::begin(arguments), std::end(arguments), "info");
   auto aquery_iter = std::find(std::begin(arguments), std::end(arguments), "aquery");

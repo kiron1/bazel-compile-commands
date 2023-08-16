@@ -4,26 +4,32 @@
 #include <fstream>
 #include <iostream>
 #include <optional>
-#include <boost/filesystem.hpp>
+
 #include <boost/process/search_path.hpp>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
-namespace fs = boost::filesystem;
 
 namespace bcc {
 namespace {
 
-std::optional<fs::path>
+std::optional<std::filesystem::path>
 find_bazelccrc()
 {
-  auto dir = fs::current_path();
+  auto dir = std::filesystem::current_path();
+
   while (!dir.empty()) {
     auto const rcpath = dir / rc_name;
-    if (fs::exists(rcpath)) {
+    if (std::filesystem::exists(rcpath)) {
+
       return rcpath;
     }
-    dir = dir.parent_path();
+    auto const parent_dir = dir.parent_path();
+    std::cerr << "dir " << dir << " parent " << parent_dir << std::endl;
+    if (parent_dir == dir) {
+      break;
+    }
+    dir = parent_dir;
   }
   return std::nullopt;
 }
@@ -35,6 +41,7 @@ options
 options::from_argv(int argc, char* argv[])
 {
   options result;
+
   result.rcpath = find_bazelccrc();
 
   // Declare the supported options.
@@ -119,7 +126,7 @@ options::from_argv(int argc, char* argv[])
     }
   }
   if (!result.bazel_command.empty()) {
-    result.bazel_command = boost::filesystem::canonical(result.bazel_command);
+    result.bazel_command = std::filesystem::canonical(result.bazel_command);
   }
   return result;
 }

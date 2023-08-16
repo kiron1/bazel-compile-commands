@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include <boost/filesystem.hpp>
 #include <boost/process.hpp>
 
 #include <google/protobuf/io/coded_stream.h>
@@ -20,8 +19,8 @@ namespace bcc {
 
 namespace {
 /// Run `bazel info $location` and return it as path
-boost::filesystem::path
-bazel_info(boost::filesystem::path const& bazel_path,
+std::filesystem::path
+bazel_info(std::filesystem::path const& bazel_path,
            std::vector<std::string> const& bazel_startup_options,
            std::string const& location)
 {
@@ -42,11 +41,11 @@ bazel_info(boost::filesystem::path const& bazel_path,
     oss << errs.rdbuf();
     throw bazel_error(bazel_path, args, rc, oss.str());
   }
-  return boost::filesystem::path(line);
+  return std::filesystem::path(line);
 }
 
 std::string
-make_bazel_error_message(boost::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
+make_bazel_error_message(std::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
 {
   std::stringstream msg;
   msg << "bazel command failed with exit code " << rc << ": " << path.native() << " ";
@@ -56,7 +55,7 @@ make_bazel_error_message(boost::filesystem::path const& path, std::vector<std::s
 }
 }
 
-bazel_error::bazel_error(boost::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
+bazel_error::bazel_error(std::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
   : std::runtime_error(make_bazel_error_message(path, args, rc, error))
 {
 }
@@ -75,7 +74,7 @@ proto_error::proto_error(std::string const& what)
 }
 
 bazel
-bazel::create(boost::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
+bazel::create(std::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
 {
   auto workspace = bazel_info(bazel_path, bazel_startup_options, "workspace");
   auto execution_root = bazel_info(bazel_path, bazel_startup_options, "execution_root");
@@ -118,10 +117,10 @@ bazel::aquery(std::string const& query,
   return agc;
 }
 
-bazel::bazel(boost::filesystem::path bazel_commands,
+bazel::bazel(std::filesystem::path bazel_commands,
              std::vector<std::string> bazel_startup_options,
-             boost::filesystem::path workspace_path,
-             boost::filesystem::path execution_root)
+             std::filesystem::path workspace_path,
+             std::filesystem::path execution_root)
   : bazel_command_(std::move(bazel_commands))
   , bazel_startup_options_(std::move(bazel_startup_options))
   , workspace_path_(std::move(workspace_path))

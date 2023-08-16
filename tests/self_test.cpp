@@ -1,10 +1,10 @@
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
 #include <boost/process.hpp>
 
@@ -21,14 +21,10 @@ using testing::NotNull;
 
 namespace {
 boost::json::value
-run(boost::filesystem::path const& commmand, std::vector<std::string_view> args)
+run(std::filesystem::path const& commmand, std::vector<std::string_view> args)
 {
   auto outs = boost::process::ipstream{};
-  auto errs = boost::process::ipstream{};
-  auto proc = boost::process::child(commmand,
-                                    boost::process::args(args),
-                                    boost::process::std_out > outs //,
-  );                                                               // boost::process::std_err > errs);
+  auto proc = boost::process::child(commmand, boost::process::args(args), boost::process::std_out > outs);
 
   auto json_parser = boost::json::stream_parser{};
   json_parser.reset();
@@ -58,11 +54,11 @@ TEST(self_test, run)
 
   auto const bcc_path = runfiles->Rlocation("bazel-compile-commands/bcc/bazel-compile-commands");
   ASSERT_THAT(bcc_path, Not(IsEmpty())) << bcc_path;
-  ASSERT_THAT(boost::filesystem::exists(bcc_path), IsTrue()) << bcc_path;
+  ASSERT_THAT(std::filesystem::exists(bcc_path), IsTrue()) << bcc_path;
 
   auto const bazel_path = runfiles->Rlocation("bazel-compile-commands/tests/bazel-mock");
   ASSERT_THAT(bazel_path, Not(IsEmpty())) << bazel_path;
-  ASSERT_THAT(boost::filesystem::exists(bazel_path), IsTrue()) << bazel_path;
+  ASSERT_THAT(std::filesystem::exists(bazel_path), IsTrue()) << bazel_path;
 
   auto const result = run(bcc_path, { "-B", bazel_path.c_str(), "-a", "-o-" });
 
