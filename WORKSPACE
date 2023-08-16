@@ -2,23 +2,23 @@ workspace(name = "bazel-compile-commands")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-_RULES_BOOST_COMMIT = "33461a3c666af36d7a080e4fd6f554725df44132"
+_RULES_BOOST_COMMIT = "f4b8260ddfdcebadcde0e5ee6c5a35a0f7662f48"
 
 http_archive(
     name = "io_bazel",
-    sha256 = "3898d2af83fe3538e40fa279911990458066f8fd170620a7a010e7537fa2c0e6",
-    strip_prefix = "bazel-6.3.1",
+    sha256 = "8b9de325bef017ee7a8d9a346e61a76d199e1eb5dc6924753eed4f8152066bab",
+    strip_prefix = "bazel-6.3.2",
     urls = [
-        "https://github.com/bazelbuild/bazel/archive/refs/tags/6.3.1.tar.gz",
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/6.3.2.tar.gz",
     ],
 )
 
 http_archive(
     name = "com_github_nelhage_rules_boost",
-    sha256 = "1198cb810d18d2a86abbd4c3d71665375e2c6a2ba4044b4f9d7b2f28e6ed898e",
-    strip_prefix = "rules_boost-%s" % _RULES_BOOST_COMMIT,
+    sha256 = "3c80e0c2bcb315bf2642c64a3a055ec66c7acc74501d0f415b4ad5ccb34f899d",
+    strip_prefix = "rules_boost-{}".format(_RULES_BOOST_COMMIT),
     urls = [
-        "https://github.com/nelhage/rules_boost/archive/%s.tar.gz" % _RULES_BOOST_COMMIT,
+        "https://github.com/nelhage/rules_boost/archive/{}.tar.gz".format(_RULES_BOOST_COMMIT),
     ],
 )
 
