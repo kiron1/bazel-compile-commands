@@ -1,5 +1,6 @@
 cc_test(
     name = "self_test",
+    size = "small",
     srcs = ["self_test.cpp"],
     data = [
         ":bazel-mock",

@@ -32,6 +32,7 @@ cc_library(
 
 cc_test(
     name = "compile_commands_test",
+    size = "small",
     srcs = ["compile_commands_test.cpp"],
     deps = [
         ":compile_commands",
@@ -68,6 +69,7 @@ cc_library(
 
 cc_test(
     name = "replacements_test",
+    size = "small",
     srcs = ["replacements_test.cpp"],
     deps = [
         ":replacements",
