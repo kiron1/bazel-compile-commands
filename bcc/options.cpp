@@ -49,7 +49,7 @@ options::from_argv(int argc, char* argv[])
     ("bazelopt,b", po::value(&result.bazel_flags)->value_name("OPTION"), "bazel options")
     ("compiler,c", po::value<std::string>()->value_name("PATH"), "use `compiler` as replacement for the bazel compiler wrapper script")
     ("config", po::value(&result.configs)->value_name("NAME"), "Bazel build config to apply")
-    ("output,o", po::value<std::string>(&result.output_path)->value_name("PATH"), "output path for the `compile_commands.json` file")
+    ("output,o", po::value(&result.output_path)->value_name("PATH"), "output path for the `compile_commands.json` file")
     ("replace,R", po::value<std::vector<std::string>>()->value_name("KEY=VALUE"), "Replace KEY with VALUE of each compile argument")
     ("targets", po::value<std::vector<std::string>>()->value_name("LABEL"), "Bazel target labels to query for compile commands")
     ;
@@ -73,7 +73,9 @@ options::from_argv(int argc, char* argv[])
   // parse rc file options when found
   if (result.rcpath.has_value()) {
     auto ifs = std::ifstream(result.rcpath.value().c_str());
-    po::store(po::parse_config_file(ifs, cfg), vm);
+    if (ifs) {
+      po::store(po::parse_config_file(ifs, cfg), vm);
+    }
   }
   // done with command line parsing
   po::notify(vm);
