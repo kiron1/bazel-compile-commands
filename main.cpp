@@ -16,6 +16,19 @@
 
 #include <unistd.h>
 
+class file_error : public std::runtime_error
+{
+public:
+  file_error(std::string_view what, boost::filesystem::path const& path)
+    : std::runtime_error([&]() {
+      std::stringstream msg;
+      msg << "failed to " << what << ": " << path.native();
+      return msg.str();
+    }())
+  {
+  }
+};
+
 std::string
 make_query(std::vector<std::string> const& targets)
 {
@@ -68,7 +81,13 @@ main(int argc, char** argv)
         options.rcpath = bazel.workspace_path() / bcc::rc_name;
       }
       auto rcfile = std::ofstream(options.rcpath.value().c_str());
+      if (!rcfile) {
+        throw file_error("open", options.rcpath.value());
+      }
       options.write(rcfile);
+      if (!rcfile) {
+        throw file_error("write", options.rcpath.value());
+      }
     }
 
     options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
@@ -104,7 +123,7 @@ main(int argc, char** argv)
     const auto compile_commands = builder.build(agc);
     {
       if (options.verbose) {
-        std::cerr << "Writting " << compile_commands.size() << " commands to `" << options.output_path << "`"
+        std::cerr << "Writing " << compile_commands.size() << " commands to `" << options.output_path << "`"
                   << std::endl;
       }
       // Allow `-` as output_path to mean write to stdout instead of a file.
@@ -113,12 +132,20 @@ main(int argc, char** argv)
       if (options.output_path == "-") {
         compile_commands_buf = std::cout.rdbuf();
       } else {
-        compile_commands_file.open(options.output_path.c_str());
+        const auto output_path = boost::filesystem::path(options.output_path);
+        boost::filesystem::create_directories(output_path.parent_path());
+        compile_commands_file.open(output_path.c_str());
+        if (!compile_commands_file) {
+          throw file_error("open", output_path);
+        }
         compile_commands_buf = compile_commands_file.rdbuf();
       }
 
       auto compile_commands_stream = std::ostream(compile_commands_buf);
       compile_commands_stream << compile_commands;
+      if (!compile_commands_stream) {
+        throw file_error("write", options.output_path);
+      }
     }
   } catch (std::exception const& ex) {
     std::cerr << "fatal error: " << ex.what() << std::endl;
