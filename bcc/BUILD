@@ -1,5 +1,17 @@
 package(default_visibility = ["//visibility:public"])
 
+cc_binary(
+    name = "bazel-compile-commands",
+    srcs = ["main.cpp"],
+    deps = [
+        ":bazel",
+        ":compile_commands",
+        ":options",
+        ":platform",
+        ":replacements",
+    ],
+)
+
 cc_proto_library(
     name = "analysis",
     deps = ["@io_bazel//src/main/protobuf:analysis_v2_proto"],
