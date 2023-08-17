@@ -4,7 +4,7 @@ cc_test(
     srcs = ["self_test.cpp"],
     data = [
         ":bazel-mock",
-        "//:bazel-compile-commands",
+        "//bcc:bazel-compile-commands",
     ],
     deps = [
         "@bazel_tools//tools/cpp/runfiles",

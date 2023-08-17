@@ -5,18 +5,6 @@ load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 
 package(default_visibility = ["//visibility:public"])
 
-cc_binary(
-    name = "bazel-compile-commands",
-    srcs = ["main.cpp"],
-    deps = [
-        "//bcc:bazel",
-        "//bcc:compile_commands",
-        "//bcc:options",
-        "//bcc:platform",
-        "//bcc:replacements",
-    ],
-)
-
 pandoc(
     name = "man",
     out = "bazel-compile-commands.1",
@@ -28,7 +16,7 @@ pandoc(
 
 pkg_tar(
     name = "bin.tar",
-    srcs = [":bazel-compile-commands"],
+    srcs = ["//bcc:bazel-compile-commands"],
     mode = "0755",
     package_dir = "bin",
 )

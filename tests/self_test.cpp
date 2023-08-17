@@ -56,7 +56,7 @@ TEST(self_test, run)
   std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
   ASSERT_THAT(runfiles, NotNull()) << error;
 
-  const auto bcc_path = runfiles->Rlocation("bazel-compile-commands/bazel-compile-commands");
+  const auto bcc_path = runfiles->Rlocation("bazel-compile-commands/bcc/bazel-compile-commands");
   ASSERT_THAT(bcc_path, Not(IsEmpty())) << bcc_path;
   ASSERT_THAT(boost::filesystem::exists(bcc_path), IsTrue()) << bcc_path;
 
