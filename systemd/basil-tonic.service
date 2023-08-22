@@ -1,0 +1,14 @@
+[Unit]
+Description=Basil Tonic Service
+Documentation=https://github.com/kiron1/bazel-compile-commands
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/basil-tonic --activate-socket Listeners
+KillMode=process
+RestartSec=5s
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
