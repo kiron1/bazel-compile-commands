@@ -1,0 +1,10 @@
+--- src/main/java/com/google/devtools/build/lib/buildeventstream/proto/BUILD
++++ src/main/java/com/google/devtools/build/lib/buildeventstream/proto/BUILD
+@@ -25,6 +25,7 @@
+ proto_library(
+     name = "build_event_stream_proto",
+     srcs = ["build_event_stream.proto"],
++    visibility = ["//visibility:public"],
+     deps = [
+         "//src/main/protobuf:action_cache_proto",
+         "//src/main/protobuf:command_line_proto",

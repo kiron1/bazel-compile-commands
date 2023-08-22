@@ -39,7 +39,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
-        run: bazel test --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+        run: bazel test --config=ci --config=clippy --config=fmt --keep_going --disk_cache=~/.cache/bazel_build_cache //...
 
   buildpkg:
     name: Build Release Asset
