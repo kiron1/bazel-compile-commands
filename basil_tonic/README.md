@@ -56,11 +56,17 @@ build commands database and extend the existing `compile_commands.json` file if
 exists. The final `compile_commands.json` file will be written, when the build
 is finished.
 
-> **Note:** You might need to restart `clangd` when you started it _before_ any
+<!-- deno-fmt-ignore-start -->
+
+> **Note**
+> You might need to restart `clangd` when you started it _before_ any
 > `compile_commands.json` existed.
 
-> **Note:** Bazil will only send build events for files it is compiling. If you
-> buid your workspace already before using Basil Tonic Bazel will use the cached
-> results and not compile the C/C++ files. Either run `bazel clean` to force a
-> re-build of the workspace or use `bazel-copmpile-commands` to generate an
-> initial `compile_commands.json` file.
+> **Note**
+> Bazel will only send build events for files it is compiling. If you buid your
+> workspace already before using Basil Tonic Bazel will use the cached results
+> and not compile the C/C++ files. Either run `bazel clean` to force a re-build
+> of the workspace or use `bazel-copmpile-commands` to generate an initial
+> `compile_commands.json` file.
+
+<!-- deno-fmt-ignore-end -->
