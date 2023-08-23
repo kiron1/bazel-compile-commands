@@ -17,20 +17,31 @@ can be used to utilize the project compile information via the
 `compile_commands.json` file.
 
 <dl>
-<dt>`bazel-compile-commands`</dt>
+<dt>
 
-<dd>Invoke `bazel-compile-commands //...` to generate a `compile_commands.json`
-file for the
+`bazel-compile-commands`
+
+<dd>
+
+Invoke `bazel-compile-commands //...` to generate a `compile_commands.json` file
+for the
 [Bazel label](https://docs.bazel.build/versions/3.1.0/build-ref.html#labels)
 `//...`. For more information, see
-[`man 1 bazel-compile-commands`](./documentation.md).</dd>
+[`man 1 bazel-compile-commands`](./documentation.md).
 
-<dt>`basil-tonic`</dt>
+</dd>
+<dt>
 
-<dd>Basil Tonic is a service which can listen to
+`basil-tonic`
+
+</dt>
+<dd>
+
+Basil Tonic is a service which can listen to
 [Bazel Build Events](https://bazel.build/remote/bep) and will write a
-`compile_commands.json` to the Bazel workspace root after compilation
-finished.</dd>
+`compile_commands.json` to the Bazel workspace root after compilation finished.
+
+</dd>
 </dl>
 
 The `bazel-compile-commands` command is ideal when you need a
