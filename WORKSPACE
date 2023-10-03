@@ -165,6 +165,7 @@ crates_repository(
             version = "0.3",
         ),
         "url": crate.spec(version = "2.4"),
+        "libc": crate.spec(version = "0.2.147")
     },
 )
 

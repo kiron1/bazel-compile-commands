@@ -4,3 +4,4 @@ user.bazelrc
 compile_flags.txt
 compile_commands.json
 rust-project.json
+.cache

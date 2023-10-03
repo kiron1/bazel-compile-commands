@@ -1,5 +1,5 @@
 {
-  "checksum": "a96ef8084647264ce42079a8a2e1495e40d1c3152e317323e3a6bc142e1d012b",
+  "checksum": "00f4183a066839e07cab80d6d361fd6e4c63ee90cdfa5da5134f6b377fcbdd61",
   "crates": {
     "addr2line 0.21.0": {
       "name": "addr2line",
@@ -1329,6 +1329,10 @@
             {
               "id": "futures-util 0.3.28",
               "target": "futures_util"
+            },
+            {
+              "id": "libc 0.2.147",
+              "target": "libc"
             },
             {
               "id": "prost 0.11.9",
