@@ -19,6 +19,18 @@ build:clippy --keep_going
 build:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
 build:clippy --output_groups=+clippy_checks
 
+build --enable_platform_specific_config
+
+build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --crosstool_top=@local_config_apple_cc//:toolchain
+build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
+
+build:x86_64_apple_darwin --platforms=:x86_64-apple-darwin
+build:x86_64_apple_darwin --cpu=darwin_x86_64
+
+build:arm64_apple_darwin --platforms=:arm64-apple-darwin
+build:arm64_apple_darwin --cpu=darwin_arm64
+
 build:release --compilation_mode=opt
 
 build:ci --show_timestamps
