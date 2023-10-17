@@ -20,7 +20,7 @@ public:
 
   explicit path_fragments(google::protobuf::RepeatedPtrField<analysis::PathFragment> const& fragments);
 
-  std::string_view build(std::uint32_t id) const;
+  std::string build(std::uint32_t id) const;
 
 private:
   std::unordered_map<std::uint32_t, entry> fragments_;

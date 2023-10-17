@@ -13,12 +13,12 @@ namespace bcc {
 class artifacts
 {
 public:
-  artifacts(google::protobuf::RepeatedPtrField<analysis::Artifact> const& artifacts, path_fragments const& fragments);
+  artifacts(google::protobuf::RepeatedPtrField<analysis::Artifact> const& artifacts, path_fragments fragments);
 
-  std::string_view path_of_artifact(std::uint32_t artifact_id) const;
+  std::string path_of_artifact(std::uint32_t artifact_id) const;
 
 private:
   std::unordered_map<std::uint32_t, std::uint32_t> artifacts_;
-  path_fragments const& fragments_;
+  path_fragments fragments_;
 };
 }
