@@ -7,6 +7,22 @@ load("@rules_rust//rust:defs.bzl", "rust_clippy", "rustfmt_test")
 
 package(default_visibility = ["//visibility:public"])
 
+platform(
+    name = "x86_64-apple-darwin",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:macos",
+    ],
+)
+
+platform(
+    name = "aarch64-apple-darwin",
+    constraint_values = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
+)
+
 rust_clippy(
     name = "rust_clippy",
     testonly = True,

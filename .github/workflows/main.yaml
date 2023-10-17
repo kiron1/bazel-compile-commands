@@ -23,9 +23,16 @@ jobs:
       matrix:
         build:
           - linux
+          - macos-aarch64
+          - macos-x86_64
+          - macos-arm64
         include:
           - build: linux
             os: ubuntu-20.04
+          - build: macos-aarch64
+            os: macos-latest
+          - build: macos-arm64
+            os: macos-latest
 
     steps:
       - name: Checkout repository

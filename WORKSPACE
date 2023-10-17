@@ -125,6 +125,7 @@ crates_repository(
     lockfile = "//:Cargo.Bazel.lock",
     packages = {
         "futures-util": crate.spec(version = "0.3"),
+        "libc": crate.spec(version = "0.2"),
         "prost": crate.spec(version = "0.11"),
         "prost-types": crate.spec(version = "0.11"),
         "protoc-gen-prost": crate.spec(
