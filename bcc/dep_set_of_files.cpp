@@ -1,17 +1,20 @@
 #include "bcc/dep_set_of_files.hpp"
 
 #include <cassert>
+#include <cstdint>
 #include <queue>
 #include <string_view>
 
 namespace bcc {
 
 dep_set_of_files::dep_set_of_files(google::protobuf::RepeatedPtrField<analysis::DepSetOfFiles> const& dep_set,
-                                   artifacts const& a)
-  : artifacts_(a)
+                                   artifacts a)
+  : artifacts_(std::move(a))
 {
   for (auto const& k : dep_set) {
-    const auto e = entry{ k.transitive_dep_set_ids(), k.direct_artifact_ids() };
+    const auto e =
+      entry{ std::vector<std::uint32_t>(k.transitive_dep_set_ids().begin(), k.transitive_dep_set_ids().end()),
+             std::vector<std::uint32_t>(k.direct_artifact_ids().begin(), k.direct_artifact_ids().end()) };
     table_.insert({ k.id(), e });
   }
 }
@@ -22,7 +25,7 @@ dep_set_of_files::get(std::uint32_t id) const
   if (const auto it = cache_.find(id); it != cache_.end()) {
     return dep_set(it->second);
   }
-  std::vector<std::string_view> result;
+  std::vector<std::string> result;
 
   std::queue<entry> q;
 

@@ -12,7 +12,7 @@ path_fragments::path_fragments(google::protobuf::RepeatedPtrField<analysis::Path
   }
 }
 
-std::string_view
+std::string
 path_fragments::build(std::uint32_t id) const
 {
   if (const auto it = cache_.find(id); it != cache_.end()) {
@@ -23,6 +23,7 @@ path_fragments::build(std::uint32_t id) const
 
   // there must be at least on path fragment (i.e. no need to check for end)
   auto pfit = fragments_.find(id);
+  assert(pfit != fragments_.end());
   result = pfit->second.label;
   path_fragment_id = pfit->second.parent;
 

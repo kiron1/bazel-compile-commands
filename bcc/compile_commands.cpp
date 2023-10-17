@@ -107,7 +107,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
         return boost::json::string(replacements_.apply(a));
       });
       const auto output = art.path_of_artifact(action.primary_output_id());
-      auto file = std::optional<std::string_view>{};
+      auto file = std::optional<std::string>{};
       for (auto const& k : action.input_dep_set_ids()) {
         const auto set = dep_set.get(k);
         file = set.find_if(is_cc_suffix);
