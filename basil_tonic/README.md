@@ -27,7 +27,7 @@ one of the `.bazelrc` [files loaded by Bazel during startup][bazelrc].
 For example in the `$HOME/.bazelrc` file:
 
 ```
-build:basil-tonic --bes_backend=grpc://127.0.0.1:50051
+build:basil-tonic --bes_backend=grpc://127.0.0.1:50151
 build:basil-tonic --build_event_publish_all_actions
 build:basil-tonic --nobes_lifecycle_events
 build:basil-tonic --bes_timeout=2s
