@@ -26,7 +26,7 @@ output_of(std::string_view cmd, std::vector<std::string_view> args)
     auto line = std::string{};
     std::getline(outs, line);
     proc.wait();
-    const auto rc = proc.exit_code();
+    auto const rc = proc.exit_code();
     if (rc != 0) {
       std::ostringstream oss;
       oss << errs.rdbuf();
@@ -50,8 +50,8 @@ platform_replacements(std::string workspace, std::string execution_root)
   replacements result;
 
 #if defined(__APPLE__)
-  const auto devdir = output_of("xcode-select", { "--print-path" });
-  const auto sdkroot = output_of("xcrun", { "--show-sdk-path" });
+  auto const devdir = output_of("xcode-select", { "--print-path" });
+  auto const sdkroot = output_of("xcrun", { "--show-sdk-path" });
 
   // See
   // https://github.com/bazelbuild/bazel/blob/47edc57806056f3c8764241ed41b8acc72bd2ebf/tools/osx/crosstool/wrapped_clang.cc

@@ -8,7 +8,7 @@
 
 namespace bcc {
 
-extern const char* const rc_name;
+extern char const* const rc_name;
 
 struct options
 {

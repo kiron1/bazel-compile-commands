@@ -36,7 +36,7 @@ bazel_info(boost::filesystem::path const& bazel_path,
   auto line = std::string{};
   std::getline(outs, line);
   bazel_proc.wait();
-  const auto rc = bazel_proc.exit_code();
+  auto const rc = bazel_proc.exit_code();
   if (rc != 0) {
     std::ostringstream oss;
     oss << errs.rdbuf();
@@ -111,7 +111,7 @@ bazel::aquery(std::string const& query,
     throw proto_error("failed to parse aquery output");
   }
   bazel_proc.wait();
-  const auto rc = bazel_proc.exit_code();
+  auto const rc = bazel_proc.exit_code();
   if (rc != 0) {
     throw bazel_error(bazel_command_, args, rc, std::string());
   }

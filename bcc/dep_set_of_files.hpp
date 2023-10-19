@@ -24,7 +24,7 @@ public:
   {
     auto result = std::optional<std::string>{};
 
-    const auto it = std::find_if(std::begin(set_), std::end(set_), pred);
+    auto const it = std::find_if(std::begin(set_), std::end(set_), pred);
     if (it != std::end(set_)) {
       result = *it;
     }

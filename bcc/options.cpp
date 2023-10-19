@@ -19,7 +19,7 @@ find_bazelccrc()
 {
   auto dir = fs::current_path();
   while (!dir.empty()) {
-    const auto rcpath = dir / rc_name;
+    auto const rcpath = dir / rc_name;
     if (fs::exists(rcpath)) {
       return rcpath;
     }
@@ -29,7 +29,7 @@ find_bazelccrc()
 }
 }
 
-const char* const rc_name = ".bazelccrc";
+char const* const rc_name = ".bazelccrc";
 
 options
 options::from_argv(int argc, char* argv[])
@@ -90,9 +90,9 @@ options::from_argv(int argc, char* argv[])
   }
 
   if (vm.count("replace")) {
-    const auto rdef = vm["replace"].as<std::vector<std::string>>();
-    for (const auto& r : rdef) {
-      const auto pos = r.find('=');
+    auto const rdef = vm["replace"].as<std::vector<std::string>>();
+    for (auto const& r : rdef) {
+      auto const pos = r.find('=');
       if (pos == 0) {
         // ignore empty keys
       } else if (pos == std::string::npos) {
@@ -130,23 +130,23 @@ options::write(std::ostream& os) const
   os << "verbose = " << this->verbose << "\n";
   os << "arguments = " << this->arguments << "\n";
   os << "bazel-command = " << this->bazel_command << "\n";
-  for (const auto& opt : bazel_startup_options) {
+  for (auto const& opt : bazel_startup_options) {
     os << "bazelsupopt = " << opt << "\n";
   }
-  for (const auto& opt : bazel_flags) {
+  for (auto const& opt : bazel_flags) {
     os << "bazelopt = " << opt << "\n";
   }
   if (compiler.has_value()) {
     os << "compiler = " << this->compiler.value() << "\n";
   }
   os << "output = " << this->output_path << "\n";
-  for (const auto& r : this->replace) {
+  for (auto const& r : this->replace) {
     os << "replace = " << r.first << "=" << r.second << "\n";
   }
-  for (const auto& c : this->configs) {
+  for (auto const& c : this->configs) {
     os << "config = " << c << "\n";
   }
-  for (const auto& t : this->targets) {
+  for (auto const& t : this->targets) {
     os << "targets = " << t << "\n";
   }
   return os;
