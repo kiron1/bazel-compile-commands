@@ -10,7 +10,7 @@
 #include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
 
 namespace {
-const char* const AQUERY_TEXTPROTO = R"(
+const char* const aquery_textproto = R"(
 rule_classes {
 id: 1
 name: "cc_binary"
@@ -221,7 +221,7 @@ main(int argc, char** argv)
     }
   } else if (aquery_iter != std::end(arguments)) {
     analysis::ActionGraphContainer agc;
-    google::protobuf::TextFormat::ParseFromString(AQUERY_TEXTPROTO, &agc);
+    google::protobuf::TextFormat::ParseFromString(aquery_textproto, &agc);
     agc.SerializePartialToOstream(&std::cout);
     return 0;
   } else {

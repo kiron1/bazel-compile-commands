@@ -216,7 +216,7 @@ CheckOptions:
   - key:             readability-identifier-naming.TemplateTemplateParameterSuffix
     value:           ''
   - key:             readability-identifier-naming.TypeTemplateParameterCase
-    value:           lower_case
+    value:           CamelCase
   - key:             readability-identifier-naming.TypeTemplateParameterPrefix
     value:           ''
   - key:             readability-identifier-naming.TypeTemplateParameterSuffix
