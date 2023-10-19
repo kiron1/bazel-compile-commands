@@ -23,16 +23,9 @@ jobs:
       matrix:
         build:
           - linux
-          - macos-aarch64
-          - macos-x86_64
-          - macos-arm64
         include:
           - build: linux
             os: ubuntu-20.04
-          - build: macos-aarch64
-            os: macos-latest
-          - build: macos-arm64
-            os: macos-latest
 
     steps:
       - name: Checkout repository
@@ -57,9 +50,15 @@ jobs:
       matrix:
         build:
           - linux
+          - macos-arm64
+          - macos-amd64
         include:
           - build: linux
             os: ubuntu-20.04
+          - build: macos-arm64
+            os: macos-latest
+          - build: macos-amd64
+            os: macos-latest
 
     steps:
       - name: Checkout repository
@@ -73,11 +72,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-buildpkg-
       - name: Build Release Package
-        run: bazel build --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:deb
+        run: bazel build --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:pkg
       - name: Output file
         id: outfile
         run: |
-          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --output=files //:deb | head -1)
+          OUTPUT_FILE=$(bazel cquery --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --output=files //:pkg | head -1)
           printf "path=%s\n" "${OUTPUT_FILE}" | tee -a "${GITHUB_OUTPUT}"
       - name: Upload package artifact
         uses: actions/upload-artifact@v3
@@ -100,7 +99,7 @@ jobs:
           name: pkg
       - name: Create Release
         run: |
-          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb
+          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

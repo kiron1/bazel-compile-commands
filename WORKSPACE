@@ -5,6 +5,14 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 _RULES_BOOST_COMMIT = "f4b8260ddfdcebadcde0e5ee6c5a35a0f7662f48"
 
 http_archive(
+    name = "build_bazel_rules_apple",
+    sha256 = "20da675977cb8249919df14d0ce6165d7b00325fb067f0b06696b893b90a55e8",
+    urls = [
+        "https://github.com/bazelbuild/rules_apple/releases/download/3.0.0/rules_apple.3.0.0.tar.gz",
+    ],
+)
+
+http_archive(
     name = "io_bazel",
     patches = ["//third_party:bazel.patch"],
     sha256 = "8b9de325bef017ee7a8d9a346e61a76d199e1eb5dc6924753eed4f8152066bab",
@@ -93,6 +101,20 @@ rust_register_toolchains(
         "x86_64-apple-darwin",
     ],
 )
+
+load(
+    "@build_bazel_rules_apple//apple:repositories.bzl",
+    "apple_rules_dependencies",
+)
+
+apple_rules_dependencies()
+
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
 
 load("@rules_rust//proto/prost:repositories.bzl", "rust_prost_dependencies")
 
