@@ -74,7 +74,7 @@ main(int argc, char** argv)
       return 1;
     }
 
-    const auto bazel = bcc::bazel::create(options.bazel_command, options.bazel_startup_options);
+    auto const bazel = bcc::bazel::create(options.bazel_command, options.bazel_startup_options);
 
     if (options.write_rc_file) {
       if (!options.rcpath.has_value()) {
@@ -109,18 +109,18 @@ main(int argc, char** argv)
       .execution_root(bazel.execution_root())
       .compiler(options.compiler);
 
-    const auto query_str = make_query(options.targets);
+    auto const query_str = make_query(options.targets);
     if (options.verbose) {
       std::cerr << "Query `" << query_str << '`' << std::endl;
     }
-    const auto agc = bazel.aquery(query_str, options.bazel_flags, options.configs);
-    const auto actions = agc.actions();
+    auto const agc = bazel.aquery(query_str, options.bazel_flags, options.configs);
+    auto const actions = agc.actions();
 
     if (options.verbose) {
       std::cerr << "Build compile commands from " << agc.actions().size() << " actions" << std::endl;
     }
 
-    const auto compile_commands = builder.build(agc);
+    auto const compile_commands = builder.build(agc);
     {
       if (options.verbose) {
         std::cerr << "Writing " << compile_commands.size() << " commands to `" << options.output_path << "`"
@@ -132,7 +132,7 @@ main(int argc, char** argv)
       if (options.output_path == "-") {
         compile_commands_buf = std::cout.rdbuf();
       } else {
-        const auto output_path = boost::filesystem::path(options.output_path);
+        auto const output_path = boost::filesystem::path(options.output_path);
         boost::filesystem::create_directories(output_path.parent_path());
         compile_commands_file.open(output_path.c_str());
         if (!compile_commands_file) {

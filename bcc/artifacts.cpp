@@ -14,7 +14,7 @@ std::string
 artifacts::path_of_artifact(std::uint32_t artifact_id) const
 {
   std::string result;
-  if (const auto ait = artifacts_.find(artifact_id); ait != artifacts_.end()) {
+  if (auto const ait = artifacts_.find(artifact_id); ait != artifacts_.end()) {
     result = fragments_.build(ait->second);
   }
   return result;

@@ -16,7 +16,7 @@ replacements::add_all(std::vector<value_type> value)
 std::string
 replacements::apply(std::string input) const
 {
-  for (const auto& def : definitions_) {
+  for (auto const& def : definitions_) {
     auto pos = std::size_t{ 0 };
     auto fpos = std::size_t{ 0 };
     while ((fpos = input.find(def.first, pos)) != std::string::npos) {

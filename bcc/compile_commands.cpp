@@ -24,7 +24,7 @@ ends_with(std::string_view const& sv, std::string_view const& suffix)
 }
 
 bool
-is_cc_suffix(const std::string_view& v)
+is_cc_suffix(std::string_view const& v)
 {
   return ends_with(v, ".C") || ends_with(v, ".c") || ends_with(v, ".cc") || ends_with(v, ".cxx") ||
          ends_with(v, ".c++") || ends_with(v, ".cpp") || ends_with(v, ".m") || ends_with(v, ".mm");
@@ -36,12 +36,12 @@ join_arguments(boost::json::array const& args)
 {
   auto cmd = std::stringstream();
   bool need_sep = false;
-  for (const auto& arg : args) {
+  for (auto const& arg : args) {
     if (need_sep) {
       cmd << " ";
     }
-    const auto has_space = arg.as_string().find(' ') == std::string_view::npos;
-    const auto has_quote = arg.as_string().find('"') == std::string_view::npos;
+    auto const has_space = arg.as_string().find(' ') == std::string_view::npos;
+    auto const has_quote = arg.as_string().find('"') == std::string_view::npos;
     if (has_space || has_quote) {
       // no need to quote
       cmd << arg.as_string().c_str();
@@ -86,15 +86,15 @@ compile_commands_builder::execution_root(boost::filesystem::path value)
 boost::json::array
 compile_commands_builder::build(analysis::ActionGraphContainer const& action_graph) const
 {
-  const auto fragements = path_fragments(action_graph.path_fragments());
-  const auto art = artifacts(action_graph.artifacts(), fragements);
-  const auto dep_set = dep_set_of_files(action_graph.dep_set_of_files(), art);
+  auto const fragements = path_fragments(action_graph.path_fragments());
+  auto const art = artifacts(action_graph.artifacts(), fragements);
+  auto const dep_set = dep_set_of_files(action_graph.dep_set_of_files(), art);
 
   // the root element of a compile_commands.json document is an array of objects
   auto json = boost::json::array();
 
-  for (const auto& action : action_graph.actions()) {
-    const auto action_args = action.arguments();
+  for (auto const& action : action_graph.actions()) {
+    auto const action_args = action.arguments();
     if (!action_args.empty()) {
       // arguments are optional in the action graph
       auto args = boost::json::array();
@@ -106,10 +106,10 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
       std::transform(action_args_begin, std::end(action_args), std::back_inserter(args), [&](auto a) {
         return boost::json::string(replacements_.apply(a));
       });
-      const auto output = art.path_of_artifact(action.primary_output_id());
+      auto const output = art.path_of_artifact(action.primary_output_id());
       auto file = std::optional<std::string>{};
       for (auto const& k : action.input_dep_set_ids()) {
-        const auto set = dep_set.get(k);
+        auto const set = dep_set.get(k);
         file = set.find_if(is_cc_suffix);
         if (file.has_value()) {
           break;

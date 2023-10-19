@@ -10,7 +10,7 @@
 #include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
 
 namespace {
-const char* const aquery_textproto = R"(
+char const* const aquery_textproto = R"(
 rule_classes {
 id: 1
 name: "cc_binary"
