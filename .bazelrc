@@ -21,15 +21,17 @@ build:clippy --output_groups=+clippy_checks
 
 build --enable_platform_specific_config
 
+build:linux --build
+
 build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
 build:macos --crosstool_top=@local_config_apple_cc//:toolchain
 build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
 
-build:x86_64_apple_darwin --platforms=:x86_64-apple-darwin
-build:x86_64_apple_darwin --cpu=darwin_x86_64
+build:macos-arm64 --platforms=:arm64-apple-darwin
+build:macos-arm64 --cpu=darwin_arm64
 
-build:arm64_apple_darwin --platforms=:arm64-apple-darwin
-build:arm64_apple_darwin --cpu=darwin_arm64
+build:macos-amd64 --platforms=:x86_64-apple-darwin
+build:macos-amd64 --cpu=darwin_x86_64
 
 build:release --compilation_mode=opt
 

@@ -24,7 +24,10 @@ rust_library(
         "@crate_index//:tonic",
         "@crate_index//:tracing",
         "@crate_index//:url",
-    ],
+    ] + select({
+        "@platforms//os:macos": ["@crate_index//:libc"],
+        "//conditions:default": [],
+    }),
 )
 
 rust_test(

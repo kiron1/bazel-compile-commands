@@ -4,6 +4,7 @@ load("@rules_pkg//pkg:providers.bzl", "PackageVariablesInfo")
 def _pkg_variables_impl(ctx):
     values = {
         "architecture": ctx.attr.architecture,
+        "os": ctx.attr.os,
         "version": ctx.attr.version[BuildSettingInfo].value,
     }
     return PackageVariablesInfo(values = values)
@@ -13,6 +14,9 @@ pkg_variables = rule(
     attrs = {
         "architecture": attr.string(
             doc = "Architecture of this build.",
+        ),
+        "os": attr.string(
+            doc = "OS of this build.",
         ),
         "version": attr.label(
             doc = "Version of this build.",

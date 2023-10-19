@@ -2,7 +2,8 @@ load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
-load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
+load("@rules_pkg//:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files")
 load("@rules_rust//rust:defs.bzl", "rust_clippy", "rustfmt_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -16,7 +17,7 @@ platform(
 )
 
 platform(
-    name = "aarch64-apple-darwin",
+    name = "arm64-apple-darwin",
     constraint_values = [
         "@platforms//cpu:arm64",
         "@platforms//os:macos",
@@ -63,31 +64,32 @@ copy_file(
     is_executable = True,
 )
 
-pkg_tar(
-    name = "bin.tar",
+pkg_files(
+    name = "bin_files",
     srcs = [
         ":basil_tonic_bin",
         "//bcc:bazel-compile-commands",
     ],
-    mode = "0755",
-    package_dir = "bin",
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "bin",
 )
 
-pkg_tar(
-    name = "man.tar",
+pkg_files(
+    name = "man_files",
     srcs = [":man"],
-    mode = "0644",
-    package_dir = "share/man/man1",
+    prefix = "share/man/man1",
 )
 
-pkg_tar(
-    name = "usr.tar",
-    package_dir = "/usr",
-    deps = [
-        ":bin.tar",
-        ":man.tar",
-        "//systemd",
-    ],
+pkg_filegroup(
+    name = "usr_files",
+    srcs = [
+        ":bin_files",
+        ":man_files",
+    ] + select({
+        "@platforms//os:linux": ["//systemd"],
+        "//conditions:default": [],
+    }),
+    prefix = "/usr",
 )
 
 pkg_deb(
@@ -97,7 +99,7 @@ pkg_deb(
         "@platforms//cpu:x86_64": "amd64",
     }),
     built_using = "unzip (6.0.1)",
-    data = ":usr.tar",
+    data = ":tar",
     description = "Generates compile_commands.json file from a Bazel workspace",
     homepage = "https://github.com/kiron1/bazel-compile-commands",
     maintainer = "Kiron <kiron1@gmail.com>",
@@ -107,11 +109,39 @@ pkg_deb(
     version_file = "@//:version_file",
 )
 
+pkg_tar(
+    name = "tar",
+    srcs = [":usr_files"],
+)
+
+pkg_zip(
+    name = "zip",
+    srcs = [":usr_files"],
+    package_file_name = "bazel-compile-commands_{version}_{os}_{architecture}.zip",
+    package_variables = "@//:variables",
+)
+
+alias(
+    name = "pkg",
+    actual =
+        select({
+            "@platforms//os:linux": ":deb",
+            # Build a zip file for any other platforms:
+            "//conditions:default": ":zip",
+        }),
+)
+
 pkg_variables(
     name = "variables",
     architecture = select({
         "@platforms//cpu:x86_64": "amd64",
-        "@platforms//cpu:aarch64": "aarch64",
+        "@platforms//cpu:aarch64": "arm64",
+    }),
+    os = select({
+        "@platforms//os:linux": "linux",
+        "@platforms//os:macos": "macos",
+        "@platforms//os:windows": "windows",
+        "//conditions:default": "unknown",
     }),
     version = "//:version",
 )
