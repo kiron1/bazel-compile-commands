@@ -39,7 +39,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
-        run: bazel test --config=ci --config=clippy --config=fmt --keep_going --disk_cache=~/.cache/bazel_build_cache //...
+        run: bazel test --config=ci --disk_cache=~/.cache/bazel_build_cache //...
 
   buildpkg:
     name: Build Release Asset
@@ -103,7 +103,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
   format_check:
     name: Style check
     runs-on: ubuntu-latest
@@ -122,3 +121,29 @@ jobs:
         run: clang-format --version
       - name: Style check
         run: ./tools/clang-format --dry-run -Werror
+
+  rustfmt_test:
+    name: Rust format check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: rustfmt
+        run: bazel test --config=ci  //:rustfmt_test
+
+  rust_clippy:
+    name: Rust clippy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: clippy
+        run: bazel build --config=ci //:rust_clippy
