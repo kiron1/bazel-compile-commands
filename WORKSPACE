@@ -2,7 +2,7 @@ workspace(name = "bazel-compile-commands")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-_RULES_BOOST_COMMIT = "f4b8260ddfdcebadcde0e5ee6c5a35a0f7662f48"
+_RULES_BOOST_COMMIT = "c649f6cd9cb8ca284d261890cdd9d75ec486861d"
 
 http_archive(
     name = "build_bazel_rules_apple",
@@ -44,7 +44,7 @@ http_archive(
 
 http_archive(
     name = "com_github_nelhage_rules_boost",
-    sha256 = "3c80e0c2bcb315bf2642c64a3a055ec66c7acc74501d0f415b4ad5ccb34f899d",
+    sha256 = "70304cb09bd7529b8f45195f79a4c4070c1d75fe7dd3cc8f2f263ec2f12c12a3",
     strip_prefix = "rules_boost-{}".format(_RULES_BOOST_COMMIT),
     urls = [
         "https://github.com/nelhage/rules_boost/archive/{}.tar.gz".format(_RULES_BOOST_COMMIT),
