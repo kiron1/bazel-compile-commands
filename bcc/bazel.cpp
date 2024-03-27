@@ -48,7 +48,7 @@ std::string
 make_bazel_error_message(std::filesystem::path const& path, std::vector<std::string> args, int rc, std::string error)
 {
   std::stringstream msg;
-  msg << "bazel command failed with exit code " << rc << ": " << path.native() << " ";
+  msg << "bazel command failed with exit code " << rc << ": " << path.string() << " ";
   std::copy(std::begin(args), std::end(args), std::ostream_iterator<std::string>(msg, " "));
   msg << ": " << error;
   return msg.str();

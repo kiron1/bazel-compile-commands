@@ -2,11 +2,13 @@
 common --verbose_failures
 common --incompatible_strict_action_env
 
-build --copt=-pedantic
-build --copt=-Wall
-build --copt=-Wextra
+build:gnu --copt=-pedantic
+build:gnu --copt=-Wall
+build:gnu --copt=-Wextra
 
-build --cxxopt=-std=c++17
+build:cl --cxxopt=/std:c++17
+build:gnu --cxxopt=-std=c++17
+
 build --ui_event_filters=-info
 
 build:fmt --noverbose_failures

@@ -8,17 +8,17 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
 package(default_visibility = ["//visibility:public"])
 
 platform(
-    name = "x86_64-apple-darwin",
+    name = "arm64-apple-darwin",
     constraint_values = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:arm64",
         "@platforms//os:macos",
     ],
 )
 
 platform(
-    name = "arm64-apple-darwin",
+    name = "x86_64-apple-darwin",
     constraint_values = [
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:x86_64",
         "@platforms//os:macos",
     ],
 )

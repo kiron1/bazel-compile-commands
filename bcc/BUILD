@@ -3,6 +3,10 @@ package(default_visibility = ["//visibility:public"])
 cc_binary(
     name = "bazel-compile-commands",
     srcs = ["main.cpp"],
+    linkopts = select({
+        "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
+        "//conditions:default": [],
+    }),
     deps = [
         ":bazel",
         ":compile_commands",

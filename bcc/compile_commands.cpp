@@ -119,7 +119,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
       // input file is required
       if (file.has_value()) {
         auto obj = boost::json::object();
-        obj.insert(boost::json::object::value_type{ "directory", execution_root_.native() });
+        obj.insert(boost::json::object::value_type{ "directory", execution_root_.string() });
         if (arguments_) {
           obj.insert(boost::json::object::value_type{ "arguments", args });
         }
