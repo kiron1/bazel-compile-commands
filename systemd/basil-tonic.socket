@@ -1,9 +1,0 @@
-[Unit]
-Description=Basil Tonic Socket
-
-[Socket]
-ListenStream=127.0.0.1:50151
-FileDescriptorName=Listeners
-
-[Install]
-WantedBy=sockets.target

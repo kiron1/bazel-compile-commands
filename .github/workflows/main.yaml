@@ -121,29 +121,3 @@ jobs:
         run: clang-format --version
       - name: Style check
         run: ./tools/clang-format --dry-run -Werror
-
-  rustfmt_test:
-    name: Rust format check
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: rustfmt
-        run: bazel test --config=ci  //:rustfmt_test
-
-  rust_clippy:
-    name: Rust clippy
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: clippy
-        run: bazel build --config=ci //:rust_clippy

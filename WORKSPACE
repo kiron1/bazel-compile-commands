@@ -51,16 +51,6 @@ http_archive(
     ],
 )
 
-RULES_RUST_VERSION = "0.26.0"
-
-http_archive(
-    name = "rules_rust",
-    sha256 = "9d04e658878d23f4b00163a72da3db03ddb451273eb347df7d7c50838d698f49",
-    urls = [
-        "https://github.com/bazelbuild/rules_rust/releases/download/{v}/rules_rust-v{v}.tar.gz".format(v = RULES_RUST_VERSION),
-    ],
-)
-
 http_archive(
     name = "rules_proto",
     sha256 = "dc3fb206a2cb3441b485eb1e423165b231235a1ea9b031b4433cf7bc1fa460dd",
@@ -90,18 +80,6 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 
 boost_deps()
 
-load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
-
-rules_rust_dependencies()
-
-rust_register_toolchains(
-    edition = "2021",
-    extra_target_triples = [
-        "aarch64-apple-darwin",
-        "x86_64-apple-darwin",
-    ],
-)
-
 load(
     "@build_bazel_rules_apple//apple:repositories.bzl",
     "apple_rules_dependencies",
@@ -116,96 +94,13 @@ load(
 
 apple_support_dependencies()
 
-load("@rules_rust//proto/prost:repositories.bzl", "rust_prost_dependencies")
-
-rust_prost_dependencies()
-
-load("@rules_rust//proto/prost:transitive_repositories.bzl", "rust_prost_transitive_repositories")
-
-rust_prost_transitive_repositories()
-
-load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
-
-crate_universe_dependencies()
-
-load("@rules_rust//crate_universe:defs.bzl", "crate", "crates_repository")
-
-crates_repository(
-    name = "crate_index",
-    annotations = {
-        "protoc-gen-prost": [crate.annotation(
-            gen_binaries = ["protoc-gen-prost"],
-        )],
-        "protoc-gen-tonic": [crate.annotation(
-            gen_binaries = ["protoc-gen-tonic"],
-        )],
-    },
-    cargo_lockfile = "//:Cargo.lock",
-    # Generate with:
-    # CARGO_BAZEL_REPIN=full bazel sync --only=crate_index
-    # https://bazelbuild.github.io/rules_rust/crate_universe.html#repinning--updating-dependencies
-    lockfile = "//:Cargo.Bazel.lock",
-    packages = {
-        "futures-util": crate.spec(version = "0.3"),
-        "libc": crate.spec(version = "0.2"),
-        "prost": crate.spec(version = "0.11"),
-        "prost-types": crate.spec(version = "0.11"),
-        "protoc-gen-prost": crate.spec(
-            version = "0.2",
-        ),
-        "protoc-gen-tonic": crate.spec(
-            version = "0.3",
-        ),
-        "serde": crate.spec(
-            features = ["derive"],
-            version = "1.0",
-        ),
-        "serde_json": crate.spec(version = "1.0"),
-        "thiserror": crate.spec(version = "1.0"),
-        "tokio": crate.spec(
-            features = [
-                "macros",
-                "rt-multi-thread",
-            ],
-            version = "1.0",
-        ),
-        "tokio-stream": crate.spec(
-            features = [
-                "net",
-                "sync",
-            ],
-            version = "0.1",
-        ),
-        "tonic": crate.spec(version = "0.9"),
-        "tonic-build": crate.spec(version = "0.9"),
-        "clap": crate.spec(
-            features = ["derive"],
-            version = "4.1",
-        ),
-        "tracing": crate.spec(version = "0.1"),
-        "tracing-subscriber": crate.spec(
-            features = ["env-filter"],
-            version = "0.3",
-        ),
-        "url": crate.spec(version = "2.4"),
-    },
-)
-
-load("@crate_index//:defs.bzl", "crate_repositories")
-
-crate_repositories()
-
-load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_dependencies")
-
-rust_analyzer_dependencies()
-
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 
 rules_proto_dependencies()
 
 rules_proto_toolchains()
 
-register_toolchains("//toolchains:prost_toolchain")
+# register_toolchains("//toolchains:prost_toolchain")
 
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
