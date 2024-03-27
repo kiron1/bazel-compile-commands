@@ -2,9 +2,8 @@ load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
-load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
 load("@rules_pkg//:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files")
-load("@rules_rust//rust:defs.bzl", "rust_clippy", "rustfmt_test")
+load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,29 +23,6 @@ platform(
     ],
 )
 
-rust_clippy(
-    name = "rust_clippy",
-    testonly = True,
-    deps = [
-        "//basil_tonic",
-        "//basil_tonic:libbasil_tonic_test",
-        "//bazel_proto",
-        "//compile_commands",
-        "//compile_commands:compile_commands_test",
-    ],
-)
-
-rustfmt_test(
-    name = "rustfmt_test",
-    targets = [
-        "//basil_tonic",
-        "//basil_tonic:libbasil_tonic_test",
-        "//bazel_proto",
-        "//compile_commands",
-        "//compile_commands:compile_commands_test",
-    ],
-)
-
 pandoc(
     name = "man",
     out = "bazel-compile-commands.1",
@@ -56,18 +32,9 @@ pandoc(
     to = "man",
 )
 
-copy_file(
-    name = "basil_tonic_bin",
-    src = "//basil_tonic",
-    out = "basil-tonic",
-    allow_symlink = False,
-    is_executable = True,
-)
-
 pkg_files(
     name = "bin_files",
     srcs = [
-        ":basil_tonic_bin",
         "//bcc:bazel-compile-commands",
     ],
     attributes = pkg_attributes(mode = "0755"),
@@ -85,10 +52,7 @@ pkg_filegroup(
     srcs = [
         ":bin_files",
         ":man_files",
-    ] + select({
-        "@platforms//os:linux": ["//systemd"],
-        "//conditions:default": [],
-    }),
+    ],
     prefix = "/usr",
 )
 
