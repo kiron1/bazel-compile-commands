@@ -16,7 +16,7 @@ std::string
 path_fragments::build(std::uint32_t id) const
 {
   if (auto const it = cache_.find(id); it != cache_.end()) {
-    return it->second.native();
+    return it->second.string();
   }
   std::filesystem::path result;
   int path_fragment_id;
@@ -36,7 +36,7 @@ path_fragments::build(std::uint32_t id) const
   auto const r = cache_.insert({ id, result });
   assert(r.second == true); ///< insertion must happen when reaching here
 
-  return r.first->second.native();
+  return r.first->second.string();
 }
 
 }

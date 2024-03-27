@@ -17,8 +17,9 @@ std::optional<std::filesystem::path>
 find_bazelccrc()
 {
   auto dir = std::filesystem::current_path();
+  auto root = dir.root_path();
 
-  while (!dir.empty()) {
+  while (!dir.empty() || dir == root) {
     auto const rcpath = dir / rc_name;
     if (std::filesystem::exists(rcpath)) {
 

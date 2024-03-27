@@ -1,3 +1,5 @@
+#include <iterator>
+
 #include "bcc/replacements.hpp"
 
 namespace bcc {

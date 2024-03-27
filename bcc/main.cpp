@@ -14,15 +14,13 @@
 
 #include <boost/json.hpp>
 
-#include <unistd.h>
-
 class file_error : public std::runtime_error
 {
 public:
   file_error(std::string_view what, std::filesystem::path const& path)
     : std::runtime_error([&]() {
       std::stringstream msg;
-      msg << "failed to " << what << ": " << path.native();
+      msg << "failed to " << what << ": " << path.string();
       return msg.str();
     }())
   {
@@ -62,7 +60,7 @@ main(int argc, char** argv)
   try {
     // When run via `bazel run ...` change directory to the current workspace
     if (getenv("BUILD_WORKSPACE_DIRECTORY")) {
-      chdir(getenv("BUILD_WORKSPACE_DIRECTORY"));
+      std::filesystem::current_path(getenv("BUILD_WORKSPACE_DIRECTORY"));
     }
 
     auto options = bcc::options::from_argv(argc, argv);
@@ -90,12 +88,12 @@ main(int argc, char** argv)
       }
     }
 
-    options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().native());
+    options.output_path = replace_workspace_placeholder(options.output_path, bazel.workspace_path().string());
     if (options.verbose) {
       options.write(std::cerr);
     }
 
-    auto replacements = bcc::platform_replacements(bazel.workspace_path().native(), bazel.execution_root().native());
+    auto replacements = bcc::platform_replacements(bazel.workspace_path().string(), bazel.execution_root().string());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
