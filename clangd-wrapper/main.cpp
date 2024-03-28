@@ -124,7 +124,7 @@ main(int argc, char* argv[])
   fs::path const workspace_dir = get_workspace_dir(clangd_args);
 
   std::optional<std::string> const execution_root =
-    get_bazel_execution_root(bazel_path, workspace_dir, bazel_startup_options);
+    get_bazel_execution_root(bazel_path, workspace_dir.string(), bazel_startup_options);
   if (execution_root) {
     clangd_args.push_back("--path-mappings=" + workspace_dir.string() + "=" + execution_root.value());
   }
