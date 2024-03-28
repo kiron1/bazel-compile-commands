@@ -87,13 +87,19 @@ jobs:
       - name: Output file
         id: outfile
         run: |
+          from os import environ as env
           from subprocess import check_output
-          import os
-          stdout = check_output(["bazel", "cquery", "--config=gnu", "--config=release", "--//:version=0", "--output=files", "//:pkg"], text= True,)
+          cfg = env.get("CONFIG", "gnu")
+          v = env.get("VERSION", "0")
+          stdout = check_output(["bazel", "cquery", f"--config={cfg}", "--config=release", f"--//:version={v}", "--output=files", "//:pkg"], text= True)
           lines = stdout.split('\n', 1)
           path = lines[0].strip()
-          print(f"path={path}", file=open(os.environ.get("GITHUB_OUTPUT", "stdout.txt"), "a"))
+          print(f"path={path}")
+          print(f"path={path}", file=open(env.get("GITHUB_OUTPUT", "stdout.txt"), "a"))
         shell: python3 {0}
+        env:
+          CONFIG: ${{ matrix.config }}
+          VERSION: ${{ github.event.inputs.version || 0 }}
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
