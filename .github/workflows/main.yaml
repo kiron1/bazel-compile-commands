@@ -67,9 +67,9 @@ jobs:
           - build: macos-amd64
             os: macos-latest
             config: gnu
-          #- build: windows
-          #  os: windows-2019
-          #  config: cl
+          - build: windows
+            os: windows-2019
+            config: cl
 
     steps:
       - name: Checkout repository
@@ -87,8 +87,13 @@ jobs:
       - name: Output file
         id: outfile
         run: |
-          OUTPUT_FILE=$(bazel cquery --config=${{ matrix.config }} --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --output=files //:pkg | head -1)
-          printf "path=%s\n" "${OUTPUT_FILE}" | tee -a "${GITHUB_OUTPUT}"
+          from subprocess import check_output
+          import os
+          stdout = check_output(["bazel", "cquery", "--config=gnu", "--config=release", "--//:version=0", "--output=files", "//:pkg"], text= True,)
+          lines = stdout.split('\n', 1)
+          path = lines[0].strip()
+          print(f"path={path}", file=open(os.environ.get("GITHUB_OUTPUT", "stdout.txt"), "a"))
+        shell: python3 {0}
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
