@@ -58,8 +58,6 @@ run(std::filesystem::path const& commmand, std::vector<std::string_view> args)
 
 TEST(self_test, run)
 {
-  // TODO: Fix tests for Windows (I do not have Windows)
-#ifndef _WIN32
   std::string error;
   std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
   ASSERT_THAT(runfiles, NotNull()) << error;
@@ -100,7 +98,6 @@ TEST(self_test, run)
   for (auto const& sf : seen_files) {
     EXPECT_THAT(sf.second, IsTrue()) << sf.first;
   }
-#endif
 }
 
 } // namespace
