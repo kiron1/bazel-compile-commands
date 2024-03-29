@@ -1,7 +1,10 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
-    name = "bazel-compile-commands",
+    name = "bazel-compile-commands-binary",
     srcs = ["main.cpp"],
     linkopts = select({
         "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
@@ -14,6 +17,29 @@ cc_binary(
         ":platform",
         ":replacements",
     ],
+)
+
+universal_binary(
+    name = "bazel-compile-commands-universal",
+    binary = ":bazel-compile-commands-binary",
+    target_compatible_with = ["@platforms//os:macos"],
+)
+
+alias(
+    name = "bazel-compile-commands-alias",
+    actual =
+        select({
+            "@platforms//os:macos": ":bazel-compile-commands-universal",
+            "//conditions:default": ":bazel-compile-commands-binary",
+        }),
+)
+
+copy_file(
+    name = "bazel-compile-commands-bin",
+    src = ":bazel-compile-commands-alias",
+    out = "bazel-compile-commands",
+    allow_symlink = False,
+    is_executable = True,
 )
 
 cc_proto_library(
