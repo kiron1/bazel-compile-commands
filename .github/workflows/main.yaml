@@ -55,16 +55,12 @@ jobs:
       matrix:
         build:
           - linux
-          - macos-arm64
-          - macos-amd64
+          - macos-universal
         include:
           - build: linux
             os: ubuntu-20.04
             config: gnu
-          - build: macos-arm64
-            os: macos-latest
-            config: gnu
-          - build: macos-amd64
+          - build: macos-universal
             os: macos-latest
             config: gnu
           - build: windows

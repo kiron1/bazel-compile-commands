@@ -35,7 +35,7 @@ pandoc(
 pkg_files(
     name = "bin_files",
     srcs = [
-        "//bcc:bazel-compile-commands",
+        "//bcc:bazel-compile-commands-bin",
     ],
     attributes = pkg_attributes(mode = "0755"),
     prefix = "bin",
@@ -81,18 +81,20 @@ pkg_tar(
 pkg_zip(
     name = "zip",
     srcs = [":usr_files"],
-    package_file_name = "bazel-compile-commands_{version}_{os}_{architecture}.zip",
+    package_file_name = select({
+        "@platforms//os:macos": "bazel-compile-commands_{version}_{os}_universal.zip",
+        "//conditions:default": "bazel-compile-commands_{version}_{os}_{architecture}.zip",
+    }),
     package_variables = "@//:variables",
 )
 
 alias(
     name = "pkg",
-    actual =
-        select({
-            "@platforms//os:linux": ":deb",
-            # Build a zip file for any other platforms:
-            "//conditions:default": ":zip",
-        }),
+    actual = select({
+        "@platforms//os:linux": ":deb",
+        # Build a zip file for any other platforms:
+        "//conditions:default": ":zip",
+    }),
 )
 
 pkg_variables(
