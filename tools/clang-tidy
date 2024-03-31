@@ -6,7 +6,7 @@
 #
 #     ./tools/clang-tidy
 #
-#     ./tools/clang-format --fix
+#     ./tools/clang-tidy --fix
 #
 
 set -eu
