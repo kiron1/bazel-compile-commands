@@ -1,0 +1,47 @@
+###############################################################################
+# Bazel now uses Bzlmod by default to manage external dependencies.
+# Please consider migrating your external dependencies from WORKSPACE to MODULE.bazel.
+#
+# For more details, please check https://github.com/bazelbuild/bazel/issues/18958
+###############################################################################
+module(name = "bazel-compile-commands")
+
+bazel_dep(name = "apple_support", version = "1.14.0", repo_name = "build_bazel_apple_support")
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "googletest", version = "1.14.0", repo_name = "com_google_googletest")
+bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "rules_apple", version = "3.4.0", repo_name = "build_bazel_rules_apple")
+bazel_dep(name = "rules_cc", version = "0.0.9")
+bazel_dep(name = "rules_java", version = "7.5.0")
+bazel_dep(name = "rules_pkg", version = "0.10.1")
+bazel_dep(name = "rules_proto", version = "6.0.0-rc2")
+bazel_dep(name = "rules_python", version = "0.31.0")
+
+apple_cc_configure = use_extension(
+    "@build_bazel_apple_support//crosstool:setup.bzl",
+    "apple_cc_configure_extension",
+)
+use_repo(apple_cc_configure, "local_config_apple_cc")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "io_bazel",
+    sha256 = "8e4d26350d01d2c0847d8ef336eb76f95930f982b7f88bf1a01306b3695e938b",
+    strip_prefix = "bazel-7.1.1",
+    urls = [
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/7.1.1.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "googleapis",
+    build_file = "@io_bazel//third_party/googleapis:BUILD.bazel",
+    # patches = ["//third_party:no-build-files.patch"],
+    patch_cmds = ["find . -mindepth 2 -name 'BUILD' -o -name 'BUILD.bazel' -exec rm {} +"],
+    sha256 = "5bb6b0253ccf64b53d6c7249625a7e3f6c3bc6402abd52d3778bfa48258703a0",
+    strip_prefix = "googleapis-2f9af297c84c55c8b871ba4495e01ade42476c92",
+    urls = [
+        "https://github.com/googleapis/googleapis/archive/2f9af297c84c55c8b871ba4495e01ade42476c92.tar.gz",
+    ],
+)

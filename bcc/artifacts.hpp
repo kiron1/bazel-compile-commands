@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <filesystem>
-#include <vector>
+#include <string>
 
-#include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
+#include "src/main/protobuf/analysis_v2.pb.h"
 
 #include "bcc/path_fragments.hpp"
 
