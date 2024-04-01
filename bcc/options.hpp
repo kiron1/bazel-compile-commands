@@ -17,6 +17,8 @@ struct options
   bool verbose{ false };
   /// Include `arguments` array in the final `compile_commands.json`
   bool arguments{ false };
+  /// Resolve symlinks of `file` entries in the `compile_commands.json`
+  bool resolve{ false };
   /// Bazel command.
   std::filesystem::path bazel_command{};
   /// Replace Bazel compiler with `cc`.
