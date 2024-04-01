@@ -2,10 +2,9 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <string_view>
 #include <unordered_map>
 
-#include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
+#include "src/main/protobuf/analysis_v2.pb.h"
 
 namespace bcc {
 ///  Path fragment table to build full path from workspace.

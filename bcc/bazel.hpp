@@ -3,12 +3,11 @@
 #include <filesystem>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include <boost/json.hpp>
 
-#include "external/io_bazel/src/main/protobuf/analysis_v2.pb.h"
+#include "src/main/protobuf/analysis_v2.pb.h"
 
 namespace bcc {
 
