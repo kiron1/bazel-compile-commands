@@ -40,6 +40,20 @@ This will generate a `compile_commands.json` file in the current directory.
 - [Documentation](./documentation.md) or `man 1 bazel-compile-commands`
 - [Download latest release](https://github.com/kiron1/bazel-compile-commands/releases/latest)
 
+## Build
+
+### Linux and macOS
+
+```sh
+bazel build --config=gnu //bcc:bazel-compile-commands
+```
+
+### Windows
+
+```sh
+bazel build --config=cl //bcc:bazel-compile-commands
+```
+
 ## Alternative tools
 
 - [Bear](https://github.com/rizsotto/Bear) - Can work when used with the
