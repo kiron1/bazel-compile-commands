@@ -26,7 +26,6 @@ find_bazelccrc()
       return rcpath;
     }
     auto const parent_dir = dir.parent_path();
-    std::cerr << "dir " << dir << " parent " << parent_dir << std::endl;
     if (parent_dir == dir) {
       break;
     }
