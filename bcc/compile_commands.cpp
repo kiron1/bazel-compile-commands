@@ -16,6 +16,12 @@ namespace bcc {
 
 namespace {
 
+/// starts_with for pre C++20
+bool
+starts_with(std::string_view const& sv, std::string_view const& prefix)
+{
+  return std::string_view(sv.data(), std::min(sv.size(), prefix.size())) == prefix;
+}
 /// ends_with for pre C++20
 bool
 ends_with(std::string_view const& sv, std::string_view const& suffix)
@@ -63,6 +69,13 @@ compile_commands_builder::arguments(bool value)
 }
 
 compile_commands_builder&
+compile_commands_builder::resolve(bool value)
+{
+  resolve_ = value;
+  return *this;
+}
+
+compile_commands_builder&
 compile_commands_builder::compiler(std::optional<std::string> value)
 {
   compiler_ = std::move(value);
@@ -73,6 +86,13 @@ compile_commands_builder&
 compile_commands_builder::replacements(bcc::replacements value)
 {
   replacements_ = std::move(value);
+  return *this;
+}
+
+compile_commands_builder&
+compile_commands_builder::workspace_path(std::filesystem::path value)
+{
+  workspace_path_ = std::move(value);
   return *this;
 }
 
@@ -118,6 +138,12 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
 
       // input file is required
       if (file.has_value()) {
+        if (resolve_) {
+          auto const resolved = std::filesystem::canonical(execution_root_ / file.value());
+          if (starts_with(resolved.string(), workspace_path_.string())) {
+            file = resolved.string();
+          }
+        }
         auto obj = boost::json::object();
         obj.insert(boost::json::object::value_type{ "directory", execution_root_.string() });
         if (arguments_) {
