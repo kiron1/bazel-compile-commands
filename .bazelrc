@@ -1,6 +1,12 @@
+#
+# .bazelrc
+#
 
 common --verbose_failures
 common --incompatible_strict_action_env
+common --enable_platform_specific_config
+
+build:windows --spawn_strategy=local
 
 build:gnu --copt=-pedantic
 build:gnu --copt=-Wall

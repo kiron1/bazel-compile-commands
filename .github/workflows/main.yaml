@@ -27,9 +27,11 @@ jobs:
         include:
           - build: linux
             os: ubuntu-20.04
+            startup:
             config: gnu
           - build: windows
             os: windows-2019
+            startup: --windows_enable_symlinks
             config: cl
 
     steps:
@@ -44,7 +46,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
-        run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+        run: bazel ${{matrix.startup }} test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
@@ -61,11 +63,14 @@ jobs:
         include:
           - build: linux
             os: ubuntu-20.04
+            startup:
             config: gnu
           - build: macos-universal
             os: macos-latest
+            startup:
             config: gnu
           - build: windows
+            startup: --windows_enable_symlinks
             os: windows-2019
             config: cl
 
@@ -81,7 +86,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-buildpkg-
       - name: Build Release Package
-        run: bazel build --config=${{ matrix.config }} --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:pkg
+        run: bazel ${{ matrix.startup }} build --config=${{ matrix.config }} --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:pkg
       - name: Output file
         id: outfile
         run: |
