@@ -1,13 +1,15 @@
 # NAME
 
-bazel-compile-commands - generate a compile_commands.json file from a Bazel
+`bazel-compile-commands` - generate a `compile_commands.json` file from a Bazel
 workspace
 
 # SYNOPSIS
 
-**bazel-compile-commands** [**-h**] **bazel-compile-commands** [**-av**] [**-b**
-BAZEL-OPTION] [**-B** BAZEL-COMMAND] [**-c** COMPILER] [**-o** OUTPUT-FILE]
-[**-s** BAZEL-STARTUP-OPTION] [**TARGETS**]
+<!-- deno-fmt-ignore-start -->
+**bazel-compile-commands** [**-h**]
+
+**bazel-compile-commands** [**-av**] [**-b** BAZEL-OPTION] [**-B** BAZEL-COMMAND] [**-c** COMPILER] [**-o** OUTPUT-FILE] [**-s** BAZEL-STARTUP-OPTION] [**TARGETS**]
+<!-- deno-fmt-ignore-end -->
 
 # DESCRIPTION
 
@@ -60,6 +62,17 @@ for macOS).
 with the actual worspace path which will be the output of
 `bazel info workspace`.
 
+-R, --replace KEY=VALUE
+
+: Replace occurrences of `KEY` with `VALUE` in the command and arguments field
+of each compile commands entry. Can be used to remove
+
+--resolve
+
+: Resolve symbolic links from the `execroot/` directory (used by Bazel as
+sandbox environment) to the absolute path. Only links of file which point into
+the **%workspace%** will be resolved.
+
 -s, --bazelsupopt **OPTION**
 
 : Additional Bazel startup options to be added to the `bazel` call.
@@ -74,7 +87,7 @@ with the actual worspace path which will be the output of
 further calls to bazel-compile-commands without arguments behaves the same as if
 the arguments are provided.
 
-If a .bazelccrc file aready exists this file will be updated. When no surch file
+If a .bazelccrc file aready exists this file will be updated. When no such file
 exists, a new file in the current Bazel workspace will be created.
 
 **TARGETS**
@@ -98,3 +111,18 @@ bazel-command = bazel
 output = %workspace%/compile_commands.json
 targets = //...
 ```
+
+# EXAMPLES
+
+## REMOVE UNWANTED ARGUMENTS
+
+We can remove arguments from the resulting command and arguments entries of each
+compile commands entry like so:
+
+```sh
+bazel-compile-commands --replace=-fno-canonical-system-headers= //...
+```
+
+With this, any occournce of `-fno-canonical-system-headers` will be removed (a
+flag which is understood by gcc but not by clang (including clangd and
+clang-tidy).
