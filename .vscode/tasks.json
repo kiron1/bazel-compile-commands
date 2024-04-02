@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run bazel-compile-commands",
+      "command": "bazel-compile-commands",
+      "type": "shell",
+      "isBackground": true,
+      "hide": true
+    },
+    {
+      "label": "Update compile_commands.json",
+      "command": "${command:clangd.restart}",
+      "isBackground": true,
+      "dependsOn": [
+        "Run bazel-compile-commands"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

@@ -40,6 +40,12 @@ This will generate a `compile_commands.json` file in the current directory.
 - [Documentation](./documentation.md) or `man 1 bazel-compile-commands`
 - [Download latest release](https://github.com/kiron1/bazel-compile-commands/releases/latest)
 
+### VS Code integration
+
+See the
+[`.vscode/tasks.json](./.vscode/tasks.json) file as an example on howto integreat`bazel-compile-commands`
+into VS Code.
+
 ## Build
 
 ### Linux and macOS
