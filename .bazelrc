@@ -1,4 +1,6 @@
 
+common --noenable_bzlmod
+
 common --verbose_failures
 common --incompatible_strict_action_env
 
