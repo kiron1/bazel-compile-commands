@@ -14,7 +14,6 @@ http_archive(
 
 http_archive(
     name = "io_bazel",
-    patches = ["//third_party:bazel.patch"],
     sha256 = "8b9de325bef017ee7a8d9a346e61a76d199e1eb5dc6924753eed4f8152066bab",
     strip_prefix = "bazel-6.3.2",
     urls = [
@@ -25,7 +24,6 @@ http_archive(
 http_archive(
     name = "googleapis",
     build_file = "@io_bazel//third_party/googleapis:BUILD.bazel",
-    # patches = ["//third_party:no-build-files.patch"],
     patch_cmds = ["find . -mindepth 2 -name 'BUILD' -o -name 'BUILD.bazel' -exec rm {} +"],
     sha256 = "5bb6b0253ccf64b53d6c7249625a7e3f6c3bc6402abd52d3778bfa48258703a0",
     strip_prefix = "googleapis-2f9af297c84c55c8b871ba4495e01ade42476c92",
