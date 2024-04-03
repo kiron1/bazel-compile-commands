@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+# https://unix.stackexchange.com/a/461534
+# via https://github.com/bazelbuild/bazel/issues/5139#issuecomment-941525571
+#
+
+set -eu
+
+# find files; sort by last accessed time [%A@]; accumulate file size in 512B blocks [%b]; print path [%p] when capacity exceeded; delete
+find "${1}" -type f -printf '%A@ %b %p\0' |
+    sort --numeric-sort --reverse --zero-terminated |
+    awk --assign RS='\0' --assign ORS='\0' --assign CAPACITY=$((1 * 1024 ** 3 / 512)) '{du += $2}; du > CAPACITY { print $3 }' |
+    xargs -r0 rm

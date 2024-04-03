@@ -45,6 +45,8 @@ jobs:
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+      - name: Cache cleanup
+        run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   buildpkg:
     name: Build Release Asset
@@ -102,6 +104,8 @@ jobs:
         with:
           name: pkg-bazel-${{ matrix.build }}
           path: ${{ steps.outfile.outputs.path }}
+      - name: Cache cleanup
+        run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   self_test:
     name: Self test
