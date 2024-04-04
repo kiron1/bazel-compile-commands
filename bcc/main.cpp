@@ -93,7 +93,7 @@ main(int argc, char** argv)
       options.write(std::cerr);
     }
 
-    auto replacements = bcc::platform_replacements(bazel.workspace_path().string(), bazel.execution_root().string());
+    auto replacements = bcc::platform_replacements(bazel.execution_root().string());
     if (options.verbose) {
       for (auto const& def : replacements.definitions()) {
         std::cerr << def.first << "=" << def.second << std::endl;
