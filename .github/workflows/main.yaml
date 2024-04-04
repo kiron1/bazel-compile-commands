@@ -114,6 +114,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Run bazel to generate worktree
+        run: bazel build --config=gnu --config=ci //...
       - name: Download pkg artifact
         uses: actions/download-artifact@v4
         with:
