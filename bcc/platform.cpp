@@ -45,7 +45,7 @@ platform_error::platform_error(std::string const& what)
 }
 
 replacements
-platform_replacements(std::string workspace, std::string execution_root)
+platform_replacements(std::string execution_root)
 {
   replacements result;
 
@@ -62,6 +62,8 @@ platform_replacements(std::string workspace, std::string execution_root)
   if (devdir.has_value()) {
     result.add({ "__BAZEL_XCODE_SDKROOT__", sdkroot.value() });
   }
+#else
+  (void)execution_root;
 #endif
 
   return result;
