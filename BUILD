@@ -1,6 +1,5 @@
 load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
-load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
 load("@rules_pkg//:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
