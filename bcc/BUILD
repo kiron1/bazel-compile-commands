@@ -1,3 +1,4 @@
+load("@//bazel:version_h.bzl", "version_h")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
 
@@ -5,7 +6,9 @@ package(default_visibility = ["//visibility:public"])
 
 cc_binary(
     name = "bazel-compile-commands-binary",
-    srcs = ["main.cpp"],
+    srcs = [
+        "main.cpp",
+    ],
     linkopts = select({
         "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
         "//conditions:default": [],
@@ -108,7 +111,10 @@ cc_library(
 cc_library(
     name = "options",
     srcs = ["options.cpp"],
-    hdrs = ["options.hpp"],
+    hdrs = [
+        "options.hpp",
+        ":version",
+    ],
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         "@boost//:process",
@@ -140,6 +146,13 @@ cc_library(
     name = "replacements",
     srcs = ["replacements.cpp"],
     hdrs = ["replacements.hpp"],
+)
+
+version_h(
+    name = "version",
+    out = "version.h",
+    varname = "BCC_VERSION",
+    version = "//:version",
 )
 
 cc_test(

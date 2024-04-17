@@ -1,4 +1,5 @@
 #include "bcc/options.hpp"
+#include "bcc/version.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -49,6 +50,7 @@ options::from_argv(int argc, char* argv[])
   // clang-format off
   cfg.add_options()
     ("help,h", "produce help message")
+    ("version,V", "print version")
     ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
     ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
     ("resolve", po::bool_switch(&result.resolve), "resolve file symlinks when their target is inside the workspace")
@@ -90,6 +92,11 @@ options::from_argv(int argc, char* argv[])
 
   if (vm.count("help")) {
     std::cerr << desc << '\n';
+    std::exit(0);
+  }
+
+  if (vm.count("version")) {
+    std::cerr << "bazel-compile-commands: " << BCC_VERSION << '\n';
     std::exit(0);
   }
 
