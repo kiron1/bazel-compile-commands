@@ -9,10 +9,11 @@ Bazel.
 
 The
 [Microsoft C/C++ Extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
-struggels sometimes with Bazel workspaces since not all include paths are at the
+struggles sometimes with Bazel workspaces since not all include paths are at the
 default locations. The `compile_commands.json` file can be used with `clangd` to
-have a significant better LSP experience. For [Visual Studio Code (VS
-Code)][vscode], the [clangd extension][llvm-vs-code-extensions.vscode-clangd]
+have a significant better LSP experience. For
+[Visual Studio Code (VS Code)](https://code.visualstudio.com), the
+[clangd extension](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
 can be used to utilize the project compile information via the
 `compile_commands.json` file.
 
@@ -42,9 +43,8 @@ This will generate a `compile_commands.json` file in the current directory.
 
 ### VS Code integration
 
-See the
-[`.vscode/tasks.json](./.vscode/tasks.json) file as an example on howto integreat`bazel-compile-commands`
-into VS Code.
+See the [`.vscode/tasks.json`](./.vscode/tasks.json) file as an example on how
+to integrate`bazel-compile-commands` into VS Code.
 
 ## Build
 
