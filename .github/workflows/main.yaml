@@ -91,10 +91,10 @@ jobs:
           cfg = env.get("CONFIG", "gnu")
           v = env.get("VERSION", "0")
           execroot = Path(check_output(["bazel", "info", "execution_root"], text= True).strip())
-          pkg = Path(check_output(["bazel", "cquery", f"--config={cfg}", "--config=release", f"--//:version={v}", "--output=files", "--output_groups=", "//:pkg"], text=True).strip())
+          pkg = Path(check_output(["bazel", "cquery", f"--config={cfg}", "--config=release", f"--//:version={v}", "--output=files", "//:pkg"], text=True).strip())
           path = execroot / pkg
           print(f"path={path}")
-          print(f"path={path}", file=open(env.get("GITHUB_OUTPUT", "stdout.txt"), "a"))
+          print(f"path={path}", file=open(env.get("GITHUB_OUTPUT", "github_output.txt"), "a"))
         shell: python3 {0}
         env:
           CONFIG: ${{ matrix.config }}
