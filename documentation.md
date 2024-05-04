@@ -6,14 +6,16 @@ workspace
 # SYNOPSIS
 
 <!-- deno-fmt-ignore-start -->
+
 **bazel-compile-commands** [**-h**]
 
 **bazel-compile-commands** [**-av**] [**-b** BAZEL-OPTION] [**-B** BAZEL-COMMAND] [**-c** COMPILER] [**-o** OUTPUT-FILE] [**-s** BAZEL-STARTUP-OPTION] [**TARGETS**]
+
 <!-- deno-fmt-ignore-end -->
 
 # DESCRIPTION
 
-A non-intrusive way to generate a **compile\_commands.json** file from a Bazel
+A non-intrusive way to generate a **compile_commands.json** file from a Bazel
 workspace. This is basically the **CMAKE_EXPORT_COMPILE_COMMANDS** option from
 CMake for Bazel.
 
@@ -126,3 +128,23 @@ bazel-compile-commands --replace=-fno-canonical-system-headers= //...
 With this, any occournce of `-fno-canonical-system-headers` will be removed (a
 flag which is understood by gcc but not by clang (including clangd and
 clang-tidy).
+
+## Compile multiple different bazel-compile-commands outputs
+
+For uses cases like https://github.com/kiron1/bazel-compile-commands/issues/46
+where different Bazel targets require different build configurations one can use
+`jq` to combine multiple bazel-compile-commands outputs into one single
+`commpile_commands.json` file:
+
+```bash
+jq -s '[ .[0] + .[1] | group_by(.output)[] | add ]' \
+  <(bazel-compile-commands -o - --config=configA //system-a//...) \
+  <(bazel-compile-commands -o - --config=configB //system-b//...) \
+  > compile_commands.json
+```
+
+We group by the output attribute, since this should be unique per
+`compile_commands.json` file (note: it is allowed when the same input `file`
+produces multiple district `output` files).
+
+More information about `jq` can be found at: https://jqlang.github.io/jq/manual/
