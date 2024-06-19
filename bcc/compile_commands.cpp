@@ -139,7 +139,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
       // input file is required
       if (file.has_value()) {
         if (resolve_) {
-          auto const resolved = std::filesystem::canonical(execution_root_ / file.value());
+          auto const resolved = std::filesystem::weakly_canonical(execution_root_ / file.value());
           if (starts_with(resolved.string(), workspace_path_.string())) {
             file = resolved.string();
           }
