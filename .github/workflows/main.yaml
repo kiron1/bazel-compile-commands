@@ -56,18 +56,31 @@ jobs:
     strategy:
       matrix:
         build:
-          - linux
+          - ubuntu-20.04
+          - ubuntu-22.04
+          - ubuntu-24.04
           - macos-universal
         include:
-          - build: linux
+          - build: focal
             os: ubuntu-20.04
             config: gnu
+            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-focal_amd64.deb
+          - build: jammy
+            os: ubuntu-22.04
+            config: gnu
+            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-jammy_amd64.deb
+          - build: noble
+            os: ubuntu-24.04
+            config: gnu
+            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-noble_amd64.deb
           - build: macos-universal
             os: macos-latest
             config: gnu
+            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-macos_universal.zip
           - build: windows
             os: windows-2019
             config: cl
+            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-windows_amd64.zip
 
     steps:
       - name: Checkout repository
@@ -77,28 +90,17 @@ jobs:
         with:
           path: |
             ~/.cache/bazel_build_cache
-          key: ${{ runner.os }}-bazel-buildpkg-${{ hashFiles('WORKSPACE') }}
+          key: ${{ matrix.os }}-bazel-buildpkg-${{ hashFiles('WORKSPACE') }}
           restore-keys: |
-            ${{ runner.os }}-bazel-buildpkg-
+            ${{ matrix.os }}-bazel-buildpkg-
       - name: Build Release Package
-        run: bazel build --config=${{ matrix.config }} --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:pkg
-      - name: Output file
-        id: outfile
-        run: |
-          from os import environ as env
-          from subprocess import check_output
-          from pathlib import Path
-          cfg = env.get("CONFIG", "gnu")
-          v = env.get("VERSION", "0")
-          execroot = Path(check_output(["bazel", "info", "execution_root"], text= True).strip())
-          pkg = Path(check_output(["bazel", "cquery", f"--config={cfg}", "--config=release", f"--//:version={v}", "--output=files", "//:pkg"], text=True).strip())
-          path = execroot / pkg
-          print(f"path={path}")
-          print(f"path={path}", file=open(env.get("GITHUB_OUTPUT", "github_output.txt"), "a"))
-        shell: python3 {0}
-        env:
-          CONFIG: ${{ matrix.config }}
-          VERSION: ${{ github.event.inputs.version || 0 }}
+        run: >
+          bazel run
+          --config=${{ matrix.config }}
+          --config=ci --config=release
+          --//:version=${{ github.event.inputs.version || 0 }}
+          --disk_cache=~/.cache/bazel_build_cache
+          //:copy -- ${{ matrix.pkgfile }}
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:

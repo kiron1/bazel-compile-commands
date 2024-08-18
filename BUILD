@@ -96,6 +96,14 @@ alias(
     }),
 )
 
+sh_binary(
+    name = "copy",
+    srcs = ["copy.sh"],
+    data = [":pkg"],
+    env = {"PKG": "$(location :pkg)"},
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
 pkg_variables(
     name = "variables",
     architecture = select({
