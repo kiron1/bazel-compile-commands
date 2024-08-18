@@ -56,31 +56,32 @@ jobs:
     strategy:
       matrix:
         build:
-          - ubuntu-20.04
-          - ubuntu-22.04
-          - ubuntu-24.04
+          - focal
+          - jammy
+          - noble
           - macos-universal
+          - windows
         include:
           - build: focal
             os: ubuntu-20.04
             config: gnu
-            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-focal_amd64.deb
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-focal_amd64.deb
           - build: jammy
             os: ubuntu-22.04
             config: gnu
-            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-jammy_amd64.deb
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-jammy_amd64.deb
           - build: noble
             os: ubuntu-24.04
             config: gnu
-            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-noble_amd64.deb
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-noble_amd64.deb
           - build: macos-universal
             os: macos-latest
             config: gnu
-            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-macos_universal.zip
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-macos_universal.zip
           - build: windows
             os: windows-2019
             config: cl
-            pkgfile: bazel-compile-commands-${{ github.event.inputs.version || 0 }}-windows_amd64.zip
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
 
     steps:
       - name: Checkout repository
@@ -105,13 +106,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pkg-bazel-${{ matrix.build }}
-          path: ${{ steps.outfile.outputs.path }}
+          path: ${{ matrix.pkgfile }}
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   self_test:
     name: Self test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: buildpkg
     steps:
       - name: Checkout repository
@@ -121,10 +122,10 @@ jobs:
       - name: Download pkg artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: pkg-bazel-linux
+          pattern: pkg-bazel-noble
       - name: Install
         run: |
-          sudo dpkg --install pkg-bazel-linux/bazel-compile-commands_*.deb
+          sudo dpkg --install pkg-bazel-noble/bazel-compile-commands_*.deb
       - name: Create compile-commands.json
         run: |
           /usr/bin/bazel-compile-commands -v -a --config=gnu --replace=-fno-canonical-system-headers= //...

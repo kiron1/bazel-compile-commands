@@ -2,10 +2,13 @@
 # .bazelrc
 #
 
+startup --windows_enable_symlinks
+
 common --verbose_failures
 common --incompatible_strict_action_env
 
 build --ui_event_filters=-info
+build --enable_runfiles
 
 build:cl --cxxopt=/std:c++17
 build:gnu --cxxopt=-std=c++17
