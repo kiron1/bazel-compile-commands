@@ -14,7 +14,7 @@ bazel_dep(name = "rules_apple", version = "3.16.0", repo_name = "build_bazel_rul
 bazel_dep(name = "rules_cc", version = "0.1.0")
 bazel_dep(name = "rules_java", version = "8.6.2")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "rules_proto", version = "6.0.0-rc2")
+bazel_dep(name = "rules_proto", version = "7.0.2")
 bazel_dep(name = "rules_python", version = "1.0.0")
 
 apple_cc_configure = use_extension(
