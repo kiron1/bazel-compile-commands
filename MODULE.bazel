@@ -8,7 +8,7 @@ module(name = "bazel-compile-commands")
 
 bazel_dep(name = "apple_support", version = "1.14.0", repo_name = "build_bazel_apple_support")
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
-bazel_dep(name = "googletest", version = "1.14.0", repo_name = "com_google_googletest")
+bazel_dep(name = "googletest", version = "1.15.2", repo_name = "com_google_googletest")
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "rules_apple", version = "3.4.0", repo_name = "build_bazel_rules_apple")
 bazel_dep(name = "rules_cc", version = "0.0.9")
