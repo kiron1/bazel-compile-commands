@@ -39,9 +39,9 @@ http_archive(
     build_file = "@io_bazel//third_party/googleapis:BUILD.bazel",
     # patches = ["//third_party:no-build-files.patch"],
     patch_cmds = ["find . -mindepth 2 -name 'BUILD' -o -name 'BUILD.bazel' -exec rm {} +"],
-    sha256 = "5bb6b0253ccf64b53d6c7249625a7e3f6c3bc6402abd52d3778bfa48258703a0",
-    strip_prefix = "googleapis-2f9af297c84c55c8b871ba4495e01ade42476c92",
+    integrity = "sha256-jRn2wQUgEYkH4cI0tckSzZjbzV1B5N8jY2SvlhlHoNE=",
+    strip_prefix = "googleapis-0f3a20ebd29fb1deb2bd1f75c7ba55500d35457d",
     urls = [
-        "https://github.com/googleapis/googleapis/archive/2f9af297c84c55c8b871ba4495e01ade42476c92.tar.gz",
+        "https://github.com/googleapis/googleapis/archive/0f3a20ebd29fb1deb2bd1f75c7ba55500d35457d.tar.gz",
     ],
 )
