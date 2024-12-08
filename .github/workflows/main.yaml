@@ -23,14 +23,14 @@ jobs:
       matrix:
         build:
           - linux
-          - windows
+          # - windows
         include:
           - build: linux
             os: ubuntu-20.04
             config: gnu
-          - build: windows
-            os: windows-2019
-            config: cl
+          # - build: windows
+          #  os: windows-2019
+          #  config: cl
 
     steps:
       - name: Checkout repository
@@ -60,7 +60,7 @@ jobs:
           - jammy
           - noble
           - macos-universal
-          - windows
+          # - windows
         include:
           - build: focal
             os: ubuntu-20.04
@@ -78,10 +78,10 @@ jobs:
             os: macos-latest
             config: gnu
             pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-macos_universal.zip
-          - build: windows
-            os: windows-2019
-            config: cl
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
+          # - build: windows
+          #   os: windows-2019
+          #   config: cl
+          #   pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
 
     steps:
       - name: Checkout repository
