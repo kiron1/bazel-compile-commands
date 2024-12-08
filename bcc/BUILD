@@ -45,6 +45,15 @@ copy_file(
     is_executable = True,
 )
 
+cc_library(
+    name = "boost_json",
+    srcs = ["boost_json.cpp"],
+    defines = ["BOOST_JSON_NO_LIB"],
+    deps = [
+        "@boost.json",
+    ],
+)
+
 cc_proto_library(
     name = "analysis",
     deps = ["@io_bazel//src/main/protobuf:analysis_v2_proto"],
@@ -67,8 +76,8 @@ cc_library(
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         ":analysis",
-        "@boost//:json",
-        "@boost//:process",
+        ":boost_json",
+        "@boost.process",
     ],
 )
 
@@ -79,11 +88,11 @@ cc_library(
     deps = [
         ":analysis",
         ":artifacts",
+        ":boost_json",
         ":dep_set_of_files",
         ":path_fragments",
         ":replacements",
-        "@boost//:io",
-        "@boost//:json",
+        "@boost.io",
     ],
 )
 
@@ -104,7 +113,7 @@ cc_library(
     deps = [
         ":analysis",
         ":artifacts",
-        "@boost//:core",
+        "@boost.core",
     ],
 )
 
@@ -117,8 +126,8 @@ cc_library(
     ],
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
-        "@boost//:process",
-        "@boost//:program_options",
+        "@boost.process",
+        "@boost.program_options",
     ],
 )
 
@@ -138,7 +147,7 @@ cc_library(
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
         ":replacements",
-        "@boost//:process",
+        "@boost.process",
     ],
 )
 
