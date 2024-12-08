@@ -15,11 +15,11 @@ bazel_dep(name = "boost.process", version = "1.83.0.bcr.1")
 bazel_dep(name = "boost.program_options", version = "1.83.0.bcr.1")
 bazel_dep(name = "googletest", version = "1.15.2", repo_name = "com_google_googletest")
 bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "protobuf", version = "29.2", repo_name = "com_google_protobuf")
 bazel_dep(name = "rules_apple", version = "3.16.0", repo_name = "build_bazel_rules_apple")
 bazel_dep(name = "rules_cc", version = "0.1.0")
 bazel_dep(name = "rules_java", version = "8.6.2")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "rules_proto", version = "7.0.2")
 bazel_dep(name = "rules_python", version = "1.0.0")
 
 apple_cc_configure = use_extension(
@@ -32,10 +32,10 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 
 http_archive(
     name = "io_bazel",
-    integrity = "sha256-6vNOiW0AaUm0X7hlNwcUTcoSI4FMQlnPK0lMa9BKbYk=",
-    strip_prefix = "bazel-7.4.1",
+    integrity = "sha256-T/Rg0FAsA7Wcdy9zjXdLedbAWaPVDq+MDnczfdh0m9s=",
+    strip_prefix = "bazel-8.0.0",
     urls = [
-        "https://github.com/bazelbuild/bazel/archive/refs/tags/7.4.1.tar.gz",
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/8.0.0.tar.gz",
     ],
 )
 
