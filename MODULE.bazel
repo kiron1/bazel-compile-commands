@@ -15,7 +15,7 @@ bazel_dep(name = "rules_cc", version = "0.1.0")
 bazel_dep(name = "rules_java", version = "7.5.0")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_proto", version = "6.0.0-rc2")
-bazel_dep(name = "rules_python", version = "0.31.0")
+bazel_dep(name = "rules_python", version = "1.0.0")
 
 apple_cc_configure = use_extension(
     "@build_bazel_apple_support//crosstool:setup.bzl",
