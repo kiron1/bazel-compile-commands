@@ -4,13 +4,13 @@ name: main
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version `x.y.z` (without leading `v`)'
+        description: "Version `x.y.z` (without leading `v`)"
         type: string
         required: true
 
@@ -23,14 +23,14 @@ jobs:
       matrix:
         build:
           - linux
-          # - windows
+          - windows
         include:
           - build: linux
             os: ubuntu-20.04
             config: gnu
-          # - build: windows
-          #  os: windows-2019
-          #  config: cl
+          - build: windows
+            os: windows-2019
+            config: cl
 
     steps:
       - name: Checkout repository
@@ -43,6 +43,12 @@ jobs:
           key: ${{ runner.os }}-bazel-test-${{ hashFiles('WORKSPACE') }}
           restore-keys: |
             ${{ runner.os }}-bazel-test-
+      - name: Setup Windows Bazelrc
+        # https://bazel.build/configure/windows
+        run: |
+          echo "startup --output_user_root=C:/ --windows_enale_symlinks" > ${{ github.workspace }}\user.bazelrc
+        shell: cmd
+        if: runner.os == 'Windows'
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
@@ -60,7 +66,7 @@ jobs:
           - jammy
           - noble
           - macos-universal
-          # - windows
+          - windows
         include:
           - build: focal
             os: ubuntu-20.04
@@ -78,10 +84,10 @@ jobs:
             os: macos-latest
             config: gnu
             pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-macos_universal.zip
-          # - build: windows
-          #   os: windows-2019
-          #   config: cl
-          #   pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
+          - build: windows
+            os: windows-2019
+            config: cl
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
 
     steps:
       - name: Checkout repository

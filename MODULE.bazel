@@ -80,5 +80,5 @@ http_archive(
     urls = ["https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-windows-x86_64.zip"],
     integrity = "sha256-BnMre5bTuZ9xG6G/JPKJ/LW8lWEZK9wb2VFMF8iqLCA=",
     strip_prefix = "pandoc-3.6",
-    build_file = "//bazel:pandoc.BUILD",
+    build_file = "//bazel:pandoc-windows.BUILD",
 )
