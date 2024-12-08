@@ -27,10 +27,10 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 
 http_archive(
     name = "io_bazel",
-    sha256 = "8e4d26350d01d2c0847d8ef336eb76f95930f982b7f88bf1a01306b3695e938b",
-    strip_prefix = "bazel-7.1.1",
+    integrity = "sha256-6vNOiW0AaUm0X7hlNwcUTcoSI4FMQlnPK0lMa9BKbYk=",
+    strip_prefix = "bazel-7.4.1",
     urls = [
-        "https://github.com/bazelbuild/bazel/archive/refs/tags/7.1.1.tar.gz",
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/7.4.1.tar.gz",
     ],
 )
 
