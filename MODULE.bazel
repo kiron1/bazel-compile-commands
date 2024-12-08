@@ -13,7 +13,7 @@ bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "rules_apple", version = "3.16.0", repo_name = "build_bazel_rules_apple")
 bazel_dep(name = "rules_cc", version = "0.1.0")
 bazel_dep(name = "rules_java", version = "7.5.0")
-bazel_dep(name = "rules_pkg", version = "0.10.1")
+bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_proto", version = "6.0.0-rc2")
 bazel_dep(name = "rules_python", version = "0.31.0")
 
