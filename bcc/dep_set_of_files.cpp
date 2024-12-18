@@ -26,7 +26,7 @@ dep_set_of_files::get(std::uint32_t id) const
     return dep_set(it->second);
   }
   std::vector<std::string> result;
-  std::set<uint32_t> visited_ids;
+  std::set<std::uint32_t> visited_ids;
 
   std::queue<entry> q;
 
