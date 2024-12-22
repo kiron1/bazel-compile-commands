@@ -72,7 +72,7 @@ TEST(self_test, run)
   ASSERT_THAT(bazel_path, Not(IsEmpty())) << bazel_path;
   ASSERT_THAT(std::filesystem::exists(bazel_path), IsTrue()) << bazel_path;
 
-  auto const result = run(bcc_path, { "-B", bazel_path.c_str(), "-a", "-o-" });
+  auto const result = run(bcc_path, { "-B", bazel_path.c_str(), "-o-" });
 
   ASSERT_THAT(result.is_array(), IsTrue());
 
@@ -88,7 +88,7 @@ TEST(self_test, run)
 
     ASSERT_THAT(cu_obj.find("file"), Not(Eq(end)));
     EXPECT_THAT(cu_obj.find("directory"), Not(Eq(end)));
-    EXPECT_THAT(cu_obj.find("command"), Not(Eq(end)));
+    EXPECT_THAT(cu_obj.find("arguments"), Not(Eq(end)));
     EXPECT_THAT(cu_obj.find("output"), Not(Eq(end)));
 
     auto const file = cu_obj.at("file").as_string();

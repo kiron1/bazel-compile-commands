@@ -102,7 +102,7 @@ main(int argc, char** argv)
     replacements.add_all(options.replace);
 
     auto builder = bcc::compile_commands_builder();
-    builder.arguments(options.arguments)
+    builder.command(options.command)
       .resolve(options.resolve)
       .replacements(replacements)
       .workspace_path(bazel.workspace_path())

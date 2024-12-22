@@ -62,9 +62,9 @@ join_arguments(boost::json::array const& args)
 } // namespace
 
 compile_commands_builder&
-compile_commands_builder::arguments(bool value)
+compile_commands_builder::command(bool value)
 {
-  arguments_ = value;
+  command_ = value;
   return *this;
 }
 
@@ -146,10 +146,10 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
         }
         auto obj = boost::json::object();
         obj.insert(boost::json::object::value_type{ "directory", execution_root_.string() });
-        if (arguments_) {
-          obj.insert(boost::json::object::value_type{ "arguments", args });
-        } else {
+        if (command_) {
           obj.insert(boost::json::object::value_type{ "command", join_arguments(args) });
+        } else {
+          obj.insert(boost::json::object::value_type{ "arguments", args });
         }
         obj.insert(boost::json::object::value_type{ "file", file.value() });
         obj.insert(boost::json::object::value_type{ "output", output });
