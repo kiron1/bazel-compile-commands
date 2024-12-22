@@ -148,8 +148,9 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
         obj.insert(boost::json::object::value_type{ "directory", execution_root_.string() });
         if (arguments_) {
           obj.insert(boost::json::object::value_type{ "arguments", args });
+        } else {
+          obj.insert(boost::json::object::value_type{ "command", join_arguments(args) });
         }
-        obj.insert(boost::json::object::value_type{ "command", join_arguments(args) });
         obj.insert(boost::json::object::value_type{ "file", file.value() });
         obj.insert(boost::json::object::value_type{ "output", output });
 
