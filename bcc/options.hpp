@@ -15,8 +15,8 @@ struct options
 
   /// Be verbose.
   bool verbose{ false };
-  /// Include `arguments` array in the final `compile_commands.json`
-  bool arguments{ false };
+  /// Include `command` string in the final `compile_commands.json`
+  bool command{ false };
   /// Resolve symlinks of `file` entries in the `compile_commands.json`
   bool resolve{ false };
   /// Bazel command.

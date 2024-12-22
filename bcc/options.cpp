@@ -52,7 +52,8 @@ options::from_argv(int argc, char* argv[])
     ("help,h", "produce help message")
     ("version,V", "print version")
     ("verbose,v", po::bool_switch(&result.verbose), "verbose, report more information")
-    ("arguments,a", po::bool_switch(&result.arguments), "include `arguments` array in output")
+    ("arguments,a", "provide `arguments` array in output (enabled by default)")
+    ("command", po::bool_switch(&result.command), "provide `command` string in output")
     ("resolve", po::bool_switch(&result.resolve), "resolve file symlinks when their target is inside the workspace")
     ("bazel-command,B", po::value(&result.bazel_command)->value_name("PATH"), "bazel command")
     ("bazelsupopt,s", po::value(&result.bazel_startup_options)->value_name("OPTION"), "bazel startup options")
@@ -143,7 +144,7 @@ std::ostream&
 options::write(std::ostream& os) const
 {
   os << "verbose = " << this->verbose << "\n";
-  os << "arguments = " << this->arguments << "\n";
+  os << "command = " << this->command << "\n";
   os << "resolve = " << this->resolve << "\n";
   os << "bazel-command = " << this->bazel_command << "\n";
   for (auto const& opt : bazel_startup_options) {

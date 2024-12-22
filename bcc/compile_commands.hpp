@@ -16,7 +16,7 @@ class compile_commands_builder
 {
 public:
   /// Include `arguments` in final compile_commands.json file.
-  compile_commands_builder& arguments(bool value);
+  compile_commands_builder& command(bool value);
   /// Resolve symlinks of file entries in the compile_commands.json file.
   compile_commands_builder& resolve(bool value);
   /// Set compiler.
@@ -31,7 +31,7 @@ public:
   boost::json::array build(analysis::ActionGraphContainer const& action_graph) const;
 
 private:
-  bool arguments_{ false };
+  bool command_{ false };
   bool resolve_{ false };
   std::optional<std::string> compiler_{};
   bcc::replacements replacements_{};
