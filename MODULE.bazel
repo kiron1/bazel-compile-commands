@@ -50,3 +50,35 @@ http_archive(
         "https://github.com/googleapis/googleapis/archive/0f3a20ebd29fb1deb2bd1f75c7ba55500d35457d.tar.gz",
     ],
 )
+
+http_archive(
+    name = "pandoc_linux_x86_64",
+    urls = ["https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-linux-amd64.tar.gz"],
+    integrity = "sha256-jjcCsZX3VBLkJd9G+PPwgkG2aiszq72eBO2lAb/ehgw=",
+    strip_prefix = "pandoc-3.6",
+    build_file = "//bazel:pandoc.BUILD",
+)
+
+http_archive(
+    name = "pandoc_macos_x86_64",
+    urls = ["https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-x86_64-macOS.zip"],
+    integrity = "sha256-I6KEyo+ibG07XtMkmlu4K1kpuexjYzxMFW3Lv3V67e8=",
+    strip_prefix = "pandoc-3.6-x86_64",
+    build_file = "//bazel:pandoc.BUILD",
+)
+
+http_archive(
+    name = "pandoc_macos_arm64",
+    urls = ["https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-arm64-macOS.zip"],
+    integrity = "sha256-eP7a5CZoLym9PA2uUfdyWXOvvAEVM7NYAmVw6lkPx4U=",
+    strip_prefix = "pandoc-3.6-arm64",
+    build_file = "//bazel:pandoc.BUILD",
+)
+
+http_archive(
+    name = "pandoc_windows_x86_64",
+    urls = ["https://github.com/jgm/pandoc/releases/download/3.6/pandoc-3.6-windows-x86_64.zip"],
+    integrity = "sha256-BnMre5bTuZ9xG6G/JPKJ/LW8lWEZK9wb2VFMF8iqLCA=",
+    strip_prefix = "pandoc-3.6",
+    build_file = "//bazel:pandoc.BUILD",
+)

@@ -1,6 +1,5 @@
 load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
-load("@mgred_rules_pandoc//pandoc:defs.bzl", "pandoc")
 load("@rules_pkg//:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
 
@@ -22,13 +21,29 @@ platform(
     ],
 )
 
-pandoc(
+filegroup(
+    name = "pandoc_macos",
+    srcs = select({
+        "@platforms//cpu:arm64": ["@pandoc_macos_arm64//:pandoc"],
+        "@platforms//cpu:x86_64": ["@pandoc_macos_x86_64//:pandoc"],
+    }),
+)
+
+filegroup(
+    name = "pandoc",
+    srcs = select({
+        "@platforms//os:linux": ["@pandoc_linux_x86_64//:pandoc"],
+        "@platforms//os:macos": [":pandoc_macos"],
+        "@platforms//os:windows": ["@pandoc_windowss_x86_64//:pandoc"],
+    }),
+)
+
+genrule(
     name = "man",
-    out = "bazel-compile-commands.1",
-    input = "documentation.md",
-    standalone = True,
-    title = "bazel-compile-commands(1)",
-    to = "man",
+    srcs = ["documentation.md"],
+    outs = ["bazel-compile-commands.1"],
+    cmd = "$(location :pandoc) -f markdown -t man -o $@ $(location documentation.md)",
+    tools = [":pandoc"],
 )
 
 pkg_files(
@@ -108,7 +123,7 @@ pkg_variables(
     name = "variables",
     architecture = select({
         "@platforms//cpu:x86_64": "amd64",
-        "@platforms//cpu:aarch64": "arm64",
+        "@platforms//cpu:arm64": "arm64",
     }),
     os = select({
         "@platforms//os:linux": "linux",
