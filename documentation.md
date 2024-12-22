@@ -31,8 +31,7 @@ from the configuration file are combined when bazel-compile-commands is called
 
 -a, --arguments
 
-: Also write the array of arguments for each entry in the
-`compile_commands.json` file.
+: Provided only for backwards compatibility.
 
 -B, --bazel-command **BAZEL**
 
@@ -47,6 +46,11 @@ from the configuration file are combined when bazel-compile-commands is called
 
 : Same as `--bazelopt "--config=CONFIG"`. A config option from `.bazelrc` to
 apply when querying Bazel for build actions.
+
+--command
+
+: Generate a `compile_commands.json` file with `command` entries instead of
+`arguments` entries.
 
 -c, --compiler **FILE**
 

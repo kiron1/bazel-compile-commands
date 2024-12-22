@@ -88,6 +88,7 @@ TEST(self_test, run)
 
     ASSERT_THAT(cu_obj.find("file"), Not(Eq(end)));
     EXPECT_THAT(cu_obj.find("directory"), Not(Eq(end)));
+    EXPECT_THAT(cu_obj.find("command"), Eq(end));
     EXPECT_THAT(cu_obj.find("arguments"), Not(Eq(end)));
     EXPECT_THAT(cu_obj.find("output"), Not(Eq(end)));
 
