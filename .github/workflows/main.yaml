@@ -4,13 +4,13 @@ name: main
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version `x.y.z` (without leading `v`)'
+        description: "Version `x.y.z` (without leading `v`)"
         type: string
         required: true
 
@@ -40,7 +40,7 @@ jobs:
         with:
           path: |
             ~/.cache/bazel_build_cache
-          key: ${{ runner.os }}-bazel-test-${{ hashFiles('WORKSPACE') }}
+          key: ${{ runner.os }}-bazel-test-${{ hashFiles('MODULE.bazel') }}
           restore-keys: |
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
@@ -91,7 +91,7 @@ jobs:
         with:
           path: |
             ~/.cache/bazel_build_cache
-          key: ${{ matrix.os }}-bazel-buildpkg-${{ hashFiles('WORKSPACE') }}
+          key: ${{ matrix.os }}-bazel-buildpkg-${{ hashFiles('MODULE.bazel') }}
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Build Release Package
@@ -117,6 +117,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Bazel cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/bazel_build_cache
+          key: bazel-selftest-${{ hashFiles('MODUE.bazel') }}
+          restore-keys: |
+            bazel-selftest-
       - name: Run bazel to generate worktree
         run: bazel build --config=gnu --config=ci //...
       - name: Download pkg artifact
