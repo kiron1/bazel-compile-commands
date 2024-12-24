@@ -73,8 +73,6 @@ bazel build --config=cl //bcc:bazel-compile-commands
   Bazel flag.
 - [hedronvision/bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor) -
   Can be integrated into Bazel files.
-- [grailbio/bazel-compilation-database](https://github.com/grailbio/bazel-compilation-database) -
-  Needs integration into your Bazel files
 
 ## Links
 
