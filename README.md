@@ -46,11 +46,14 @@ This will generate a `compile_commands.json` file in the current directory.
 See the [`.vscode/tasks.json`](./.vscode/tasks.json) file as an example on how
 to integrate`bazel-compile-commands` into VS Code.
 
-## Comparissions
+## Mentions
 
 - [Bartek Kryza mentions `bazel-compile-commands` in the blog post
   "compile_commands.json gallery"](https://blog.bkryza.com/posts/compile-commands-json-gallery/),
   _Dec. 2, 2004_.
+- [Blog post in System/5: BazelCon 2024 recap, section IDE support, bullet point
+  "Compilation database"](https://blogsystem5.substack.com/p/bazelcon-2024-recap),
+  _Oct. 22, 2024_.
 
 ## Build
 
