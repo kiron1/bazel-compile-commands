@@ -54,6 +54,8 @@ to integrate`bazel-compile-commands` into VS Code.
 - [Blog post in System/5: BazelCon 2024 recap, section IDE support, bullet point
   "Compilation database"](https://blogsystem5.substack.com/p/bazelcon-2024-recap),
   _Oct. 22, 2024_.
+- [BazelCon 2024: The State of Compilation Database in Bazel](https://www.youtube.com/watch?v=HJGD0-mX6G8&list=PLbzoR-pLrL6ptKfAQNZ5RS4HMdmeilBcw&index=41)
+  (Video)
 
 ## Build
 
