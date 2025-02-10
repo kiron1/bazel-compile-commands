@@ -34,7 +34,7 @@ filegroup(
     srcs = select({
         "@platforms//os:linux": ["@pandoc_linux_x86_64//:pandoc"],
         "@platforms//os:macos": [":pandoc_macos"],
-        "@platforms//os:windows": ["@pandoc_windowss_x86_64//:pandoc"],
+        "@platforms//os:windows": ["@pandoc_windows_x86_64//:pandoc"],
     }),
 )
 
@@ -43,6 +43,14 @@ genrule(
     srcs = ["documentation.md"],
     outs = ["bazel-compile-commands.1"],
     cmd = "$(location :pandoc) -f markdown -t man -o $@ $(location documentation.md)",
+    tools = [":pandoc"],
+)
+
+genrule(
+    name = "html",
+    srcs = ["documentation.md"],
+    outs = ["bazel-compile-commands.html"],
+    cmd = "$(location :pandoc) -f markdown -t html -o $@ $(location documentation.md)",
     tools = [":pandoc"],
 )
 
@@ -61,13 +69,27 @@ pkg_files(
     prefix = "share/man/man1",
 )
 
+pkg_files(
+    name = "doc_files",
+    srcs = [":html"],
+    prefix = "share/doc",
+)
+
 pkg_filegroup(
     name = "usr_files",
     srcs = [
         ":bin_files",
-        ":man_files",
-    ],
+    ] + select({
+        "@platforms//os:windows": [":doc_files"],
+        "//conditions:default": [":man_files"],
+    }),
     prefix = "/usr",
+)
+
+pkg_tar(
+    name = "tar",
+    srcs = [":usr_files"],
+    extension = "tar.gz",
 )
 
 pkg_deb(
@@ -85,11 +107,6 @@ pkg_deb(
     package_file_name = "bazel-compile-commands_{version}_{architecture}.deb",
     package_variables = "@//:variables",
     version_file = "@//:version_file",
-)
-
-pkg_tar(
-    name = "tar",
-    srcs = [":usr_files"],
 )
 
 pkg_zip(
