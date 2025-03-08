@@ -41,7 +41,7 @@ run(std::filesystem::path const& commmand, std::vector<std::string_view> args)
   auto line = std::string{};
 
   while (std::getline(outs, line)) {
-    auto ec = boost::json::error_code{};
+    auto ec = boost::system::error_code{};
     json_parser.write(line, ec);
     if (ec) {
       throw std::runtime_error("invalid JSON");
