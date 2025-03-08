@@ -17,7 +17,7 @@ bazel_dep(name = "googletest", version = "1.15.2", repo_name = "com_google_googl
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "protobuf", version = "29.2", repo_name = "com_google_protobuf")
 bazel_dep(name = "rules_apple", version = "3.16.0", repo_name = "build_bazel_rules_apple")
-bazel_dep(name = "rules_cc", version = "0.1.0")
+bazel_dep(name = "rules_cc", version = "0.1.1")
 bazel_dep(name = "rules_java", version = "8.6.2")
 bazel_dep(name = "rules_pkg", version = "1.0.1")
 bazel_dep(name = "rules_python", version = "1.0.0")
