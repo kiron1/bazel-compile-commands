@@ -1,4 +1,4 @@
-load("@//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
+load("//bazel:pkg_info.bzl", "pkg_variables", "pkg_version")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load("@rules_pkg//:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files")
 load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
