@@ -144,7 +144,8 @@ jobs:
   mkrelease:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: buildpkg
+    needs:
+      - buildpkg
     if: github.event_name == 'workflow_dispatch'
 
     steps:
@@ -155,9 +156,12 @@ jobs:
         with:
           pattern: pkg-*
           merge-multiple: true
+      - name: Create Source Archive
+        run: |
+          ./tools/archive.sh
       - name: Create Release
         run: |
-          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip
+          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip *.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
