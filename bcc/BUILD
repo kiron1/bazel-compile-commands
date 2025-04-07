@@ -1,4 +1,4 @@
-load("@//bazel:version_h.bzl", "version_h")
+load("//bazel:version_h.bzl", "version_h")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
 
