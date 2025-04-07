@@ -1,5 +1,6 @@
 MODULE.bazel.lock
 bazel-*
+bazel-compile-commands-*.tar.gz
 user.bazelrc
 .bazelccrc
 compile_flags.txt
