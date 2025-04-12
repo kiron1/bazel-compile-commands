@@ -156,12 +156,14 @@ jobs:
         with:
           pattern: pkg-*
           merge-multiple: true
-      - name: Create Source Archive
-        run: |
-          ./tools/archive.sh
+      # - name: Create Source Archive
+      #   run: |
+      #     ./tools/archive.sh
+      #   env:
+      #     TAG: v${{ github.event.inputs.version }}
       - name: Create Release
         run: |
-          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip *.tar.gz
+          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
