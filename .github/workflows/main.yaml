@@ -26,7 +26,7 @@ jobs:
           # - windows
         include:
           - build: linux
-            os: ubuntu-20.04
+            os: ubuntu-24.04
             config: gnu
           # - build: windows
           #  os: windows-2019
@@ -56,16 +56,11 @@ jobs:
     strategy:
       matrix:
         build:
-          - focal
           - jammy
           - noble
           - macos-universal
           # - windows
         include:
-          - build: focal
-            os: ubuntu-20.04
-            config: gnu
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-focal_amd64.deb
           - build: jammy
             os: ubuntu-22.04
             config: gnu
