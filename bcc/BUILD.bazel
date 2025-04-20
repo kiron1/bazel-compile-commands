@@ -1,6 +1,6 @@
-load("//bazel:version_h.bzl", "version_h")
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+load("//bazel:version_h.bzl", "version_h")
 
 package(default_visibility = ["//visibility:public"])
 
