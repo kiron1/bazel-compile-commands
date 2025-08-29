@@ -55,22 +55,30 @@ jobs:
 
     strategy:
       matrix:
-        build:
-          - jammy
-          - noble
-          - macos-universal
-          # - windows
         include:
-          - build: jammy
+          - build: jammy-x86_64
             os: ubuntu-22.04
             config: gnu
+            platform: "//:linux_x86_64"
             pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-jammy_amd64.deb
-          - build: noble
+          - build: noble-x86_64
             os: ubuntu-24.04
             config: gnu
+            platform: "//:linux_x86_64"
             pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-noble_amd64.deb
+          - build: jammy-aarch64
+            os: ubuntu-22.04
+            config: gnu
+            platform: "@toolchains_llvm//platforms:linux-aarch64"
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-jammy_arm64.deb
+          - build: noble-arm64
+            os: ubuntu-24.04
+            config: gnu
+            platform: "@toolchains_llvm//platforms:linux-aarch64"
+            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-noble_arm64.deb
           - build: macos-universal
             os: macos-latest
+            platform: "//:apple-darwin-aarch64"
             config: gnu
             pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-macos_universal.zip
           # - build: windows
@@ -90,12 +98,14 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Build Release Package
-        run: >
-          bazel run
-          --config=${{ matrix.config }}
-          --config=ci --config=release
-          --//:version=${{ github.event.inputs.version || 0 }}
-          --disk_cache=~/.cache/bazel_build_cache
+        run: |
+          bazel run \
+          --extra_toolchains=@llvm_toolchain//:all \
+          --platforms "${{ matrix.platform }}" \
+          --config=${{ matrix.config }} \
+          --config=ci --config=release \
+          --//:version=${{ github.event.inputs.version || 0 }} \
+          --disk_cache=~/.cache/bazel_build_cache \
           //:copy -- ${{ matrix.pkgfile }}
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
@@ -125,10 +135,10 @@ jobs:
       - name: Download pkg artifact
         uses: actions/download-artifact@v4
         with:
-          pattern: pkg-bazel-noble
+          pattern: pkg-bazel-noble-x86_64
       - name: Install
         run: |
-          sudo dpkg --install pkg-bazel-noble/bazel-compile-commands_*.deb
+          sudo dpkg --install pkg-bazel-noble-x86_64/bazel-compile-commands_*.deb
       - name: Create compile-commands.json
         run: |
           /usr/bin/bazel-compile-commands -v -a --config=gnu --replace=-fno-canonical-system-headers= //...
