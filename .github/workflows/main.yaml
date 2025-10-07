@@ -60,31 +60,49 @@ jobs:
             os: ubuntu-22.04
             config: gnu
             platform: "//:linux_x86_64"
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-jammy_amd64.deb
+            suffix: jammy_amd64
+            type: deb
           - build: noble-x86_64
             os: ubuntu-24.04
             config: gnu
             platform: "//:linux_x86_64"
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-noble_amd64.deb
+            suffix: noble_amd64
+            type: deb
           - build: jammy-aarch64
             os: ubuntu-22.04
             config: gnu
-            platform: "@toolchains_llvm//platforms:linux-aarch64"
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-jammy_arm64.deb
+            platform: "//:linux_aarch64"
+            suffix: jammy_arm64
+            type: deb
           - build: noble-arm64
             os: ubuntu-24.04
             config: gnu
-            platform: "@toolchains_llvm//platforms:linux-aarch64"
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-noble_arm64.deb
+            platform: "//:linux_aarch64"
+            suffix: noble_arm64
+            type: deb
+          - build: linux-amd64
+            os: ubuntu-24.04
+            config: gnu
+            platform: "//:linux_x86_64"
+            suffix: linux_amd64
+            type: zip
+          - build: linux-arm64
+            os: ubuntu-24.04
+            config: gnu
+            platform: "//:linux_aarch64"
+            suffix: linux_arm64
+            type: zip
           - build: macos-universal
             os: macos-latest
             platform: "//:apple-darwin-aarch64"
             config: gnu
-            pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-macos_universal.zip
+            suffix: macos_universal
+            type: zip
           # - build: windows
           #   os: windows-2019
           #   config: cl
-          #   pkgfile: bazel-compile-commands_${{ github.event.inputs.version || 0 }}-windows_amd64.zip
+          #   suffix: windows_amd64
+          #   type: zip
 
     steps:
       - name: Checkout repository
@@ -97,21 +115,24 @@ jobs:
           key: ${{ matrix.os }}-bazel-buildpkg-${{ hashFiles('MODULE.bazel') }}
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
+      - name: Generate Package Name
+        run: |
+         echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
       - name: Build Release Package
         run: |
           bazel run \
-          --extra_toolchains=@llvm_toolchain//:all \
           --platforms "${{ matrix.platform }}" \
           --config=${{ matrix.config }} \
           --config=ci --config=release \
           --//:version=${{ github.event.inputs.version || 0 }} \
           --disk_cache=~/.cache/bazel_build_cache \
-          //:copy -- ${{ matrix.pkgfile }}
+          //:copy_${{ matrix.type }} -- "${PKGFILE}"
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-bazel-${{ matrix.build }}
-          path: ${{ matrix.pkgfile }}
+          path: ${{ env.PKGFILE }}
+          if-no-files-found: error
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 

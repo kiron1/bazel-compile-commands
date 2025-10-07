@@ -29,6 +29,14 @@ platform(
     ],
 )
 
+platform(
+    name = "linux_aarch64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ]
+)
+
 filegroup(
     name = "pandoc_macos",
     srcs = select({
@@ -110,20 +118,19 @@ pkg_zip(
     package_variables = "@//:variables",
 )
 
-alias(
-    name = "pkg",
-    actual = select({
-        "@platforms//os:linux": ":deb",
-        # Build a zip file for any other platforms:
-        "//conditions:default": ":zip",
-    }),
+sh_binary(
+    name = "copy_zip",
+    srcs = ["copy.sh"],
+    data = [":zip"],
+    env = {"PKG": "$(location :zip)"},
+    deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
 sh_binary(
-    name = "copy",
+    name = "copy_deb",
     srcs = ["copy.sh"],
-    data = [":pkg"],
-    env = {"PKG": "$(location :pkg)"},
+    data = [":deb"],
+    env = {"PKG": "$(location :deb)"},
     deps = ["@bazel_tools//tools/bash/runfiles"],
 )
 
