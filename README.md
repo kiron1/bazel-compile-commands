@@ -68,7 +68,7 @@ bazel build --config=gnu //bcc:bazel-compile-commands
 To cross-compiling for a Linux `aarch64` platform, run:
 
 ```sh
-bazel build --extra_toolchains=@llvm_toolchain//:all --platforms=@toolchains_llvm//platforms:linux-aarch64 --config=gnu //bcc:bazel-compile-commands
+bazel build --platforms=//:linux_aarch64 --config=gnu //bcc:bazel-compile-commands
 ```
 
 ### Windows
