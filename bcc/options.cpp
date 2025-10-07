@@ -66,7 +66,7 @@ options::from_argv(int argc, char* argv[])
     ;
   // clang-format on
 
-  po::options_description desc("Usage: bazle-compile-commands [-hvcCBbsw] TARGETS");
+  po::options_description desc("Usage: bazel-compile-commands [-hvcCBbsw] TARGETS");
   desc.add(cfg);
   // clang-format off
   desc.add_options()
