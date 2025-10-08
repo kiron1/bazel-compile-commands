@@ -146,7 +146,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
           }
         }
         auto obj = boost::json::object();
-        obj.insert(boost::json::object::value_type{ "directory", execution_root_.string() });
+        obj.insert(boost::json::object::value_type{ "directory", workspace_path_.string() });
         if (command_) {
           obj.insert(boost::json::object::value_type{ "command", join_arguments(args) });
         } else {

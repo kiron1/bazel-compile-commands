@@ -148,6 +148,12 @@ main(int argc, char** argv)
         throw file_error("write", options.output_path);
       }
     }
+
+    auto external_symlink = bazel.workspace_path() / "external";
+    if (!std::filesystem::exists(external_symlink) &&
+        std::filesystem::symlink_status(external_symlink).type() == std::filesystem::file_type::not_found) {
+      std::filesystem::create_directory_symlink(bazel.output_base() / "external", external_symlink);
+    }
   } catch (std::exception const& ex) {
     std::cerr << "fatal error: " << ex.what() << std::endl;
     return 1;

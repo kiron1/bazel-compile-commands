@@ -78,12 +78,13 @@ bazel::create(std::filesystem::path const& bazel_path, std::vector<std::string> 
 {
   auto workspace = bazel_info(bazel_path, bazel_startup_options, "workspace");
   auto execution_root = bazel_info(bazel_path, bazel_startup_options, "execution_root");
+  auto output_base = bazel_info(bazel_path, bazel_startup_options, "output_base");
 
   if (workspace.empty()) {
     throw workspace_error();
   }
 
-  return bazel(bazel_path, std::move(bazel_startup_options), workspace, execution_root);
+  return bazel(bazel_path, std::move(bazel_startup_options), workspace, execution_root, output_base);
 }
 
 analysis::ActionGraphContainer
@@ -120,11 +121,13 @@ bazel::aquery(std::string const& query,
 bazel::bazel(std::filesystem::path bazel_commands,
              std::vector<std::string> bazel_startup_options,
              std::filesystem::path workspace_path,
-             std::filesystem::path execution_root)
+             std::filesystem::path execution_root,
+             std::filesystem::path output_base)
   : bazel_command_(std::move(bazel_commands))
   , bazel_startup_options_(std::move(bazel_startup_options))
   , workspace_path_(std::move(workspace_path))
   , execution_root_(std::move(execution_root))
+  , output_base_(std::move(output_base))
 {
 }
 } // namespace bcc

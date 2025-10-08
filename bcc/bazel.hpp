@@ -44,6 +44,9 @@ public:
   // Return the path to the execution root of bazel
   std::filesystem::path execution_root() const { return execution_root_; };
 
+  // Return the path to the output base of bazel
+  std::filesystem::path output_base() const { return output_base_; };
+
   // Execute an `aquery` on the current workspace.
   analysis::ActionGraphContainer aquery(std::string const& query,
                                         std::vector<std::string> const& bazel_flags,
@@ -54,12 +57,14 @@ private:
   bazel(std::filesystem::path bazel_command,
         std::vector<std::string> bazel_startup_options,
         std::filesystem::path workspace,
-        std::filesystem::path execution_root);
+        std::filesystem::path execution_root,
+        std::filesystem::path output_base);
 
 private:
   std::filesystem::path bazel_command_;
   std::vector<std::string> bazel_startup_options_;
   std::filesystem::path workspace_path_;
   std::filesystem::path execution_root_;
+  std::filesystem::path output_base_;
 };
 } // namespace bcc
