@@ -58,6 +58,7 @@ pkg_files(
     name = "bin_files",
     srcs = [
         "//bcc:bazel-compile-commands-bin",
+        "//clangd-wrapper:bazel-clangd-wrapper-bin",
     ],
     attributes = pkg_attributes(mode = "0755"),
     prefix = "bin",
