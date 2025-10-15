@@ -1,6 +1,5 @@
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
-load("//bazel:version_h.bzl", "version_h")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,7 +7,7 @@ cc_binary(
     name = "bazel-clangd-wrapper-binary",
     srcs = [
         "main.cpp",
-        ":version",
+        "//bcc:version",
     ],
     linkopts = select({
         "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
@@ -49,11 +48,4 @@ genrule(
     outs = ["bazel-clangd-wrapper.1"],
     cmd = "$(location //:pandoc) -f markdown -t man -o $@ $(location README.md)",
     tools = ["//:pandoc"],
-)
-
-version_h(
-    name = "version",
-    out = "version.h",
-    varname = "BCC_VERSION",
-    version = "//:version",
 )

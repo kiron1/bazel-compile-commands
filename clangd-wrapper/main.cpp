@@ -1,4 +1,4 @@
-#include "clangd-wrapper/version.h"
+#include "bcc/version.h"
 #include <algorithm>
 #include <filesystem>
 #include <iostream>
@@ -7,6 +7,12 @@
 #include <vector>
 #include <boost/process.hpp>
 #include <boost/program_options.hpp>
+
+#ifdef _WIN32
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#endif
 
 namespace fs = std::filesystem;
 namespace bp = boost::process;
@@ -113,15 +119,24 @@ main(int argc, char* argv[])
     clangd_args.push_back("--path-mappings=" + workspace_dir.string() + "=" + execution_root.value());
   }
 
-  int exit_code = 0;
+#ifdef _WIN32
   try {
     bp::child clangd(get_absolute_executable_path(clangd_path), bp::args(clangd_args));
     clangd.wait();
-    exit_code = clangd.exit_code();
+    return clangd.exit_code();
   } catch (bp::process_error const& e) {
-    std::cerr << "Couldn't launch clangd: " << e.what() << std::endl;
+    std::cerr << "fatal error: couldn't launch clangd: " << e.what() << std::endl;
     return 1;
   }
-
-  return exit_code;
+#else
+  std::vector<char*> clangd_argv;
+  clangd_argv.push_back(const_cast<char*>(clangd_path.c_str()));
+  for (auto const& arg : clangd_args) {
+    clangd_argv.push_back(const_cast<char*>(arg.c_str()));
+  }
+  clangd_argv.push_back(nullptr);
+  execvp(clangd_path.c_str(), clangd_argv.data());
+  std::cerr << "fatal error: couldn't launch clangd: " << strerror(errno) << std::endl;
+  return 1;
+#endif
 }
