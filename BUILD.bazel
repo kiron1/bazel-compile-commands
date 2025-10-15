@@ -66,7 +66,10 @@ pkg_files(
 
 pkg_files(
     name = "man_files",
-    srcs = [":man"],
+    srcs = [
+        ":man",
+        "//clangd-wrapper:man",
+    ],
     prefix = "share/man/man1",
 )
 

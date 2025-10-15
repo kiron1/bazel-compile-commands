@@ -43,6 +43,14 @@ copy_file(
     is_executable = True,
 )
 
+genrule(
+    name = "man",
+    srcs = ["README.md"],
+    outs = ["bazel-clangd-wrapper.1"],
+    cmd = "$(location //:pandoc) -f markdown -t man -o $@ $(location README.md)",
+    tools = ["//:pandoc"],
+)
+
 version_h(
     name = "version",
     out = "version.h",

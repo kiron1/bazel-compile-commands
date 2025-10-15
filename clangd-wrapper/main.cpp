@@ -75,7 +75,7 @@ main(int argc, char* argv[])
   // clang-format on
 
   // Arguments before -- are passed to the wrapper, arguments after -- are passed to clangd.
-  char** split_iter = std::find(argv, argv + argc, std::string("--"));
+  char** const split_iter = std::find(argv, argv + argc, std::string("--"));
   std::vector<char*> wrapper_args(argv, split_iter);
   std::vector<std::string> clangd_args;
   if (split_iter != argv + argc) {
@@ -103,12 +103,12 @@ main(int argc, char* argv[])
     return 0;
   }
 
-  std::string bazel_path = vm["bazel-path"].as<std::string>();
-  std::string clangd_path = vm["clangd-path"].as<std::string>();
+  std::string const bazel_path = vm["bazel-path"].as<std::string>();
+  std::string const clangd_path = vm["clangd-path"].as<std::string>();
 
-  fs::path workspace_dir = get_workspace_dir(clangd_args);
+  fs::path const workspace_dir = get_workspace_dir(clangd_args);
 
-  std::optional<std::string> execution_root = get_bazel_execution_root(bazel_path, workspace_dir);
+  std::optional<std::string> const execution_root = get_bazel_execution_root(bazel_path, workspace_dir);
   if (execution_root) {
     clangd_args.push_back("--path-mappings=" + workspace_dir.string() + "=" + execution_root.value());
   }
