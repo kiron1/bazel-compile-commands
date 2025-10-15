@@ -55,3 +55,7 @@ bazel-clangd-wrapper --bazel-path bazelisk -- --log=verbose --background-index
 
 This sets the Bazel executable to `bazelisk`, while passing logging and indexing
 options to clangd.
+
+# SEE ALSO
+
+bazel-compile-commands(1)
