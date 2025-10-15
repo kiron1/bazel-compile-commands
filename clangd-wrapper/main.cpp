@@ -29,11 +29,17 @@ get_absolute_executable_path(bp::filesystem::path const& path)
 }
 
 std::optional<std::string>
-get_bazel_execution_root(std::string const& bazel_path, std::string const& workspace_dir)
+get_bazel_execution_root(std::string const& bazel_path,
+                         std::string const& workspace_dir,
+                         std::vector<std::string> const& bazel_startup_options)
 {
   bp::ipstream is;
-  bp::child c(
-    get_absolute_executable_path(bazel_path), "info", "execution_root", bp::std_out > is, bp::start_dir(workspace_dir));
+  bp::child c(get_absolute_executable_path(bazel_path),
+              bazel_startup_options,
+              "info",
+              "execution_root",
+              bp::std_out > is,
+              bp::start_dir(workspace_dir));
   c.wait();
 
   std::string result;
@@ -76,8 +82,9 @@ main(int argc, char* argv[])
   desc.add_options()
     ("help,h", "Produce help message")
     ("version,V", "print version")
-    ("bazel-path", po::value<std::string>()->default_value("bazel"), "Path to the bazel executable")
-    ("clangd-path", po::value<std::string>()->default_value("clangd"), "Path to the clangd executable");
+    ("bazel-path", po::value<std::string>()->default_value("bazel"), "path to the bazel executable")
+    ("clangd-path", po::value<std::string>()->default_value("clangd"), "path to the clangd executable")
+    ("bazelsupopt,s", po::value<std::vector<std::string>>()->value_name("OPTION"), "bazel startup options");
   // clang-format on
 
   // Arguments before -- are passed to the wrapper, arguments after -- are passed to clangd.
@@ -111,10 +118,12 @@ main(int argc, char* argv[])
 
   std::string const bazel_path = vm["bazel-path"].as<std::string>();
   std::string const clangd_path = vm["clangd-path"].as<std::string>();
+  std::vector<std::string> const bazel_startup_options = vm["bazelsupopt"].as<std::vector<std::string>>();
 
   fs::path const workspace_dir = get_workspace_dir(clangd_args);
 
-  std::optional<std::string> const execution_root = get_bazel_execution_root(bazel_path, workspace_dir);
+  std::optional<std::string> const execution_root =
+    get_bazel_execution_root(bazel_path, workspace_dir, bazel_startup_options);
   if (execution_root) {
     clangd_args.push_back("--path-mappings=" + workspace_dir.string() + "=" + execution_root.value());
   }

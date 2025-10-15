@@ -8,7 +8,7 @@
 
 **bazel-clangd-wrapper** [**-h**]
 
-**bazel-clangd-wrapper** [**--bazel-path** BAZEL-PATH] [**--clangd-path** CLANGD-PATH] [ -- CLANGD-OPTIONS ]
+**bazel-clangd-wrapper** [**--bazel-path** BAZEL-PATH] [**--clangd-path** CLANGD-PATH] [**-s** BAZEL-STARTUP-OPTION ] [ -- CLANGD-OPTIONS ]
 
 <!-- deno-fmt-ignore-end -->
 
@@ -37,6 +37,10 @@ clangd to associate the workspace source files with Bazel's output base.
 -h, --help
 
 : Show the available options and exit.
+
+-s, --bazelsupopt **OPTION**
+
+: Additional Bazel startup options to be added to the `bazel` call.
 
 # EXAMPLES
 
