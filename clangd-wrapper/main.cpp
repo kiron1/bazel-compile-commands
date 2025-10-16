@@ -8,7 +8,7 @@
 #include <boost/process.hpp>
 #include <boost/program_options.hpp>
 
-#ifdef _WIN32
+#ifndef _WIN32
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
