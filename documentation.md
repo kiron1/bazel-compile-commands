@@ -152,3 +152,7 @@ We group by the output attribute, since this should be unique per
 produces multiple district `output` files).
 
 More information about `jq` can be found at: https://jqlang.github.io/jq/manual/
+
+# SEE ALSO
+
+bazel-clangd-wrapper(1)

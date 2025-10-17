@@ -1,0 +1,51 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_binary(
+    name = "bazel-clangd-wrapper-binary",
+    srcs = [
+        "main.cpp",
+        "//bcc:version",
+    ],
+    linkopts = select({
+        "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
+        "//conditions:default": [],
+    }),
+    deps = [
+        "@boost.process",
+        "@boost.program_options",
+    ],
+)
+
+universal_binary(
+    name = "bazel-clangd-wrapper-universal",
+    binary = ":bazel-clangd-wrapper-binary",
+    target_compatible_with = ["@platforms//os:macos"],
+)
+
+alias(
+    name = "bazel-clangd-wrapper-alias",
+    actual =
+        select({
+            "@platforms//os:macos": ":bazel-clangd-wrapper-universal",
+            "//conditions:default": ":bazel-clangd-wrapper-binary",
+        }),
+)
+
+copy_file(
+    name = "bazel-clangd-wrapper-bin",
+    src = ":bazel-clangd-wrapper-alias",
+    out = "bazel-clangd-wrapper",
+    allow_symlink = False,
+    is_executable = True,
+)
+
+genrule(
+    name = "man",
+    srcs = ["README.md"],
+    outs = ["bazel-clangd-wrapper.1"],
+    cmd = "$(location //:pandoc) -f markdown -t man -o $@ $(location README.md)",
+    tools = ["//:pandoc"],
+)
