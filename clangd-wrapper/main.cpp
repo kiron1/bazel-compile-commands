@@ -118,7 +118,8 @@ main(int argc, char* argv[])
 
   std::string const bazel_path = vm["bazel-path"].as<std::string>();
   std::string const clangd_path = vm["clangd-path"].as<std::string>();
-  std::vector<std::string> const bazel_startup_options = vm["bazelsupopt"].as<std::vector<std::string>>();
+  std::vector<std::string> const bazel_startup_options =
+    vm["bazelsupopt"].empty() ? std::vector<std::string>() : vm["bazelsupopt"].as<std::vector<std::string>>();
 
   fs::path const workspace_dir = get_workspace_dir(clangd_args);
 
