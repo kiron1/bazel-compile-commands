@@ -28,6 +28,10 @@ The `bazel-compile-commands` command is ideal when you need a
 the `compile_commands.json` file. For example in CI use cases when you when
 static analysis tools use a `compile_commands.json` file as input.
 
+## Installation
+
+Navigate to the [release](https://github.com/kiron1/bazel-compile-commands/releases) page to obtain the corresponding binary installation package.
+
 ## Usage of `bazel-compile-commands`
 
 Inside a Bazel workspace run:
