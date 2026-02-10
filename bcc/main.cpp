@@ -72,7 +72,7 @@ main(int argc, char** argv)
       return 1;
     }
 
-    auto const bazel = bcc::bazel::create(options.bazel_command, options.bazel_startup_options);
+    auto const bazel = bcc::bazel::create(options.bazel_command, options.bazel_startup_options, options.bazel_flags);
 
     if (options.write_rc_file) {
       if (!options.rcpath.has_value()) {

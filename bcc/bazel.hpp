@@ -33,7 +33,9 @@ public:
 class bazel
 {
 public:
-  static bazel create(std::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options);
+  static bazel create(std::filesystem::path const& bazel_path,
+                      std::vector<std::string> bazel_startup_options,
+                      std::vector<std::string> bazel_flags);
 
   // Path of the `bazel` executable.
   std::filesystem::path command_path() const { return bazel_command_; };

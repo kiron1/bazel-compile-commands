@@ -22,10 +22,12 @@ namespace {
 std::filesystem::path
 bazel_info(std::filesystem::path const& bazel_path,
            std::vector<std::string> const& bazel_startup_options,
+           std::vector<std::string> const& bazel_flags,
            std::string const& location)
 {
   std::vector<std::string> args(std::begin(bazel_startup_options), std::end(bazel_startup_options));
   args.push_back("info");
+  args.insert(args.end(), bazel_flags.begin(), bazel_flags.end());
   args.push_back(location);
   boost::process::ipstream outs;
   boost::process::ipstream errs;
@@ -74,10 +76,12 @@ proto_error::proto_error(std::string const& what)
 }
 
 bazel
-bazel::create(std::filesystem::path const& bazel_path, std::vector<std::string> bazel_startup_options)
+bazel::create(std::filesystem::path const& bazel_path,
+              std::vector<std::string> bazel_startup_options,
+              std::vector<std::string> bazel_flags)
 {
-  auto workspace = bazel_info(bazel_path, bazel_startup_options, "workspace");
-  auto execution_root = bazel_info(bazel_path, bazel_startup_options, "execution_root");
+  auto workspace = bazel_info(bazel_path, bazel_startup_options, bazel_flags, "workspace");
+  auto execution_root = bazel_info(bazel_path, bazel_startup_options, bazel_flags, "execution_root");
 
   if (workspace.empty()) {
     throw workspace_error();
