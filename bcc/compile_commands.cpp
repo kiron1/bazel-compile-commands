@@ -129,8 +129,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
       auto const output = art.path_of_artifact(action.primary_output_id());
       auto file = std::optional<std::string>{};
       for (auto const& k : action.input_dep_set_ids()) {
-        auto const set = dep_set.get(k);
-        file = set.find_if(is_cc_suffix);
+        file = dep_set.find_first_matching(k, is_cc_suffix);
         if (file.has_value()) {
           break;
         }

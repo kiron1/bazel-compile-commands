@@ -114,6 +114,16 @@ cc_library(
     ],
 )
 
+cc_test(
+    name = "dep_set_of_files_test",
+    size = "small",
+    srcs = ["dep_set_of_files_test.cpp"],
+    deps = [
+        ":dep_set_of_files",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "options",
     srcs = ["options.cpp"],
