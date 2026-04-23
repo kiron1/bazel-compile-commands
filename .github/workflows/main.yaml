@@ -105,7 +105,7 @@ jobs:
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Generate Package Name
         run: |
-         echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
+          echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
       - name: Build Release Package
         run: |
           bazel run \
@@ -136,7 +136,7 @@ jobs:
         with:
           path: |
             ~/.cache/bazel_build_cache
-          key: bazel-selftest-${{ hashFiles('MODUE.bazel') }}
+          key: bazel-selftest-${{ hashFiles('MODULE.bazel') }}
           restore-keys: |
             bazel-selftest-
       - name: Run bazel to generate worktree
@@ -154,6 +154,8 @@ jobs:
       - name: Run clang-tidy
         run: |
           clang-tidy -p "$(pwd)" $(find . -type f -name '*.cpp')
+      - name: Cache cleanup
+        run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   mkrelease:
     name: Create Release
