@@ -10,6 +10,9 @@ on:
   schedule:
     - cron: "42 11 * * 3"
 
+concurrency:
+  group: renovate
+
 jobs:
   renovate:
     runs-on: ubuntu-24.04
