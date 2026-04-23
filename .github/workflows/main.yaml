@@ -212,9 +212,18 @@ jobs:
     name: Success gate
     if: always()
     needs:
+      - test
+      - buildpkg
       - self_test
       - format_check
     runs-on: ubuntu-24.04
     steps:
       - name: Check
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
+        run: >
+          jq --exit-status --arg event '${{ github.event_name }}'
+          'if $event != "pull_request" then
+            del(.format_check)
+          else
+            .
+          end |
+          all(.[]; .result == "success")' <<< '${{ toJson(needs) }}'
