@@ -23,4 +23,7 @@ jobs:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
           RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
-          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          # github.head_ref is only available in pull requests, in all other events use config from main branch
+          RENOVATE_BASE_BRANCH_PATTERNS: ${{ format('["{0}"]', github.head_ref || 'main') }}
+          RENOVATE_USE_BASE_BRANCH_CONFIG: ${{ github.event_name == 'pull_request' && 'merge' || 'none' }}
+          RENOVATE_REPOSITORIES: ${{ format('["{0}"]', github.repository) }}
