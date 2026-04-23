@@ -56,23 +56,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - build: jammy-x86_64
-            os: ubuntu-22.04
-            config: gnu
-            platform: "//:linux_x86_64"
-            suffix: jammy_amd64
-            type: deb
           - build: noble-x86_64
             os: ubuntu-24.04
             config: gnu
             platform: "//:linux_x86_64"
             suffix: noble_amd64
-            type: deb
-          - build: jammy-aarch64
-            os: ubuntu-22.04
-            config: gnu
-            platform: "//:linux_aarch64"
-            suffix: jammy_arm64
             type: deb
           - build: noble-arm64
             os: ubuntu-24.04
