@@ -88,6 +88,7 @@ cc_library(
         ":dep_set_of_files",
         ":path_fragments",
         ":replacements",
+        ":string_utils",
         "@boost.io",
         "@boost.json",
     ],
@@ -110,7 +111,6 @@ cc_library(
     deps = [
         ":detail_analysis_v2",
         ":artifacts",
-        "@boost.core",
     ],
 )
 
@@ -120,6 +120,7 @@ cc_test(
     srcs = ["dep_set_of_files_test.cpp"],
     deps = [
         ":dep_set_of_files",
+        ":string_utils",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -162,6 +163,21 @@ cc_library(
     name = "replacements",
     srcs = ["replacements.cpp"],
     hdrs = ["replacements.hpp"],
+)
+
+cc_library(
+    name = "string_utils",
+    hdrs = ["string_utils.hpp"],
+)
+
+cc_test(
+    name = "string_utils_test",
+    size = "small",
+    srcs = ["string_utils_test.cpp"],
+    deps = [
+        ":string_utils",
+        "@com_google_googletest//:gtest_main",
+    ],
 )
 
 version_h(

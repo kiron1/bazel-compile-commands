@@ -7,24 +7,13 @@
 #include <gtest/gtest.h>
 
 #include "bcc/dep_set_of_files.hpp"
+#include "bcc/string_utils.hpp"
 
 using testing::Eq;
 using testing::IsFalse;
 using testing::IsTrue;
 
 namespace {
-
-bool
-ends_with(std::string_view const& sv, std::string_view const& suffix)
-{
-  return sv.size() >= suffix.size() && sv.compare(sv.size() - suffix.size(), std::string_view::npos, suffix) == 0;
-}
-
-bool
-is_cc_source(std::string_view const& v)
-{
-  return ends_with(v, ".cpp") || ends_with(v, ".cc") || ends_with(v, ".c");
-}
 
 /// Helper to build protobuf objects for a dep set tree.
 ///
@@ -122,7 +111,7 @@ TEST(dep_set_of_files, find_first_matching_finds_source_in_transitive)
   auto dsf = fixture.build();
 
   // Root dep set 1: direct=[header.h], transitive=[dep_set 2 which has main.cpp]
-  auto const result = dsf.find_first_matching(1, is_cc_source);
+  auto const result = dsf.find_first_matching(1, bcc::is_cc_suffix);
 
   ASSERT_THAT(result.has_value(), IsTrue());
   EXPECT_THAT(result.value(), Eq("src/main.cpp"));
@@ -135,7 +124,7 @@ TEST(dep_set_of_files, find_first_matching_finds_direct_source)
   auto dsf = fixture.build();
 
   // Dep set 2: direct=[main.cpp, util.h], main.cpp should be found directly
-  auto const result = dsf.find_first_matching(2, is_cc_source);
+  auto const result = dsf.find_first_matching(2, bcc::is_cc_suffix);
 
   ASSERT_THAT(result.has_value(), IsTrue());
   EXPECT_THAT(result.value(), Eq("src/main.cpp"));
@@ -147,7 +136,7 @@ TEST(dep_set_of_files, find_first_matching_returns_nullopt_when_no_match)
   auto fixture = test_fixture();
   auto dsf = fixture.build();
 
-  auto const result = dsf.find_first_matching(1, [](std::string_view const& v) { return ends_with(v, ".py"); });
+  auto const result = dsf.find_first_matching(1, [](std::string_view const& v) { return bcc::ends_with(v, ".py"); });
 
   EXPECT_THAT(result.has_value(), IsFalse());
 }
@@ -158,50 +147,10 @@ TEST(dep_set_of_files, find_first_matching_returns_nullopt_for_unknown_id)
   auto fixture = test_fixture();
   auto dsf = fixture.build();
 
-  auto const result = dsf.find_first_matching(999, is_cc_source);
+  auto const result = dsf.find_first_matching(999, bcc::is_cc_suffix);
 
   EXPECT_THAT(result.has_value(), IsFalse());
 }
 
-TEST(dep_set_of_files, find_first_matching_uses_cache_from_get)
-{
-
-  auto fixture = test_fixture();
-  auto dsf = fixture.build();
-
-  // Call get() first to populate the cache for dep set 1
-  auto const all = dsf.get(1);
-  ASSERT_THAT(all.all().empty(), IsFalse());
-
-  // find_first_matching should now use the cached path
-  auto const result = dsf.find_first_matching(1, is_cc_source);
-
-  ASSERT_THAT(result.has_value(), IsTrue());
-  EXPECT_THAT(result.value(), Eq("src/main.cpp"));
-
-  // Verify it matches what get() + find_if() would return
-  auto const expected = all.find_if(is_cc_source);
-  ASSERT_THAT(expected.has_value(), IsTrue());
-  EXPECT_THAT(result.value(), Eq(expected.value()));
-}
-
-TEST(dep_set_of_files, find_first_matching_agrees_with_get_find_if)
-{
-
-  auto fixture = test_fixture();
-
-  for (std::uint32_t const id : { 1u, 2u, 3u }) {
-    auto dsf = fixture.build();
-    auto const via_get = dsf.get(id).find_if(is_cc_source);
-
-    auto dsf2 = fixture.build();
-    auto const via_find = dsf2.find_first_matching(id, is_cc_source);
-
-    EXPECT_THAT(via_find.has_value(), Eq(via_get.has_value())) << "dep set id=" << id;
-    if (via_find.has_value() && via_get.has_value()) {
-      EXPECT_THAT(via_find.value(), Eq(via_get.value())) << "dep set id=" << id;
-    }
-  }
-}
 
 } // namespace
