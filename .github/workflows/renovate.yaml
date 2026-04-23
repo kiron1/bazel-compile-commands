@@ -1,0 +1,26 @@
+---
+name: Renovate
+
+on:
+  pull_request:
+    paths:
+      - "renovate.json"
+      - ".github/workflows/renovate.yaml"
+  workflow_dispatch:
+  schedule:
+    - cron: "42 11 * * 3"
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v46.1.10
+        with:
+          configurationFile: renovate.json
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
