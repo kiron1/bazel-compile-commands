@@ -10,8 +10,8 @@
 #
 
 $files = Get-ChildItem -Directory |
-    Where-Object Name -notmatch '^(\.git|bazel-|third_party)' |
+    Where-Object Name -notmatch '^(\.|bazel-|third_party)' |
     ForEach-Object { Get-ChildItem -Path $_.FullName -Recurse -Include *.cpp, *.hpp } |
     Select-Object -ExpandProperty FullName
 
-D:\work\clang\bin\clang-format --style=file --fallback-style=none @args @files
+clang-format --style=file --fallback-style=none @args @files
