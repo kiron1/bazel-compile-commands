@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "src/main/protobuf/analysis_v2.pb.h"
+#include "bcc/detail/analysis_v2.hpp"
 
 namespace bcc {
 ///  Path fragment table to build full path from workspace.

@@ -13,6 +13,13 @@ build --enable_runfiles
 build:cl --cxxopt=/std:c++17
 build:gnu --cxxopt=-std=c++17
 
+# Disable Boost's MSVC auto-link pragma; Bazel handles linking explicitly.
+build:cl --cxxopt=-DBOOST_ALL_NO_LIB
+
+# io_bazel's generated protobufs contain a field named 'environ', which MSVC CRT
+# turns into a macro. Suppress POSIX CRT name aliases only for io_bazel source files.
+build:cl --per_file_copt=.*io_bazel.*@/D_CRT_DECLARE_NONSTDC_NAMES=0
+
 build:gnu --copt=-pedantic
 build:gnu --copt=-Wall
 build:gnu --copt=-Wextra

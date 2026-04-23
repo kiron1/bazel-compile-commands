@@ -8,7 +8,7 @@
 
 #include <boost/core/span.hpp>
 
-#include "src/main/protobuf/analysis_v2.pb.h"
+#include "bcc/detail/analysis_v2.hpp"
 
 #include "bcc/artifacts.hpp"
 

@@ -50,7 +50,7 @@ filegroup(
     srcs = select({
         "@platforms//os:linux": ["@pandoc_linux_x86_64//:pandoc"],
         "@platforms//os:macos": [":pandoc_macos"],
-        "@platforms//os:windows": ["@pandoc_windowss_x86_64//:pandoc"],
+        "@platforms//os:windows": ["@pandoc_windows_x86_64//:pandoc"],
     }),
 )
 

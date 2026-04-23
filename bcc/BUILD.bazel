@@ -51,11 +51,17 @@ cc_proto_library(
 )
 
 cc_library(
+    name = "detail_analysis_v2",
+    hdrs = ["detail/analysis_v2.hpp"],
+    deps = [":analysis"],
+)
+
+cc_library(
     name = "artifacts",
     srcs = ["artifacts.cpp"],
     hdrs = ["artifacts.hpp"],
     deps = [
-        ":analysis",
+        ":detail_analysis_v2",
         ":path_fragments",
     ],
 )
@@ -66,7 +72,7 @@ cc_library(
     hdrs = ["bazel.hpp"],
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
-        ":analysis",
+        ":detail_analysis_v2",
         "@boost.json",
         "@boost.process",
     ],
@@ -77,7 +83,7 @@ cc_library(
     srcs = ["compile_commands.cpp"],
     hdrs = ["compile_commands.hpp"],
     deps = [
-        ":analysis",
+        ":detail_analysis_v2",
         ":artifacts",
         ":dep_set_of_files",
         ":path_fragments",
@@ -102,7 +108,7 @@ cc_library(
     srcs = ["dep_set_of_files.cpp"],
     hdrs = ["dep_set_of_files.hpp"],
     deps = [
-        ":analysis",
+        ":detail_analysis_v2",
         ":artifacts",
         "@boost.core",
     ],
@@ -127,7 +133,7 @@ cc_library(
     srcs = ["path_fragments.cpp"],
     hdrs = ["path_fragments.hpp"],
     deps = [
-        ":analysis",
+        ":detail_analysis_v2",
     ],
 )
 

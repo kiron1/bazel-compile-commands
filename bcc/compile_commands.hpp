@@ -8,7 +8,7 @@
 
 #include <boost/json/value.hpp>
 
-#include "src/main/protobuf/analysis_v2.pb.h"
+#include "bcc/detail/analysis_v2.hpp"
 
 namespace bcc {
 
