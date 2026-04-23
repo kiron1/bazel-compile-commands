@@ -8,7 +8,7 @@
   "automergeStrategy": "fast-forward",
   "prHourlyLimit": 4,
   "enabledManagers": [
-    "bazel-modules",
+    "bazel-module",
     "bazelisk",
     "github-actions"
   ],
