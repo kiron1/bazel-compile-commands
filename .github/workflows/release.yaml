@@ -1,0 +1,17 @@
+---
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  release:
+    uses: "./.github/workflows/main.yaml"
+    with:
+      version: ${{ github.event.release.tag_name }}
+    secrets: inherit
