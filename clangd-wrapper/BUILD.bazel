@@ -1,5 +1,6 @@
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,6 +10,7 @@ cc_binary(
         "main.cpp",
         "//bcc:version",
     ],
+    defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     linkopts = select({
         "@platforms//os:windows": ["-DEFAULTLIB:shell32.lib"],
         "//conditions:default": [],

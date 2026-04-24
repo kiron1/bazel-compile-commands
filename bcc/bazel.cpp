@@ -8,6 +8,9 @@
 #include <string>
 #include <string_view>
 
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/readable_pipe.hpp>
 #include <boost/process.hpp>
 
 #include <google/protobuf/io/coded_stream.h>
@@ -29,21 +32,30 @@ bazel_info(std::filesystem::path const& bazel_path,
   args.push_back("info");
   args.insert(args.end(), bazel_flags.begin(), bazel_flags.end());
   args.push_back(location);
-  boost::process::ipstream outs;
-  boost::process::ipstream errs;
-  boost::process::child bazel_proc(
-    bazel_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
 
-  auto line = std::string{};
-  std::getline(outs, line);
-  bazel_proc.wait();
-  auto const rc = bazel_proc.exit_code();
+  boost::asio::io_context ctx;
+  boost::asio::readable_pipe out_pipe(ctx);
+  boost::asio::readable_pipe err_pipe(ctx);
+  boost::process::process bazel_proc(ctx, bazel_path, args, boost::process::process_stdio{ {}, out_pipe, err_pipe });
+
+  std::string out_buf;
+  boost::system::error_code read_ec;
+  boost::asio::read(out_pipe, boost::asio::dynamic_buffer(out_buf), read_ec);
+
+  std::string err_buf;
+  boost::asio::read(err_pipe, boost::asio::dynamic_buffer(err_buf), read_ec);
+
+  auto const rc = bazel_proc.wait();
   if (rc != 0) {
-    std::ostringstream oss;
-    oss << errs.rdbuf();
-    throw bazel_error(bazel_path, args, rc, oss.str());
+    throw bazel_error(bazel_path, args, rc, err_buf);
   }
-  return std::filesystem::path(line);
+
+  // Return just the first line
+  auto pos = out_buf.find('\n');
+  if (pos != std::string::npos) {
+    out_buf.resize(pos);
+  }
+  return std::filesystem::path(out_buf);
 }
 
 std::string
@@ -106,15 +118,19 @@ bazel::aquery(std::string const& query,
   });
   args.push_back(query);
 
-  boost::process::ipstream outs;
-  boost::process::child bazel_proc(bazel_command_, boost::process::args(args), boost::process::std_out > outs);
+  boost::asio::io_context ctx;
+  boost::asio::readable_pipe out_pipe(ctx);
+  boost::process::process bazel_proc(ctx, bazel_command_, args, boost::process::process_stdio{ {}, out_pipe, {} });
+
+  std::string out_buf;
+  boost::system::error_code read_ec;
+  boost::asio::read(out_pipe, boost::asio::dynamic_buffer(out_buf), read_ec);
 
   analysis::ActionGraphContainer agc;
-  if (!agc.ParseFromIstream(&outs)) {
+  if (!agc.ParseFromString(out_buf)) {
     throw proto_error("failed to parse aquery output");
   }
-  bazel_proc.wait();
-  auto const rc = bazel_proc.exit_code();
+  auto const rc = bazel_proc.wait();
   if (rc != 0) {
     throw bazel_error(bazel_command_, args, rc, std::string());
   }

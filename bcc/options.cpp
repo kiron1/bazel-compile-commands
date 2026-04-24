@@ -6,7 +6,7 @@
 #include <iostream>
 #include <optional>
 
-#include <boost/process/search_path.hpp>
+#include <boost/process/environment.hpp>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
@@ -125,13 +125,13 @@ options::from_argv(int argc, char* argv[])
   }
 
   if (result.bazel_command.empty()) {
-    result.bazel_command = boost::process::search_path("bazelisk");
+    result.bazel_command = boost::process::environment::find_executable("bazelisk");
     if (result.bazel_command.empty()) {
-      result.bazel_command = boost::process::search_path("bazel");
+      result.bazel_command = boost::process::environment::find_executable("bazel");
     }
   } else {
     if (!result.bazel_command.is_absolute()) {
-      result.bazel_command = boost::process::search_path(result.bazel_command);
+      result.bazel_command = boost::process::environment::find_executable(result.bazel_command);
     }
   }
   if (!result.bazel_command.empty()) {
