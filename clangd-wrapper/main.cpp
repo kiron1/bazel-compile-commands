@@ -5,6 +5,9 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/readable_pipe.hpp>
 #include <boost/process.hpp>
 #include <boost/program_options.hpp>
 
@@ -18,13 +21,13 @@ namespace fs = std::filesystem;
 namespace bp = boost::process;
 namespace po = boost::program_options;
 
-bp::filesystem::path
-get_absolute_executable_path(bp::filesystem::path const& path)
+std::filesystem::path
+get_absolute_executable_path(std::filesystem::path const& path)
 {
   if (path.is_absolute()) {
     return path;
   } else {
-    return bp::search_path(path);
+    return bp::environment::find_executable(path);
   }
 }
 
@@ -33,33 +36,36 @@ get_bazel_execution_root(std::string const& bazel_path,
                          std::string const& workspace_dir,
                          std::vector<std::string> const& bazel_startup_options)
 {
-  bp::ipstream is;
-  bp::child c(get_absolute_executable_path(bazel_path),
-              bazel_startup_options,
-              "info",
-              "execution_root",
-              bp::std_out > is,
-              bp::start_dir(workspace_dir));
-  c.wait();
-
-  std::string result;
-  std::string line;
-  while (std::getline(is, line)) {
-    result += line;
+  boost::asio::io_context ctx;
+  boost::asio::readable_pipe out_pipe(ctx);
+  std::vector<std::string> bp_args;
+  for (auto const& opt : bazel_startup_options) {
+    bp_args.push_back(opt);
   }
+  bp_args.push_back("info");
+  bp_args.push_back("execution_root");
+  bp::process c(ctx,
+                get_absolute_executable_path(bazel_path),
+                bp_args,
+                bp::process_stdio{ {}, out_pipe, {} },
+                bp::process_start_dir(workspace_dir));
 
-  int exit_code = c.exit_code();
+  std::string out_buf;
+  boost::system::error_code read_ec;
+  boost::asio::read(out_pipe, boost::asio::dynamic_buffer(out_buf), read_ec);
+
+  int exit_code = c.wait();
   if (exit_code != 0) {
     std::cerr << "Failed to run 'bazel info execution_root'. Exit code: " << exit_code << std::endl;
     return std::nullopt;
   }
 
   // Remove trailing newline
-  if (!result.empty() && result.back() == '\n') {
-    result.pop_back();
+  if (!out_buf.empty() && out_buf.back() == '\n') {
+    out_buf.pop_back();
   }
 
-  return result;
+  return out_buf;
 }
 
 fs::path
@@ -131,10 +137,11 @@ main(int argc, char* argv[])
 
 #ifdef _WIN32
   try {
-    bp::child clangd(get_absolute_executable_path(clangd_path), bp::args(clangd_args));
-    clangd.wait();
-    return clangd.exit_code();
-  } catch (bp::process_error const& e) {
+    boost::asio::io_context ctx;
+    bp::process clangd(ctx, get_absolute_executable_path(clangd_path), clangd_args);
+    auto rc = clangd.wait();
+    return rc;
+  } catch (boost::system::system_error const& e) {
     std::cerr << "fatal error: couldn't launch clangd: " << e.what() << std::endl;
     return 1;
   }
