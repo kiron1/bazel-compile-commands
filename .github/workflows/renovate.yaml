@@ -6,6 +6,11 @@ on:
     paths:
       - "renovate.json"
       - ".github/workflows/renovate.yaml"
+  # trigger renovate post push to maain
+  # to give renovate a chance to update their PRs
+  push:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: "42 11 * * 3"

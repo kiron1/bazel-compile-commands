@@ -3,9 +3,10 @@
   "baseBranchPatterns": ["main"],
   "gitAuthor": "GitHub Actions <github-actions[bot]@users.noreply.github.com>",
   "configMigration": true,
-  "rebaseWhen": "conflicted",
-  "labels": ["dependencies"],
   "automergeStrategy": "fast-forward",
+  "automerge": true,
+  "rebaseWhen": "auto",
+  "labels": ["dependencies"],
   "prHourlyLimit": 4,
   "enabledManagers": [
     "bazel-module",
