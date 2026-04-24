@@ -111,8 +111,6 @@ pkg_filegroup(
     }),
 )
 
-
-
 pkg_deb(
     name = "deb",
     architecture = select({
@@ -126,8 +124,8 @@ pkg_deb(
     maintainer = "Kiron <kiron1@gmail.com>",
     package = "bazel-compile-commands",
     package_file_name = "bazel-compile-commands_{version}_{architecture}.deb",
-    package_variables = "@//:variables",
-    version_file = "@//:version_file",
+    package_variables = ":variables",
+    version_file = ":version",
 )
 
 pkg_tar(
@@ -142,7 +140,7 @@ pkg_zip(
         "@platforms//os:macos": "bazel-compile-commands_{version}_{os}_universal.zip",
         "//conditions:default": "bazel-compile-commands_{version}_{os}_{architecture}.zip",
     }),
-    package_variables = "@//:variables",
+    package_variables = ":variables",
 )
 
 sh_binary(
@@ -173,17 +171,9 @@ pkg_variables(
         "@platforms//os:windows": "windows",
         "//conditions:default": "unknown",
     }),
-    version = "//:version",
 )
 
 pkg_version(
-    name = "version_file",
-    out = "version.txt",
-    version = "//:version",
-)
-
-string_flag(
     name = "version",
-    build_setting_default = "0",
-    visibility = ["//visibility:public"],
+    out = "version.txt",
 )

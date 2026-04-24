@@ -1,11 +1,10 @@
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-
 def _version_h_impl(ctx):
     guard = "{}_{}_H_INCLUDED".format(ctx.label.name.upper(), ctx.attr.varname)
     content = [
         "#ifndef {}".format(guard),
-        "#define {} \"{}\"".format(ctx.attr.varname, ctx.attr.version[BuildSettingInfo].value),
+        "#define {} \"{}\"".format(ctx.attr.varname, ctx.attr.version),
         "#endif",
+        "",
     ]
     ctx.actions.write(
         output = ctx.outputs.out,
@@ -15,7 +14,7 @@ def _version_h_impl(ctx):
     runfiles = ctx.runfiles(files = [ctx.outputs.out])
     return [DefaultInfo(files = files, data_runfiles = runfiles)]
 
-version_h = rule(
+_version_h = rule(
     implementation = _version_h_impl,
     output_to_genfiles = True,
     attrs = {
@@ -23,9 +22,18 @@ version_h = rule(
         "varname": attr.string(
             doc = "Name of the varible to hold the versions",
         ),
-        "version": attr.label(
+        "version": attr.string(
             doc = "Version of this build.",
         ),
     },
     doc = "Version as C/C++ header file.",
 )
+
+def version_h(name, out, varname, **kwargs):
+    _version_h(
+        name = name,
+        out = out,
+        varname = varname,
+        version = native.module_version(),
+        **kwargs
+    )
