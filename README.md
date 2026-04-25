@@ -1,6 +1,7 @@
 # `compile_commands.json` generator for Bazel
 
-![bazel-compile-commands build status of main branch](https://github.com/kiron1/bazel-compile-commands/actions/workflows/main.yaml/badge.svg)
+[![bazel-compile-commands build status of main branch](https://github.com/kiron1/bazel-compile-commands/actions/workflows/main.yaml/badge.svg)](https://github.com/kiron1/bazel-compile-commands/actions/workflows/main.yaml)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 This repository contains two tools to generate a `compile_commands.json` file
 from a Bazel workspace without the need to modify any of the Bazel configuration
