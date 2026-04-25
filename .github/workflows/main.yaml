@@ -46,7 +46,7 @@ jobs:
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
-        if: runner.os != 'Windows'
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   buildpkg:
@@ -105,31 +105,26 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Generate Package Name
+        id: pkg
         shell: bash
-        run: |
-         echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
-      - name: Build Release Package (Linux/macOS)
-        if: runner.os != 'Windows'
-        run: |
-          bazel run \
-            --platforms "${{ matrix.platform }}" \
-            --config=${{ matrix.config }} \
-            --config=ci --config=release \
-            --//:version=${{ github.event.inputs.version || 0 }} \
-            --disk_cache=~/.cache/bazel_build_cache \
-            //:copy_${{ matrix.type }} -- "${PKGFILE}"
-      - name: Build Release Package (Windows)
-        if: runner.os == 'Windows'
+        run: echo "pkgfile=bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_OUTPUT
+      - name: Build Release Package
         run: >
-          bazel run --platforms "${{ matrix.platform }}" --config=${{ matrix.config }} --config=ci --config=release --//:version=${{ github.event.inputs.version || 0 }} --disk_cache=~/.cache/bazel_build_cache //:copy_${{ matrix.type }} -- $env:PKGFILE
+          bazel run
+          --platforms "${{ matrix.platform }}"
+          --config=${{ matrix.config }}
+          --config=ci --config=release
+          --//:version=${{ github.event.inputs.version || 0 }}
+          --disk_cache=~/.cache/bazel_build_cache
+          //:copy_${{ matrix.type }} -- "${{ steps.pkg.outputs.pkgfile }}"
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-bazel-${{ matrix.build }}
-          path: ${{ env.PKGFILE }}
+          path: ${{ steps.pkg.outputs.pkgfile }}
           if-no-files-found: error
       - name: Cache cleanup
-        if: runner.os != 'Windows'
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   self_test:
