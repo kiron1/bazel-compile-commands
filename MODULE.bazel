@@ -22,7 +22,7 @@ bazel_dep(name = "rules_python", version = "1.6.3")
 bazel_dep(name = "toolchains_musl", version = "0.1.27", dev_dependency = True)
 
 # https://github.com/protocolbuffers/protobuf/issues/22073#issuecomment-2936499960
-bazel_dep(name = "abseil-cpp", version = "20250814.1", repo_name = None)
+bazel_dep(name = "abseil-cpp", version = "20250814.2", repo_name = None)
 
 bazel_dep(name = "googletest", version = "1.17.0.bcr.1", dev_dependency = True, repo_name = "com_google_googletest")
 
