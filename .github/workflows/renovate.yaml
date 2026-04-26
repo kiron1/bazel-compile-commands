@@ -24,6 +24,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
+      - name: Bazel module lock file for renovate
+        # when no MODULE.bazel.lock file is present, renovate
+        # will skip the balze-module manager
+        run: bazel mod --config=ci deps --lockfile_mode=update
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v46.1.10
         with:

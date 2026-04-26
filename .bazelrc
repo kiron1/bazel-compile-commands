@@ -7,6 +7,11 @@ startup --windows_enable_symlinks
 common --verbose_failures
 common --incompatible_strict_action_env
 
+common:ci --show_timestamps
+common:ci --color=no
+common:ci --curses=no
+common:ci --show_timestamps
+
 build --ui_event_filters=-info
 build --enable_runfiles
 
@@ -25,9 +30,6 @@ build:gnu --copt=-Wall
 build:gnu --copt=-Wextra
 
 build:release --compilation_mode=opt
-
-build:ci --show_timestamps
-build:ci --curses=no
 
 test --test_output=errors
 test --test_env=HOME
