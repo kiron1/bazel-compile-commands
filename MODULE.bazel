@@ -4,27 +4,43 @@ module(
     compatibility_level = 0,
 )
 
-bazel_dep(name = "apple_support", version = "1.23.1", repo_name = "build_bazel_apple_support")
-bazel_dep(name = "bazel_skylib", version = "1.8.2")
-bazel_dep(name = "boost.core", version = "1.87.0")
-bazel_dep(name = "boost.io", version = "1.87.0")
-bazel_dep(name = "boost.json", version = "1.87.0")
-bazel_dep(name = "boost.process", version = "1.87.0")
-bazel_dep(name = "boost.program_options", version = "1.87.0")
-bazel_dep(name = "googleapis", version = "0.0.0-20250826-a92cee39")
+bazel_dep(name = "apple_support", version = "2.5.3", repo_name = "build_bazel_apple_support")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+bazel_dep(name = "boost.core", version = "1.90.0.bcr.1")
+bazel_dep(name = "boost.io", version = "1.90.0.bcr.1")
+bazel_dep(name = "boost.json", version = "1.90.0.bcr.1")
+bazel_dep(name = "boost.process", version = "1.90.0.bcr.1")
+bazel_dep(name = "boost.program_options", version = "1.90.0.bcr.1")
+bazel_dep(name = "googleapis", version = "0.0.0-20260422-20ac242a")
+bazel_dep(name = "grpc", version = "1.80.0", repo_name = "com_github_grpc_grpc")
+bazel_dep(name = "grpc-java", version = "1.78.0.bcr.1")
 bazel_dep(name = "platforms", version = "1.0.0")
-bazel_dep(name = "protobuf", version = "32.1", repo_name = "com_google_protobuf")
+bazel_dep(name = "protobuf", version = "34.1", repo_name = "com_google_protobuf")
 bazel_dep(name = "rules_apple", version = "4.5.3", repo_name = "build_bazel_rules_apple")
-bazel_dep(name = "rules_cc", version = "0.2.9")
-bazel_dep(name = "rules_java", version = "8.16.1")
-bazel_dep(name = "rules_pkg", version = "1.1.0")
-bazel_dep(name = "rules_python", version = "1.6.3")
-bazel_dep(name = "toolchains_musl", version = "0.1.27", dev_dependency = True)
+bazel_dep(name = "rules_cc", version = "0.2.18")
+bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "rules_java", version = "9.6.1")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "rules_python", version = "1.9.0")
+bazel_dep(name = "rules_shell", version = "0.8.0")
+bazel_dep(name = "rules_swift", version = "3.5.0", repo_name = "build_bazel_rules_swift")
+
+# ERROR: Error computing the main repository mapping: rules_apple@4.5.3 depends on rules_swift@3.5.0
+# with compatibility level 3, but grpc@1.80.0 depends on rules_swift@2.5.0 with compatibility level 2
+# which is different
+single_version_override(
+    module_name = "rules_swift",
+    version = "3.5.0",
+)
+
+bazel_dep(name = "llvm", version = "0.7.3")
+
+register_toolchains("@llvm//toolchain:all")
 
 # https://github.com/protocolbuffers/protobuf/issues/22073#issuecomment-2936499960
 bazel_dep(name = "abseil-cpp", version = "20250814.2", repo_name = None)
 
-bazel_dep(name = "googletest", version = "1.17.0.bcr.1", dev_dependency = True, repo_name = "com_google_googletest")
+bazel_dep(name = "googletest", version = "1.17.0.bcr.2", dev_dependency = True, repo_name = "com_google_googletest")
 
 apple_cc_configure = use_extension(
     "@build_bazel_apple_support//crosstool:setup.bzl",
@@ -36,10 +52,10 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 
 http_archive(
     name = "io_bazel",
-    integrity = "sha256-T/Rg0FAsA7Wcdy9zjXdLedbAWaPVDq+MDnczfdh0m9s=",
-    strip_prefix = "bazel-8.0.0",
+    integrity = "sha256-gePV8mxHrn7TeSx6GmMW1AqjFgZt5deLQDtWO2KrYQY=",
+    strip_prefix = "bazel-9.0.2",
     urls = [
-        "https://github.com/bazelbuild/bazel/archive/refs/tags/8.0.0.tar.gz",
+        "https://github.com/bazelbuild/bazel/archive/refs/tags/9.0.2.tar.gz",
     ],
 )
 

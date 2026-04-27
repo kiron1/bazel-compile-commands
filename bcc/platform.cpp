@@ -3,6 +3,9 @@
 #include <optional>
 #include <sstream>
 #include <string_view>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/readable_pipe.hpp>
 #include <boost/process.hpp>
 
 namespace bcc {
@@ -13,27 +16,37 @@ std::optional<std::string>
 output_of(std::string_view cmd, std::vector<std::string_view> args)
 {
   try {
-    boost::process::ipstream outs;
-    boost::process::ipstream errs;
-
-    auto cmd_path = boost::process::search_path(cmd.data());
+    auto cmd_path = boost::process::environment::find_executable(cmd.data());
     if (cmd_path.empty()) {
       return std::nullopt;
     }
-    boost::process::child proc(
-      cmd_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
 
-    auto line = std::string{};
-    std::getline(outs, line);
-    proc.wait();
-    auto const rc = proc.exit_code();
+    boost::asio::io_context ctx;
+    boost::asio::readable_pipe out_pipe(ctx);
+    boost::asio::readable_pipe err_pipe(ctx);
+    std::vector<std::string> str_args(args.begin(), args.end());
+    boost::process::process proc(ctx, cmd_path, str_args, boost::process::process_stdio{ {}, out_pipe, err_pipe });
+
+    std::string out_buf;
+    boost::system::error_code read_ec;
+    auto n = boost::asio::read(out_pipe, boost::asio::dynamic_buffer(out_buf), read_ec);
+    (void)n;
+
+    std::string err_buf;
+    boost::asio::read(err_pipe, boost::asio::dynamic_buffer(err_buf), read_ec);
+
+    auto const rc = proc.wait();
     if (rc != 0) {
-      std::ostringstream oss;
-      oss << errs.rdbuf();
-      throw platform_error(oss.str());
+      throw platform_error(err_buf);
     }
-    return line;
-  } catch (boost::process::process_error const& ex) {
+
+    // Return just the first line
+    auto pos = out_buf.find('\n');
+    if (pos != std::string::npos) {
+      out_buf.resize(pos);
+    }
+    return out_buf;
+  } catch (boost::system::system_error const& ex) {
     return std::nullopt;
   }
 }

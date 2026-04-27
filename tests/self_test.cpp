@@ -5,6 +5,9 @@
 #include <vector>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/readable_pipe.hpp>
 #include <boost/json.hpp>
 #include <boost/process.hpp>
 
@@ -33,22 +36,27 @@ exe_suffix()
 boost::json::value
 run(std::filesystem::path const& commmand, std::vector<std::string_view> args)
 {
-  auto outs = boost::process::ipstream{};
-  auto proc = boost::process::child(commmand, boost::process::args(args), boost::process::std_out > outs);
+  boost::asio::io_context ctx;
+  boost::asio::readable_pipe out_pipe(ctx);
+  std::vector<std::string> str_args(args.begin(), args.end());
+  boost::process::process proc(ctx, commmand, str_args, boost::process::process_stdio{ {}, out_pipe, {} });
+
+  std::string out_buf;
+  boost::system::error_code read_ec;
+  boost::asio::read(out_pipe, boost::asio::dynamic_buffer(out_buf), read_ec);
 
   auto json_parser = boost::json::stream_parser{};
   json_parser.reset();
-  auto line = std::string{};
 
-  while (std::getline(outs, line)) {
+  {
     auto ec = boost::system::error_code{};
-    json_parser.write(line, ec);
+    json_parser.write(out_buf, ec);
     if (ec) {
       throw std::runtime_error("invalid JSON");
     }
   }
-  proc.wait();
-  auto const rc = proc.exit_code();
+
+  auto const rc = proc.wait();
   if (rc != 0 || !json_parser.done()) {
     throw std::runtime_error("JSON error");
   }
