@@ -3,7 +3,6 @@ Checks:          'clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,-*,
 WarningsAsErrors: '*'
 FormatStyle: 'file'
 HeaderFilterRegex: 'bcc/.*\.hpp'
-AnalyzeTemporaryDtors: false
 CheckOptions:
   - key:             readability-identifier-naming.AbstractClassCase
     value:           lower_case
