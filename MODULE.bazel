@@ -33,7 +33,9 @@ single_version_override(
     version = "3.5.0",
 )
 
-bazel_dep(name = "toolchains_musl", version = "0.1.27", dev_dependency = True)
+bazel_dep(name = "llvm", version = "0.7.3")
+
+register_toolchains("@llvm//toolchain:all")
 
 # https://github.com/protocolbuffers/protobuf/issues/22073#issuecomment-2936499960
 bazel_dep(name = "abseil-cpp", version = "20250814.2", repo_name = None)

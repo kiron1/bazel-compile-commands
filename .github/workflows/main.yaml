@@ -62,30 +62,30 @@ jobs:
           - build: noble-x86_64
             os: ubuntu-24.04
             config: gnu
-            platform: "//:linux_x86_64"
+            platform: "@llvm//platforms:linux_x86_64_musl"
             suffix: noble_amd64
             type: deb
           - build: noble-arm64
             os: ubuntu-24.04
             config: gnu
-            platform: "//:linux_aarch64"
+            platform: "@llvm//platforms:linux_aarch64_musl"
             suffix: noble_arm64
             type: deb
           - build: linux-amd64
             os: ubuntu-24.04
             config: gnu
-            platform: "//:linux_x86_64"
+            platform: "@llvm//platforms:linux_x86_64_musl"
             suffix: linux_amd64
             type: zip
           - build: linux-arm64
             os: ubuntu-24.04
             config: gnu
-            platform: "//:linux_aarch64"
+            platform: "@llvm//platforms:linux_aarch64_musl"
             suffix: linux_arm64
             type: zip
           - build: macos-universal
             os: macos-latest
-            platform: "//:apple-darwin-aarch64"
+            platform: "@llvm//platforms:macos_aarch64"
             config: gnu
             suffix: macos_universal
             type: zip
