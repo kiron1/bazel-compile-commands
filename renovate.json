@@ -15,10 +15,13 @@
   ],
   "packageRules": [
     {
+      "matchManagers": ["bazel-module"],
+      "matchPackageNames": ["boost.*"],
+      "groupName": "boost"
+    },
+    {
       "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "automerge": true,
-      "pinDigests": false
+      "matchUpdateTypes": ["major", "minor", "patch"]
     },
     {
       "matchDatasources": ["*"],
