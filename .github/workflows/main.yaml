@@ -7,6 +7,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_call:
+    inputs:
+      version:
+        type: string
   workflow_dispatch:
     inputs:
       version:
@@ -48,10 +52,28 @@ jobs:
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
+  version:
+    name: Version
+    runs-on: ubuntu-24.04
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Version
+        id: version
+        run: |
+          VERSION=${VERSION#v}
+          printf 'version=%s\n' "${VERSION}" | tee -a "${GITHUB_OUTPUT}"
+        env:
+          VERSION: ${{ github.event.inputs.version || 'v0.0.0' }}
+
   buildpkg:
     name: Build Release Asset
     runs-on: ${{ matrix.os }}
-    needs: test
+    needs:
+      - test
+      - version
 
     strategy:
       matrix:
@@ -105,14 +127,14 @@ jobs:
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Generate Package Name
         run: |
-          echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
+          echo PKGFILE="bazel-compile-commands_${{ needs.version.outputs.version }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
       - name: Build Release Package
         run: |
           bazel run \
           --platforms "${{ matrix.platform }}" \
           --config=${{ matrix.config }} \
           --config=ci --config=release \
-          --//:version=${{ github.event.inputs.version || 0 }} \
+          --//:version=${{ needs.version.outputs.version }} \
           --disk_cache=~/.cache/bazel_build_cache \
           //:copy_${{ matrix.type }} -- "${PKGFILE}"
       - name: Upload package artifact
@@ -163,7 +185,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - buildpkg
-    if: github.event_name == 'workflow_dispatch'
+      - version
+    if: github.event_name == 'workflow_call' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout repository
@@ -177,10 +200,10 @@ jobs:
       #   run: |
       #     ./tools/archive.sh
       #   env:
-      #     TAG: v${{ github.event.inputs.version }}
+      #     TAG: v${{ needs.version.outputs.version }}
       - name: Create Release
         run: |
-          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip
+          gh release upload v${{ needs.version.outputs.version }} *.deb *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
