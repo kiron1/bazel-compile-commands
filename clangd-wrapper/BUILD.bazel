@@ -35,11 +35,27 @@ alias(
 )
 
 copy_file(
-    name = "bazel-clangd-wrapper-bin",
+    name = "bazel-clangd-wrapper-bin-unix",
     src = ":bazel-clangd-wrapper-alias",
     out = "bazel-clangd-wrapper",
     allow_symlink = False,
     is_executable = True,
+)
+
+copy_file(
+    name = "bazel-clangd-wrapper-bin-windows",
+    src = ":bazel-clangd-wrapper-alias",
+    out = "bazel-clangd-wrapper.exe",
+    allow_symlink = False,
+    is_executable = True,
+)
+
+filegroup(
+    name = "bazel-clangd-wrapper-bin",
+    srcs = select({
+        "@platforms//os:windows": [":bazel-clangd-wrapper-bin-windows"],
+        "//conditions:default": [":bazel-clangd-wrapper-bin-unix"],
+    }),
 )
 
 genrule(

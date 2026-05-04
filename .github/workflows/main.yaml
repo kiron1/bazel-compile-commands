@@ -87,7 +87,7 @@ jobs:
             config: gnu
             suffix: macos_universal
             type: zip
-          - build: windows
+          - build: windows-amd64
             os: windows-2022
             config: cl
             suffix: windows_amd64

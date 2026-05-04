@@ -69,7 +69,10 @@ pkg_files(
         "//clangd-wrapper:bazel-clangd-wrapper-bin",
     ],
     attributes = pkg_attributes(mode = "0755"),
-    prefix = "bin",
+    prefix = select({
+        "@platforms//os:windows": "",
+        "//conditions:default": "bin",
+    }),
 )
 
 pkg_files(
@@ -78,7 +81,10 @@ pkg_files(
         ":man",
         "//clangd-wrapper:man",
     ],
-    prefix = "share/man/man1",
+    prefix = select({
+        "@platforms//os:windows": "man",
+        "//conditions:default": "share/man/man1",
+    }),
 )
 
 pkg_filegroup(
@@ -87,8 +93,13 @@ pkg_filegroup(
         ":bin_files",
         ":man_files",
     ],
-    prefix = "/usr",
+    prefix = select({
+        "@platforms//os:windows": "bazel-compile-commands",
+        "//conditions:default": "/usr",
+    }),
 )
+
+
 
 pkg_deb(
     name = "deb",
