@@ -23,14 +23,14 @@ jobs:
       matrix:
         build:
           - linux
-          # - windows
+          - windows
         include:
           - build: linux
             os: ubuntu-24.04
             config: gnu
-          # - build: windows
-          #  os: windows-2019
-          #  config: cl
+          - build: windows
+            os: windows-2022
+            config: cl
 
     steps:
       - name: Checkout repository
@@ -46,6 +46,7 @@ jobs:
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   buildpkg:
@@ -86,11 +87,11 @@ jobs:
             config: gnu
             suffix: macos_universal
             type: zip
-          # - build: windows
-          #   os: windows-2019
-          #   config: cl
-          #   suffix: windows_amd64
-          #   type: zip
+          - build: windows-amd64
+            os: windows-2022
+            config: cl
+            suffix: windows_amd64
+            type: zip
 
     steps:
       - name: Checkout repository
@@ -104,24 +105,26 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Generate Package Name
-        run: |
-          echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
+        id: pkg
+        shell: bash
+        run: echo "pkgfile=bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_OUTPUT
       - name: Build Release Package
-        run: |
-          bazel run \
-          --platforms "${{ matrix.platform }}" \
-          --config=${{ matrix.config }} \
-          --config=ci --config=release \
-          --//:version=${{ github.event.inputs.version || 0 }} \
-          --disk_cache=~/.cache/bazel_build_cache \
-          //:copy_${{ matrix.type }} -- "${PKGFILE}"
+        run: >
+          bazel run
+          --platforms "${{ matrix.platform }}"
+          --config=${{ matrix.config }}
+          --config=ci --config=release
+          --//:version=${{ github.event.inputs.version || 0 }}
+          --disk_cache=~/.cache/bazel_build_cache
+          //:copy_${{ matrix.type }} -- "${{ steps.pkg.outputs.pkgfile }}"
       - name: Upload package artifact
         uses: actions/upload-artifact@v7
         with:
           name: pkg-bazel-${{ matrix.build }}
-          path: ${{ env.PKGFILE }}
+          path: ${{ steps.pkg.outputs.pkgfile }}
           if-no-files-found: error
       - name: Cache cleanup
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   self_test:
@@ -157,6 +160,21 @@ jobs:
           clang-tidy -p "$(pwd)" $(find . -type f -name '*.cpp')
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
+
+  self_test_windows:
+    name: Self test (Windows)
+    runs-on: windows-2022
+    needs: buildpkg
+    steps:
+      - name: Download pkg artifact
+        uses: actions/download-artifact@v8
+        with:
+          pattern: pkg-bazel-windows-amd64
+          path: pkg-bazel-windows-amd64
+      - name: Extract
+        run: Expand-Archive -Path pkg-bazel-windows-amd64\*.zip -DestinationPath pkg-bazel-windows-amd64\extracted
+      - name: Run --version
+        run: pkg-bazel-windows-amd64\extracted\bazel-compile-commands\bazel-compile-commands.exe --version
 
   mkrelease:
     name: Create Release
