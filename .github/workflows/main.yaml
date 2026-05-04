@@ -161,6 +161,21 @@ jobs:
       - name: Cache cleanup
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
+  self_test_windows:
+    name: Self test (Windows)
+    runs-on: windows-2022
+    needs: buildpkg
+    steps:
+      - name: Download pkg artifact
+        uses: actions/download-artifact@v8
+        with:
+          pattern: pkg-bazel-windows-amd64
+          path: pkg-bazel-windows-amd64
+      - name: Extract
+        run: Expand-Archive -Path pkg-bazel-windows-amd64\*.zip -DestinationPath pkg-bazel-windows-amd64\extracted
+      - name: Run --version
+        run: pkg-bazel-windows-amd64\extracted\bazel-compile-commands\bazel-compile-commands.exe --version
+
   mkrelease:
     name: Create Release
     runs-on: ubuntu-latest
