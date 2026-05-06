@@ -65,3 +65,11 @@ genrule(
     cmd = "$(location //:pandoc) -f markdown -t man -o $@ $(location README.md)",
     tools = ["//:pandoc"],
 )
+
+genrule(
+    name = "html",
+    srcs = ["README.md"],
+    outs = ["bazel-clangd-wrapper.html"],
+    cmd = "$(location //:pandoc) -f markdown -t html -s -o $@ $(location README.md)",
+    tools = ["//:pandoc"],
+)

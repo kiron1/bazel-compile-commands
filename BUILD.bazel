@@ -34,7 +34,7 @@ platform(
     constraint_values = [
         "@platforms//os:linux",
         "@platforms//cpu:aarch64",
-    ]
+    ],
 )
 
 filegroup(
@@ -62,6 +62,14 @@ genrule(
     tools = [":pandoc"],
 )
 
+genrule(
+    name = "html",
+    srcs = ["documentation.md"],
+    outs = ["bazel-compile-commands.html"],
+    cmd = "$(location :pandoc) -f markdown -t html -s -o $@ $(location documentation.md)",
+    tools = [":pandoc"],
+)
+
 pkg_files(
     name = "bin_files",
     srcs = [
@@ -69,20 +77,23 @@ pkg_files(
         "//clangd-wrapper:bazel-clangd-wrapper-bin",
     ],
     attributes = pkg_attributes(mode = "0755"),
-    prefix = select({
-        "@platforms//os:windows": "",
-        "//conditions:default": "bin",
-    }),
+    prefix = "bin",
 )
 
 pkg_files(
     name = "man_files",
-    srcs = [
-        ":man",
-        "//clangd-wrapper:man",
-    ],
+    srcs = select({
+        "@platforms//os:windows": [
+            ":html",
+            "//clangd-wrapper:html",
+        ],
+        "//conditions:default": [
+            ":man",
+            "//clangd-wrapper:man",
+        ],
+    }),
     prefix = select({
-        "@platforms//os:windows": "man",
+        "@platforms//os:windows": "doc",
         "//conditions:default": "share/man/man1",
     }),
 )

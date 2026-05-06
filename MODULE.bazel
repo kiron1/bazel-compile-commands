@@ -19,6 +19,7 @@ bazel_dep(name = "rules_cc", version = "0.2.9")
 bazel_dep(name = "rules_java", version = "8.16.1")
 bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_python", version = "1.6.3")
+
 bazel_dep(name = "toolchains_musl", version = "0.1.27", dev_dependency = True)
 
 # https://github.com/protocolbuffers/protobuf/issues/22073#issuecomment-2936499960
