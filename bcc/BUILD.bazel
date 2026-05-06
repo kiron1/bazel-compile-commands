@@ -83,9 +83,9 @@ cc_library(
     srcs = ["compile_commands.cpp"],
     hdrs = ["compile_commands.hpp"],
     deps = [
-        ":detail_analysis_v2",
         ":artifacts",
         ":dep_set_of_files",
+        ":detail_analysis_v2",
         ":path_fragments",
         ":replacements",
         "@boost.io",
@@ -108,8 +108,8 @@ cc_library(
     srcs = ["dep_set_of_files.cpp"],
     hdrs = ["dep_set_of_files.hpp"],
     deps = [
-        ":detail_analysis_v2",
         ":artifacts",
+        ":detail_analysis_v2",
         "@boost.core",
     ],
 )

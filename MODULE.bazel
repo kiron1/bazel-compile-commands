@@ -1,7 +1,6 @@
 module(
     name = "bazel-compile-commands",
     version = "0.21.0",
-    compatibility_level = 0,
 )
 
 bazel_dep(name = "apple_support", version = "2.5.4", repo_name = "build_bazel_apple_support")
@@ -19,6 +18,8 @@ bazel_dep(name = "rules_cc", version = "0.2.18")
 bazel_dep(name = "rules_java", version = "9.6.1")
 bazel_dep(name = "rules_pkg", version = "1.2.0")
 bazel_dep(name = "rules_python", version = "2.0.0")
+bazel_dep(name = "rules_shell", version = "0.8.0")
+
 bazel_dep(name = "toolchains_musl", version = "0.1.27", dev_dependency = True)
 
 # https://github.com/protocolbuffers/protobuf/issues/22073#issuecomment-2936499960
