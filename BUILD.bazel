@@ -63,6 +63,14 @@ genrule(
     tools = [":pandoc"],
 )
 
+genrule(
+    name = "html",
+    srcs = ["documentation.md"],
+    outs = ["bazel-compile-commands.html"],
+    cmd = "$(location :pandoc) -f markdown -t html -s -o $@ $(location documentation.md)",
+    tools = [":pandoc"],
+)
+
 pkg_files(
     name = "bin_files",
     srcs = [
@@ -75,11 +83,20 @@ pkg_files(
 
 pkg_files(
     name = "man_files",
-    srcs = [
-        ":man",
-        "//clangd-wrapper:man",
-    ],
-    prefix = "share/man/man1",
+    srcs = select({
+        "@platforms//os:windows": [
+            ":html",
+            "//clangd-wrapper:html",
+        ],
+        "//conditions:default": [
+            ":man",
+            "//clangd-wrapper:man",
+        ],
+    }),
+    prefix = select({
+        "@platforms//os:windows": "doc",
+        "//conditions:default": "share/man/man1",
+    }),
 )
 
 pkg_filegroup(
@@ -88,8 +105,13 @@ pkg_filegroup(
         ":bin_files",
         ":man_files",
     ],
-    prefix = "/usr",
+    prefix = select({
+        "@platforms//os:windows": "bazel-compile-commands",
+        "//conditions:default": "/usr",
+    }),
 )
+
+
 
 pkg_deb(
     name = "deb",

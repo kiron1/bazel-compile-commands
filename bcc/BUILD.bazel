@@ -38,11 +38,27 @@ alias(
 )
 
 copy_file(
-    name = "bazel-compile-commands-bin",
+    name = "bazel-compile-commands-bin-unix",
     src = ":bazel-compile-commands-alias",
     out = "bazel-compile-commands",
     allow_symlink = False,
     is_executable = True,
+)
+
+copy_file(
+    name = "bazel-compile-commands-bin-windows",
+    src = ":bazel-compile-commands-alias",
+    out = "bazel-compile-commands.exe",
+    allow_symlink = False,
+    is_executable = True,
+)
+
+filegroup(
+    name = "bazel-compile-commands-bin",
+    srcs = select({
+        "@platforms//os:windows": [":bazel-compile-commands-bin-windows"],
+        "//conditions:default": [":bazel-compile-commands-bin-unix"],
+    }),
 )
 
 cc_proto_library(

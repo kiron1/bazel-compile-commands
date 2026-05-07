@@ -8,7 +8,7 @@ dst=${1:-${BUILD_WORKSPACE_DIRECTORY}}
 # Take care of relative path, since this scripts working directoy is
 # not the one where `bazel run ...` was called.
 case "${dst}" in
-/*) ;;
+/*|[A-Za-z]:/*) ;;  # absolute: Unix path or Windows drive letter (e.g. D:/...)
 *) dst=${BUILD_WORKING_DIRECTORY}/${dst} ;;
 esac
 
