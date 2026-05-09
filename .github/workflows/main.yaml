@@ -187,6 +187,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - buildpkg
+      - self_test
+      - self_test_windows
       - version
     if: github.event_name == 'release'
 
@@ -240,6 +242,7 @@ jobs:
       - test
       - buildpkg
       - self_test
+      - self_test_windows
       - format_check
     runs-on: ubuntu-24.04
     steps:
