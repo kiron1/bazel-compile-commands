@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.2](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.1...bazel-compile-commands-v0.22.2) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ci:** restore suffix in pkg file name ([30dc1b7](https://github.com/kiron1/bazel-compile-commands/commit/30dc1b7c0f3912dd877a1e1009ae74996ae7f465))
+
 ## [0.22.1](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.0...bazel-compile-commands-v0.22.1) (2026-05-09)
 
 
