@@ -123,7 +123,7 @@ jobs:
       - name: Generate Package Name
         id: pkg
         shell: bash
-        run: echo "pkgfile=bazel-compile-commands_${{ needs.version.outputs.version }}.${{ matrix.type}}" >> "${GITHUB_OUTPUT}"
+        run: echo "pkgfile=bazel-compile-commands_${{ needs.version.outputs.version }}-${{ matrix.suffix }}.${{ matrix.type}}" >> "${GITHUB_OUTPUT}"
       - name: Build Release Package
         run: >
           bazel run
