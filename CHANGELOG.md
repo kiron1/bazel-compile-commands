@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.1](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.0...bazel-compile-commands-v0.22.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ci:** release artifacts upload workflow ([2f53bdd](https://github.com/kiron1/bazel-compile-commands/commit/2f53bdd806c5a4c1045f049d87a958d205cccbca))
+
 ## [0.22.0](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.21.0...bazel-compile-commands-v0.22.0) (2026-05-09)
 
 
