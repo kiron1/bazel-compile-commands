@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.3](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.2...bazel-compile-commands-v0.22.3) (2026-05-09)
+
+
+### Bug Fixes
+
+* **ci:** enable build and test again ([6deed5a](https://github.com/kiron1/bazel-compile-commands/commit/6deed5acc690c1c198050e4745b70e264a1b98ae))
+
 ## [0.22.2](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.1...bazel-compile-commands-v0.22.2) (2026-05-09)
 
 
