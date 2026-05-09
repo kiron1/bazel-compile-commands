@@ -8,8 +8,7 @@ on:
   pull_request:
     branches: [main]
   release:
-    types:
-      - released
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -183,7 +182,7 @@ jobs:
         run: pkg-bazel-windows-amd64\extracted\bazel-compile-commands\bin\bazel-compile-commands.exe --version
 
   mkrelease:
-    name: Create Release
+    name: Upload release artifacts
     runs-on: ubuntu-latest
     needs:
       - buildpkg
@@ -193,8 +192,6 @@ jobs:
     if: github.event_name == 'release'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
       - name: Download pkg artifact
         uses: actions/download-artifact@v8
         with:
@@ -205,11 +202,12 @@ jobs:
       #     ./tools/archive.sh
       #   env:
       #     TAG: v${{ needs.version.outputs.version }}
-      - name: Create Release
+      - name: Upload artifacts
         run: |
-          gh release upload v${{ needs.version.outputs.version }} *.deb *.zip
+          gh release upload bazel-compile-commands-v${{ needs.version.outputs.version }} *.deb *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
 
   format_check:
     name: Style check
