@@ -12,7 +12,6 @@ on:
 jobs:
   test:
     name: Build and test
-    if: github.event_name != 'release'
     runs-on: ${{ matrix.os }}
 
     strategy:
