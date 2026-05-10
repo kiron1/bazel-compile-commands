@@ -6,6 +6,7 @@ startup --windows_enable_symlinks
 
 common --verbose_failures
 common --incompatible_strict_action_env
+common --experimental_strict_repo_env
 
 build --ui_event_filters=-info
 build --enable_runfiles
