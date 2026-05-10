@@ -117,7 +117,6 @@ pkg_deb(
         "@platforms//cpu:aarch64": "arm64",
         "@platforms//cpu:x86_64": "amd64",
     }),
-    built_using = "unzip (6.0.1)",
     data = ":tar",
     description = "Generates compile_commands.json file from a Bazel workspace",
     homepage = "https://github.com/kiron1/bazel-compile-commands",
@@ -131,6 +130,7 @@ pkg_deb(
 pkg_tar(
     name = "tar",
     srcs = [":usr_files"],
+    extension = "tar.xz",
 )
 
 pkg_zip(
