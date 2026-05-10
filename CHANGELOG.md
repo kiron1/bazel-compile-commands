@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.4](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.3...bazel-compile-commands-v0.22.4) (2026-05-10)
+
+
+### Bug Fixes
+
+* debian package format ([f01302e](https://github.com/kiron1/bazel-compile-commands/commit/f01302e849d520208e12033dc3588e095b24e299))
+
 ## [0.22.3](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.2...bazel-compile-commands-v0.22.3) (2026-05-09)
 
 
