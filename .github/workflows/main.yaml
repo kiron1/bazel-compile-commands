@@ -40,6 +40,12 @@ jobs:
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+      - name: Upload test logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: testlogs-${{ matrix.build }}
+          path: bazel-testlogs/**/test.log
       - name: Cache cleanup
         shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
