@@ -3,16 +3,11 @@
 name: main
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version `x.y.z` (without leading `v`)"
-        type: string
-        required: true
 
 jobs:
   test:
@@ -23,20 +18,20 @@ jobs:
       matrix:
         build:
           - linux
-          # - windows
+          - windows
         include:
           - build: linux
             os: ubuntu-24.04
             config: gnu
-          # - build: windows
-          #  os: windows-2019
-          #  config: cl
+          - build: windows
+            os: windows-2022
+            config: cl
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Bazel cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/bazel_build_cache
@@ -46,12 +41,33 @@ jobs:
       - name: Run bazel test
         run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
+
+  version:
+    name: Version
+    runs-on: ubuntu-24.04
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Version
+        id: version
+        run: bazel run --config=ci --disk_cache=~/.cache/bazel_build_cache //:version >> "${GITHUB_OUTPUT}"
+      - name: Show current version
+        run: printf 'version=%s\n' "${VERSION}"
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
 
   buildpkg:
     name: Build Release Asset
     runs-on: ${{ matrix.os }}
-    needs: test
+    needs:
+      - test
+      - version
 
     strategy:
       matrix:
@@ -86,17 +102,17 @@ jobs:
             config: gnu
             suffix: macos_universal
             type: zip
-          # - build: windows
-          #   os: windows-2019
-          #   config: cl
-          #   suffix: windows_amd64
-          #   type: zip
+          - build: windows-amd64
+            os: windows-2022
+            config: cl
+            suffix: windows_amd64
+            type: zip
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Bazel cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/bazel_build_cache
@@ -104,24 +120,25 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-bazel-buildpkg-
       - name: Generate Package Name
-        run: |
-         echo PKGFILE="bazel-compile-commands_${{ github.event.inputs.version || 0 }}-${{ matrix.suffix }}.${{ matrix.type}}" >> $GITHUB_ENV
+        id: pkg
+        shell: bash
+        run: echo "pkgfile=bazel-compile-commands_${{ needs.version.outputs.version }}-${{ matrix.suffix }}.${{ matrix.type}}" >> "${GITHUB_OUTPUT}"
       - name: Build Release Package
-        run: |
-          bazel run \
-          --platforms "${{ matrix.platform }}" \
-          --config=${{ matrix.config }} \
-          --config=ci --config=release \
-          --//:version=${{ github.event.inputs.version || 0 }} \
-          --disk_cache=~/.cache/bazel_build_cache \
-          //:copy_${{ matrix.type }} -- "${PKGFILE}"
+        run: >
+          bazel run
+          --platforms=${{ matrix.platform }}
+          --config=${{ matrix.config }}
+          --config=ci --config=release
+          --disk_cache=~/.cache/bazel_build_cache
+          //:copy_${{ matrix.type }} -- "${{ steps.pkg.outputs.pkgfile }}"
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pkg-bazel-${{ matrix.build }}
-          path: ${{ env.PKGFILE }}
+          path: ${{ steps.pkg.outputs.pkgfile }}
           if-no-files-found: error
       - name: Cache cleanup
+        shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
 
   self_test:
@@ -130,43 +147,51 @@ jobs:
     needs: buildpkg
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Bazel cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/bazel_build_cache
-          key: bazel-selftest-${{ hashFiles('MODUE.bazel') }}
-          restore-keys: |
-            bazel-selftest-
-      - name: Run bazel to generate worktree
-        run: bazel build --config=gnu --config=ci //...
+        uses: actions/checkout@v6
       - name: Download pkg artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: pkg-bazel-noble-x86_64
+          path: pkg-bazel-noble-x86_64
       - name: Install
         run: |
           sudo dpkg --install pkg-bazel-noble-x86_64/bazel-compile-commands_*.deb
       - name: Create compile-commands.json
         run: |
-          /usr/bin/bazel-compile-commands -v -a --config=gnu --replace=-fno-canonical-system-headers= //...
-      - name: Run clang-tidy
+          /usr/bin/bazel-compile-commands -v //...
+        working-directory: ./tests/project
+      - name: Check compile-commands.json
         run: |
-          clang-tidy -p "$(pwd)" $(find . -type f -name '*.cpp')
+          tests/project/check-compile-commands-json.py -p ./tests/project
+
+  self_test_windows:
+    name: Self test (Windows)
+    runs-on: windows-2022
+    needs: buildpkg
+    steps:
+      - name: Download pkg artifact
+        uses: actions/download-artifact@v8
+        with:
+          pattern: pkg-bazel-windows-amd64
+          path: pkg-bazel-windows-amd64
+      - name: Extract
+        run: Expand-Archive -Path pkg-bazel-windows-amd64\*.zip -DestinationPath pkg-bazel-windows-amd64\extracted
+      - name: Run --version
+        run: pkg-bazel-windows-amd64\extracted\bazel-compile-commands\bin\bazel-compile-commands.exe --version
 
   mkrelease:
-    name: Create Release
+    name: Upload release artifacts
     runs-on: ubuntu-latest
     needs:
       - buildpkg
-    if: github.event_name == 'workflow_dispatch'
+      - self_test
+      - self_test_windows
+      - version
+    if: github.event_name == 'release'
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
       - name: Download pkg artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: pkg-*
           merge-multiple: true
@@ -174,12 +199,13 @@ jobs:
       #   run: |
       #     ./tools/archive.sh
       #   env:
-      #     TAG: v${{ github.event.inputs.version }}
-      - name: Create Release
+      #     TAG: v${{ needs.version.outputs.version }}
+      - name: Upload artifacts
         run: |
-          gh release create v${{ github.event.inputs.version }} --generate-notes *.deb *.zip
+          gh release upload bazel-compile-commands-v${{ needs.version.outputs.version }} *.deb *.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
 
   format_check:
     name: Style check
@@ -188,11 +214,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - name: Install LLVM
-        uses: KyleMayes/install-llvm-action@v1.6.1
+        uses: KyleMayes/install-llvm-action@v2.0.9
         with:
           version: "15.0.6"
       - name: clang-format --version
@@ -209,9 +235,19 @@ jobs:
     name: Success gate
     if: always()
     needs:
+      - test
+      - buildpkg
       - self_test
+      - self_test_windows
       - format_check
     runs-on: ubuntu-24.04
     steps:
       - name: Check
-        run: jq --exit-status 'all(.result == "success")' <<< '${{ toJson(needs) }}'
+        run: >
+          jq --exit-status --arg event '${{ github.event_name }}'
+          'if $event != "pull_request" then
+            del(.format_check)
+          else
+            .
+          end |
+          all(.[]; .result == "success")' <<< '${{ toJson(needs) }}'

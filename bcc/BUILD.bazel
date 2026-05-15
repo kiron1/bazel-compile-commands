@@ -1,5 +1,9 @@
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+load("@com_google_protobuf//bazel:cc_proto_library.bzl", "cc_proto_library")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("//bazel:version_h.bzl", "version_h")
 
 package(default_visibility = ["//visibility:public"])
@@ -38,11 +42,27 @@ alias(
 )
 
 copy_file(
-    name = "bazel-compile-commands-bin",
+    name = "bazel-compile-commands-bin-unix",
     src = ":bazel-compile-commands-alias",
     out = "bazel-compile-commands",
     allow_symlink = False,
     is_executable = True,
+)
+
+copy_file(
+    name = "bazel-compile-commands-bin-windows",
+    src = ":bazel-compile-commands-alias",
+    out = "bazel-compile-commands.exe",
+    allow_symlink = False,
+    is_executable = True,
+)
+
+filegroup(
+    name = "bazel-compile-commands-bin",
+    srcs = select({
+        "@platforms//os:windows": [":bazel-compile-commands-bin-windows"],
+        "//conditions:default": [":bazel-compile-commands-bin-unix"],
+    }),
 )
 
 cc_proto_library(
@@ -83,9 +103,9 @@ cc_library(
     srcs = ["compile_commands.cpp"],
     hdrs = ["compile_commands.hpp"],
     deps = [
-        ":detail_analysis_v2",
         ":artifacts",
         ":dep_set_of_files",
+        ":detail_analysis_v2",
         ":path_fragments",
         ":replacements",
         ":string_utils",
@@ -109,8 +129,8 @@ cc_library(
     srcs = ["dep_set_of_files.cpp"],
     hdrs = ["dep_set_of_files.hpp"],
     deps = [
-        ":detail_analysis_v2",
         ":artifacts",
+        ":detail_analysis_v2",
     ],
 )
 
@@ -184,7 +204,6 @@ version_h(
     name = "version",
     out = "version.h",
     varname = "BCC_VERSION",
-    version = "//:version",
 )
 
 cc_test(

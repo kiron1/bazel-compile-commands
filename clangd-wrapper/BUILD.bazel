@@ -1,5 +1,6 @@
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@build_bazel_apple_support//rules:universal_binary.bzl", "universal_binary")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -35,11 +36,27 @@ alias(
 )
 
 copy_file(
-    name = "bazel-clangd-wrapper-bin",
+    name = "bazel-clangd-wrapper-bin-unix",
     src = ":bazel-clangd-wrapper-alias",
     out = "bazel-clangd-wrapper",
     allow_symlink = False,
     is_executable = True,
+)
+
+copy_file(
+    name = "bazel-clangd-wrapper-bin-windows",
+    src = ":bazel-clangd-wrapper-alias",
+    out = "bazel-clangd-wrapper.exe",
+    allow_symlink = False,
+    is_executable = True,
+)
+
+filegroup(
+    name = "bazel-clangd-wrapper-bin",
+    srcs = select({
+        "@platforms//os:windows": [":bazel-clangd-wrapper-bin-windows"],
+        "//conditions:default": [":bazel-clangd-wrapper-bin-unix"],
+    }),
 )
 
 genrule(
@@ -47,5 +64,13 @@ genrule(
     srcs = ["README.md"],
     outs = ["bazel-clangd-wrapper.1"],
     cmd = "$(location //:pandoc) -f markdown -t man -o $@ $(location README.md)",
+    tools = ["//:pandoc"],
+)
+
+genrule(
+    name = "html",
+    srcs = ["README.md"],
+    outs = ["bazel-clangd-wrapper.html"],
+    cmd = "$(location //:pandoc) -f markdown -t html -s -o $@ $(location README.md)",
     tools = ["//:pandoc"],
 )
