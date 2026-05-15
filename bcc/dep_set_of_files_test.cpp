@@ -1,5 +1,6 @@
 
 #include <cstdint>
+#include <filesystem>
 #include <string_view>
 #include <vector>
 
@@ -110,7 +111,7 @@ TEST(dep_set_of_files, find_first_matching_finds_source_in_transitive)
   auto const result = dsf.find_first_matching(1, bcc::is_cc_suffix);
 
   ASSERT_THAT(result.has_value(), IsTrue());
-  EXPECT_THAT(result.value(), Eq("src/main.cpp"));
+  EXPECT_THAT(std::filesystem::path(result.value()), Eq(std::filesystem::path("src/main.cpp")));
 }
 
 TEST(dep_set_of_files, find_first_matching_finds_direct_source)
@@ -123,7 +124,7 @@ TEST(dep_set_of_files, find_first_matching_finds_direct_source)
   auto const result = dsf.find_first_matching(2, bcc::is_cc_suffix);
 
   ASSERT_THAT(result.has_value(), IsTrue());
-  EXPECT_THAT(result.value(), Eq("src/main.cpp"));
+  EXPECT_THAT(std::filesystem::path(result.value()), Eq(std::filesystem::path("src/main.cpp")));
 }
 
 TEST(dep_set_of_files, find_first_matching_returns_nullopt_when_no_match)
