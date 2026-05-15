@@ -61,8 +61,7 @@ struct test_fixture
     add_dep_set(1, { 10 }, { 2 });
   }
 
-  void
-  add_path_fragment(std::uint32_t id, std::string const& label, std::uint32_t parent)
+  void add_path_fragment(std::uint32_t id, std::string const& label, std::uint32_t parent)
   {
     auto* pf = path_fragments.Add();
     pf->set_id(id);
@@ -72,18 +71,16 @@ struct test_fixture
     }
   }
 
-  void
-  add_artifact(std::uint32_t id, std::uint32_t path_fragment_id)
+  void add_artifact(std::uint32_t id, std::uint32_t path_fragment_id)
   {
     auto* a = artifacts.Add();
     a->set_id(id);
     a->set_path_fragment_id(path_fragment_id);
   }
 
-  void
-  add_dep_set(std::uint32_t id,
-              std::vector<std::uint32_t> const& direct,
-              std::vector<std::uint32_t> const& transitive)
+  void add_dep_set(std::uint32_t id,
+                   std::vector<std::uint32_t> const& direct,
+                   std::vector<std::uint32_t> const& transitive)
   {
     auto* ds = dep_sets.Add();
     ds->set_id(id);
@@ -95,8 +92,7 @@ struct test_fixture
     }
   }
 
-  bcc::dep_set_of_files
-  build() const
+  bcc::dep_set_of_files build() const
   {
     auto frags = bcc::path_fragments(path_fragments);
     auto arts = bcc::artifacts(artifacts, frags);
@@ -151,6 +147,5 @@ TEST(dep_set_of_files, find_first_matching_returns_nullopt_for_unknown_id)
 
   EXPECT_THAT(result.has_value(), IsFalse());
 }
-
 
 } // namespace

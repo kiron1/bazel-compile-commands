@@ -19,8 +19,7 @@ struct string_match_case
 };
 
 class starts_with_test : public testing::TestWithParam<string_match_case>
-{
-};
+{};
 
 TEST_P(starts_with_test, matches)
 {
@@ -40,8 +39,7 @@ INSTANTIATE_TEST_SUITE_P(string_utils,
                                          string_match_case{ "", "a", false }));
 
 class ends_with_test : public testing::TestWithParam<string_match_case>
-{
-};
+{};
 
 TEST_P(ends_with_test, matches)
 {
@@ -67,8 +65,7 @@ struct suffix_case
 };
 
 class is_cc_suffix_test : public testing::TestWithParam<suffix_case>
-{
-};
+{};
 
 TEST_P(is_cc_suffix_test, matches)
 {
