@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.5](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.4...bazel-compile-commands-v0.22.5) (2026-06-25)
+
+
+### Bug Fixes
+
+* remove abseil-cpp workaround ([d670dbc](https://github.com/kiron1/bazel-compile-commands/commit/d670dbce57f3491b33e3d101379b8b3730944089))
+
 ## [0.22.4](https://github.com/kiron1/bazel-compile-commands/compare/bazel-compile-commands-v0.22.3...bazel-compile-commands-v0.22.4) (2026-05-10)
 
 
