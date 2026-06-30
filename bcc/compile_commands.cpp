@@ -11,30 +11,11 @@
 #include "bcc/artifacts.hpp"
 #include "bcc/dep_set_of_files.hpp"
 #include "bcc/path_fragments.hpp"
+#include "bcc/string_utils.hpp"
 
 namespace bcc {
 
 namespace {
-
-/// starts_with for pre C++20
-bool
-starts_with(std::string_view const& sv, std::string_view const& prefix)
-{
-  return std::string_view(sv.data(), std::min(sv.size(), prefix.size())) == prefix;
-}
-/// ends_with for pre C++20
-bool
-ends_with(std::string_view const& sv, std::string_view const& suffix)
-{
-  return sv.size() >= suffix.size() && sv.compare(sv.size() - suffix.size(), std::string_view::npos, suffix) == 0;
-}
-
-bool
-is_cc_suffix(std::string_view const& v)
-{
-  return ends_with(v, ".C") || ends_with(v, ".c") || ends_with(v, ".cc") || ends_with(v, ".cxx") ||
-         ends_with(v, ".c++") || ends_with(v, ".cpp") || ends_with(v, ".m") || ends_with(v, ".mm");
-}
 
 /// Join an array of arguments into a commands string.
 std::string
@@ -129,8 +110,7 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
       auto const output = art.path_of_artifact(action.primary_output_id());
       auto file = std::optional<std::string>{};
       for (auto const& k : action.input_dep_set_ids()) {
-        auto const set = dep_set.get(k);
-        file = set.find_if(is_cc_suffix);
+        file = dep_set.find_first_matching(k, is_cc_suffix);
         if (file.has_value()) {
           break;
         }
