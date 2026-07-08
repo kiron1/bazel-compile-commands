@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Bazel cache
         uses: actions/cache@v6
         with:
@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Version
         id: version
         run: bazel run --config=ci --disk_cache=~/.cache/bazel_build_cache //:version >> "${GITHUB_OUTPUT}"
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Bazel cache
         uses: actions/cache@v6
         with:
@@ -147,7 +147,7 @@ jobs:
     needs: buildpkg
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Download pkg artifact
         uses: actions/download-artifact@v8
         with:
@@ -214,7 +214,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 1
       - name: Install LLVM
