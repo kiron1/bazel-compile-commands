@@ -26,6 +26,7 @@ jobs:
           - build: windows
             os: windows-2022
             config: cl
+            startup: --output_user_root=C:/b
 
     steps:
       - name: Checkout repository
@@ -39,7 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-test-
       - name: Run bazel test
-        run: bazel test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
+        run: bazel ${{ matrix.startup }} test --config=${{ matrix.config }} --config=ci --disk_cache=~/.cache/bazel_build_cache //...
       - name: Cache cleanup
         shell: bash
         run: ./tools/disk-cache-collect-garbage ~/.cache/bazel_build_cache
@@ -105,6 +106,7 @@ jobs:
           - build: windows-amd64
             os: windows-2022
             config: cl
+            startup: --output_user_root=C:/b
             suffix: windows_amd64
             type: zip
 
@@ -125,7 +127,7 @@ jobs:
         run: echo "pkgfile=bazel-compile-commands_${{ needs.version.outputs.version }}-${{ matrix.suffix }}.${{ matrix.type}}" >> "${GITHUB_OUTPUT}"
       - name: Build Release Package
         run: >
-          bazel run
+          bazel ${{ matrix.startup }} run
           --platforms=${{ matrix.platform }}
           --config=${{ matrix.config }}
           --config=ci --config=release
