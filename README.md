@@ -78,11 +78,6 @@ bazel build --platforms=@llvm//platforms:linux_aarch64_musl --config=gnu //bcc:b
 bazel build --config=cl //bcc:bazel-compile-commands
 ```
 
-`--config=cl` uses the hermetic `clang-cl` toolchain from `@llvm` with the
-Microsoft Visual C++ runtime and Windows SDK. It sets
-`BAZEL_MSVC_RUNTIME_VISUAL_STUDIO_EULA=1` and `BAZEL_WINDOWS_SDK_EULA=1`, which
-means you accept the respective Microsoft licenses.
-
 ## Alternative tools
 
 - [Bear](https://github.com/rizsotto/Bear) - Can work when used with the
