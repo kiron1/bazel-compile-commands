@@ -13,6 +13,15 @@ build --enable_runfiles
 build:cl --cxxopt=/std:c++17
 build:gnu --cxxopt=-std=c++17
 
+# Fail instead of silently falling back to a host C++ toolchain.
+build:gnu --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+
+# Hermetic clang-cl, MSVC runtime and Windows SDK from @llvm. Using the
+# Microsoft payloads requires accepting their licenses.
+build:cl --platforms=@llvm//platforms:windows_x86_64_msvc
+build:cl --repo_env=BAZEL_MSVC_RUNTIME_VISUAL_STUDIO_EULA=1
+build:cl --repo_env=BAZEL_WINDOWS_SDK_EULA=1
+
 # Disable Boost's MSVC auto-link pragma; Bazel handles linking explicitly.
 build:cl --cxxopt=-DBOOST_ALL_NO_LIB
 
