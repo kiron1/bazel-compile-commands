@@ -166,7 +166,7 @@ jobs:
 
   self_test_windows:
     name: Self test (Windows)
-    runs-on: windows-2022
+    runs-on: windows-2025
     needs: buildpkg
     steps:
       - name: Download pkg artifact
