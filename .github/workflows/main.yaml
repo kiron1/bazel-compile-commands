@@ -46,7 +46,7 @@ jobs:
 
   version:
     name: Version
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -143,7 +143,7 @@ jobs:
 
   self_test:
     name: Self test
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: buildpkg
     steps:
       - name: Checkout repository
@@ -240,7 +240,7 @@ jobs:
       - self_test
       - self_test_windows
       - format_check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Check
         run: >
