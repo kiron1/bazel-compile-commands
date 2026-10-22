@@ -13,6 +13,9 @@ build --enable_runfiles
 build:cl --cxxopt=/std:c++17
 build:gnu --cxxopt=-std=c++17
 
+# Fail instead of silently falling back to a host C++ toolchain.
+build:gnu --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+
 # Disable Boost's MSVC auto-link pragma; Bazel handles linking explicitly.
 build:cl --cxxopt=-DBOOST_ALL_NO_LIB
 
