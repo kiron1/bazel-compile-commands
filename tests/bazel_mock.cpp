@@ -202,18 +202,24 @@ execution_platform: "@local_config_platform//:host"
 int
 main(int argc, char** argv)
 {
+#ifdef _WIN32
+  _setmode(_fileno(stdout), _O_BINARY);
+#endif
   std::vector<std::string> arguments(argv + 1, argv + argc);
   auto info_iter = std::find(std::begin(arguments), std::end(arguments), "info");
   auto aquery_iter = std::find(std::begin(arguments), std::end(arguments), "aquery");
 
   if (info_iter != std::end(arguments)) {
+    auto const noise = std::string(2 * 1024 * 1024, 'x');
+    // Exceed pipe capacity on both streams around the requested location.
+    std::cerr << noise;
     ++info_iter;
     if (info_iter != std::end(arguments)) {
       if (*info_iter == std::string_view("workspace")) {
-        std::cout << "/tmp/workspace\n";
+        std::cout << "/tmp/workspace\n" << noise;
         return 0;
       } else if (*info_iter == std::string_view("execution_root")) {
-        std::cout << "/tmp/execroot\n";
+        std::cout << "/tmp/execroot\n" << noise;
         return 0;
       } else {
         std::cerr << "fatal error: invalid argument for workspace: invlaid location\n";
@@ -226,9 +232,6 @@ main(int argc, char** argv)
   } else if (aquery_iter != std::end(arguments)) {
     analysis::ActionGraphContainer agc;
     google::protobuf::TextFormat::ParseFromString(aquery_textproto, &agc);
-#ifdef _WIN32
-    _setmode(_fileno(stdout), _O_BINARY);
-#endif
     agc.SerializePartialToOstream(&std::cout);
     return 0;
   } else {
