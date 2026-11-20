@@ -3,7 +3,9 @@
 #include "bcc/bazel.hpp"
 
 #include <algorithm>
+#include <cstdio>
 #include <iterator>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -30,18 +32,17 @@ bazel_info(std::filesystem::path const& bazel_path,
   args.insert(args.end(), bazel_flags.begin(), bazel_flags.end());
   args.push_back(location);
   boost::process::ipstream outs;
-  boost::process::ipstream errs;
   boost::process::child bazel_proc(
-    bazel_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > errs);
+    bazel_path, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > stderr);
 
   auto line = std::string{};
   std::getline(outs, line);
+  // Drain stdout before waiting, retaining only the requested location.
+  outs.ignore(std::numeric_limits<std::streamsize>::max());
   bazel_proc.wait();
   auto const rc = bazel_proc.exit_code();
   if (rc != 0) {
-    std::ostringstream oss;
-    oss << errs.rdbuf();
-    throw bazel_error(bazel_path, args, rc, oss.str());
+    throw bazel_error(bazel_path, args, rc, std::string());
   }
   return std::filesystem::path(line);
 }
@@ -107,7 +108,8 @@ bazel::aquery(std::string const& query,
   args.push_back(query);
 
   boost::process::ipstream outs;
-  boost::process::child bazel_proc(bazel_command_, boost::process::args(args), boost::process::std_out > outs);
+  boost::process::child bazel_proc(
+    bazel_command_, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > stderr);
 
   analysis::ActionGraphContainer agc;
   if (!agc.ParseFromIstream(&outs)) {

@@ -7,7 +7,7 @@ cc_test(
     srcs = ["self_test.cpp"],
     data = [
         ":bazel-mock",
-        "//bcc:bazel-compile-commands",
+        "//bcc:bazel-compile-commands-bin",
     ],
     defines = ["BOOST_PROCESS_USE_STD_FS=1"],
     deps = [
