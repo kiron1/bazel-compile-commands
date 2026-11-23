@@ -141,8 +141,16 @@ compile_commands_builder::build(analysis::ActionGraphContainer const& action_gra
         if (resolve_) {
           std::error_code ec;
           auto const resolved = std::filesystem::canonical(execution_root_ / file.value(), ec);
-          if (!ec && starts_with(resolved.string(), workspace_path_.string())) {
-            file = resolved.string();
+          if (!ec) {
+            auto resolved_lower = resolved.generic_string();
+            auto workspace_lower = workspace_path_.generic_string();
+#ifdef _WIN32
+            std::transform(resolved_lower.begin(), resolved_lower.end(), resolved_lower.begin(), [](unsigned char c){ return std::tolower(c); });
+            std::transform(workspace_lower.begin(), workspace_lower.end(), workspace_lower.begin(), [](unsigned char c){ return std::tolower(c); });
+#endif
+            if (starts_with(resolved_lower, workspace_lower)) {
+              file = resolved.generic_string();
+            }
           }
         }
         auto obj = boost::json::object();
