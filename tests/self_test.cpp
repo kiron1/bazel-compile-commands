@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <filesystem>
 #include <stdexcept>
 #include <string>
@@ -34,7 +35,8 @@ boost::json::value
 run(std::filesystem::path const& commmand, std::vector<std::string_view> args)
 {
   auto outs = boost::process::ipstream{};
-  auto proc = boost::process::child(commmand, boost::process::args(args), boost::process::std_out > outs);
+  auto proc = boost::process::child(
+    commmand, boost::process::args(args), boost::process::std_out > outs, boost::process::std_err > stderr);
 
   auto json_parser = boost::json::stream_parser{};
   json_parser.reset();
@@ -62,11 +64,11 @@ TEST(self_test, run)
   std::unique_ptr<Runfiles> runfiles(Runfiles::CreateForTest(&error));
   ASSERT_THAT(runfiles, NotNull()) << error;
 
-  auto const bcc_path = runfiles->Rlocation("bazel-compile-commands/bcc/bazel-compile-commands") + exe_suffix();
+  auto const bcc_path = runfiles->Rlocation("bazel-compile-commands/bcc/bazel-compile-commands" + exe_suffix());
   ASSERT_THAT(bcc_path, Not(IsEmpty())) << bcc_path;
   ASSERT_THAT(std::filesystem::exists(bcc_path), IsTrue()) << bcc_path;
 
-  auto const bazel_path = runfiles->Rlocation("bazel-compile-commands/tests/bazel-mock") + exe_suffix();
+  auto const bazel_path = runfiles->Rlocation("bazel-compile-commands/tests/bazel-mock" + exe_suffix());
   ASSERT_THAT(bazel_path, Not(IsEmpty())) << bazel_path;
   ASSERT_THAT(std::filesystem::exists(bazel_path), IsTrue()) << bazel_path;
 
@@ -85,7 +87,8 @@ TEST(self_test, run)
     auto const end = cu_obj.end();
 
     ASSERT_THAT(cu_obj.find("file"), Not(Eq(end)));
-    EXPECT_THAT(cu_obj.find("directory"), Not(Eq(end)));
+    ASSERT_THAT(cu_obj.find("directory"), Not(Eq(end)));
+    EXPECT_THAT(cu_obj.at("directory").as_string(), Eq("/tmp/execroot"));
     EXPECT_THAT(cu_obj.find("command"), Eq(end));
     EXPECT_THAT(cu_obj.find("arguments"), Not(Eq(end)));
     EXPECT_THAT(cu_obj.find("output"), Not(Eq(end)));
